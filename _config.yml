@@ -32,6 +32,7 @@ comments:
     category_name: "General"
     category_id: "DIC_kwDORSwx8c4C2tFb"
     discussion_term: "pathname"
+    strict: "1"
     reactions_enabled: "1"
     theme: "dark_dimmed"
 
