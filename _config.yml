@@ -1,0 +1,77 @@
+# Site Settings
+title: "JunHan's AI Factory"
+subtitle: "AI & Deep Learning Research Blog"
+name: "JunHan"
+description: "Object Detection, YOLO, Deep Learning, and AI Research"
+url: "https://junhanzang.github.io"
+baseurl: ""
+
+# Theme
+remote_theme: "mmistakes/minimal-mistakes@4.26.2"
+minimal_mistakes_skin: "dark"
+
+# Site Author
+author:
+  name: "JunHan"
+  bio: "AI Researcher & Engineer"
+  location: "South Korea"
+  links:
+    - label: "Tistory"
+      icon: "fas fa-fw fa-blog"
+      url: "https://junhan-ai.tistory.com"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/junhanzang"
+
+# Reading Files
+include:
+  - _pages
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Outputting
+permalink: /:categories/:title/
+paginate: 10
+paginate_path: /page:num/
+timezone: Asia/Seoul
+
+# Plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-include-cache
+
+# Archives
+category_archive:
+  type: liquid
+  path: /categories/
+tag_archive:
+  type: liquid
+  path: /tags/
+
+# Defaults
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+      toc: true
+      toc_sticky: true
+  # _pages
+  - scope:
+      path: "_pages"
+      type: pages
+    values:
+      layout: single
+      author_profile: true
