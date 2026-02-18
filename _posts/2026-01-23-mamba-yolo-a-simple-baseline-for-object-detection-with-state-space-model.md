@@ -7,7 +7,11 @@ categories:
 
 <https://arxiv.org/abs/2406.05835>
 
-[Mamba YOLO: A Simple Baseline for Object Detection with State Space Model](https://arxiv.org/abs/2406.05835)
+[Mamba YOLO: A Simple Baseline for Object Detection with State Space Model
+
+Driven by the rapid development of deep learning technology, the YOLO series has set a new benchmark for real-time object detectors. Additionally, transformer-based structures have emerged as the most powerful solution in the field, greatly extending the m
+
+arxiv.org](https://arxiv.org/abs/2406.05835)
 
 **Mamba YOLO: 상태 공간 모델(State Space Model)을 활용한 객체 탐지를 위한 간단한 베이스라인**
 
@@ -27,7 +31,11 @@ Zeyu Wang¹˒², Chen Li¹˒²,\* Huiying Xu¹˒², Xinzhong Zhu¹˒²˒³,† H
 공개된 COCO 벤치마크 데이터셋에 대한 광범위한 실험 결과, Mamba YOLO는 기존 방법들과 비교하여 최첨단(State-of-the-Art) 성능을 달성함을 확인하였다. 특히, Mamba YOLO의 tiny 버전은 단일 RTX 4090 GPU 환경에서 추론 시간 1.5 ms로 동작하면서 mAP 기준 7.5%의 성능 향상을 달성하였다. PyTorch 코드는 다음 링크에서 확인할 수 있다.  
 <https://github.com/HZAI-ZJNU/Mamba-YOLO>
 
-[GitHub - HZAI-ZJNU/Mamba-YOLO: the official pytorch implementation of “Mamba-YOLO：SSMs-based for Object Detection”](https://github.com/HZAI-ZJNU/Mamba-YOLO)
+[GitHub - HZAI-ZJNU/Mamba-YOLO: the official pytorch implementation of “Mamba-YOLO：SSMs-based for Object Detection”
+
+the official pytorch implementation of “Mamba-YOLO：SSMs-based for Object Detection” - HZAI-ZJNU/Mamba-YOLO
+
+github.com](https://github.com/HZAI-ZJNU/Mamba-YOLO)
 
 ![](/assets/images/posts/622/img.png)
 
@@ -193,7 +201,6 @@ R\_fusion = R\_global ⊙ Y(R\_local)
 
 > activation의 **출력 분포(shape)** 가  
 > 곧 **정보 통과량(control signal)** 이 된다는 뜻
-
 ---
 
 ## 3️⃣ GELU vs SiLU vs ReLU를 기능적으로 비교하면
@@ -213,7 +220,6 @@ RG Block 관점에서:
 - SSM에서 누적되는 state가 폭주하지 않음
 
 ➡️ **가장 안전한 선택**
-
 ---
 
 ### ? (2) SiLU (Swish)
@@ -244,7 +250,6 @@ RG Block에서의 영향:
 - latency 차이는 거의 없음
 
 ➡️ **현실적인 대체재**
-
 ---
 
 ### ? (3) ReLU — 문제의 핵심
@@ -282,7 +287,6 @@ RG Block에서 치명적인 이유 ?
 - small object AP ↓
 - AP75 ↓
 - 학습 초반 loss oscillation ↑
-
 ---
 
 ## 4️⃣ 왜 논문들이 거의 항상 GELU를 쓰는가
@@ -297,7 +301,6 @@ RG Block에서 치명적인 이유 ?
 - ReLU ❌
 - GELU / SiLU ⭕
 - 심지어 ELU, Mish도 종종 사용됨
-
 ---
 
 ## 5️⃣ 실전 조언 (네 상황 기준)
@@ -323,7 +326,6 @@ RG Block에서 치명적인 이유 ?
 
 - **SiLU 실험 하나 넣는 건 합리적**
 - ReLU는 굳이 안 해도 됨 (이론적으로 불리)
-
 ---
 
 ## ? 최종 한 줄 정리
@@ -331,7 +333,6 @@ RG Block에서 치명적인 이유 ?
 > **RG Block처럼 곱셈 게이팅이 있는 구조에서는  
 > GELU ↔ SiLU는 거의 동등하지만,  
 > ReLU는 구조적으로 맞지 않아 성능 저하가 크다.**
-
 ---
 
 ## 실험(Experiments)
@@ -415,7 +416,6 @@ Neck 부분에서는 ODSSBlock을 제거하면 모델을 더 경량화할 수 �
 
 본 연구는 다음 연구비의 지원을 받아 수행되었다.  
 중국 국가자연과학재단(62376252); 저장성 자연과학재단 중점 프로젝트(LZ22F030003); 저장성 Leading Geese Plan(2024C02G1123882).
-
 ---
 
 Mamba YOLO 변형에서 값 설정 유형에 대한 소거 실험(Ablation Study)을 잘 이해 못하겠는데, ODSSBlock 반복 횟수가 정확히 말그대로 해당 P안에서 반복수인가?
@@ -598,7 +598,6 @@ Head
   - SSM 특성상 가장 균형 잡힌 깊이 배분
 - 이 ablation은
   - “SSM은 어디에, 얼마나 써야 좋은가”를 보여주는 실험
-
 ---
 
 ## 종합 평점: **3 / 5**

@@ -9,7 +9,11 @@ tags:
 
 <https://arxiv.org/abs/2504.09858>
 
-[Reasoning Models Can Be Effective Without Thinking](https://arxiv.org/abs/2504.09858)
+[Reasoning Models Can Be Effective Without Thinking
+
+Recent LLMs have significantly improved reasoning capabilities, primarily by including an explicit, lengthy Thinking process as part of generation. In this paper, we question whether this explicit thinking is necessary. Using the state-of-the-art DeepSeek-
+
+arxiv.org](https://arxiv.org/abs/2504.09858)
 
 **초록**  
 최근의 대형 언어 모델(LLM)은 **명시적이고 긴 사고 과정(Thinking process)** 을 생성 과정에 포함함으로써 추론 능력을 크게 향상시켜 왔습니다. 본 논문에서는 이러한 명시적인 사고 과정이 과연 필수적인지를 의문을 제기합니다. 최신 모델인 **DeepSeek-R1-Distill-Qwen**을 활용하여, 단순한 프롬프트를 통해 사고 과정을 생략하는 방식, 즉 **NoThinking**이 의외로 효과적일 수 있음을 확인했습니다.
@@ -386,8 +390,110 @@ pass@k는 다음과 같이 정의됩니다:
 
 ---
 
+
+
 ![](/assets/images/posts/548/img_10.png)
 
 ![](/assets/images/posts/548/img_11.png)
-
 ---
+
+### 지표 (Metrics)
+
+우리는 **지연 시간(latency)** 을 다음과 같이 정의합니다:  
+**각 데이터셋에서 N개의 병렬 샘플링 결과 중 생성된 토큰 수의 최댓값을 평균한 값**입니다.
+
+이 지표는 **실제 애플리케이션에서 매우 중요한 요소**입니다.  
+왜냐하면, **낮은 지연 시간은 더 빠른 응답 시간**으로 이어지기 때문이며, 이는 **현실 세계의 사용자 경험 측면에서 핵심 목표**가 되기 때문입니다.
+
+![](/assets/images/posts/548/img_12.png)
+
+![](/assets/images/posts/548/img_13.png)
+
+### 4.2 결과 (Results)
+
+**그림 7**은 모든 벤치마크에 대해 **Thinking**과 **NoThinking**의 **pass@1 결과**를 보여줍니다.
+
+- **단일 샘플 응답의 성능**은 **병렬 스케일링 없이의 pass@1**으로 간주되며,
+- **여러 샘플에 대해 Best-of-N 선택을 수행한 정확도**는 **병렬 스케일링을 적용한 pass@1**으로 간주됩니다.
+
+**검증기(verifier)가 없는 태스크들**의 경우, 우리는 그림에서 **confidence 기반 결과**를 사용하였으며,  
+**선택된 실험들에 대한 ablation 결과는 표 2**에 제시했습니다.
+
+이 표는 **4.1절에서 설명한 Best-of-N 선택 방법들**을 비교한 것으로, **confidence 기반 선택 방식이 일반적으로 다수결보다 우수한 성능**을 보였습니다.  
+또한, 병렬 스케일링을 사용할 때 **pass@1의 이론적 상한선**으로서 **pass@k 정확도도 함께 보고**하였으며, 이 값도 표 2에 포함되어 있습니다.  
+**확장된 표**는 **부록 B.3**에서 확인할 수 있습니다.
+
+### 완벽한 검증기(perfect verifiers)가 있는 경우
+
+**NoThinking은 병렬 스케일링과 결합될 때**, 전통적인 순차적 접근 방식에 비해 **훨씬 더 효율적인 대안**이 됩니다.  
+즉, **훨씬 낮은 지연 시간과 토큰 사용량으로 비슷하거나 더 높은 정확도**를 달성할 수 있습니다.
+
+**그림 7의 첫 번째와 두 번째 플롯**을 보면, **NoThinking은 Thinking보다 훨씬 낮은 지연 시간**으로  
+**유사하거나 더 높은 성능**을 보여줍니다.
+
+- 병렬 스케일링 없이도, **NoThinking은 Thinking과 거의 유사한 정확도를 훨씬 적은 지연 시간으로 달성**합니다.
+- 만약 **완벽한 검증기**가 존재한다면, **k개의 샘플 중에서 가장 좋은 응답을 선택함으로써 pass@k 정확도**를 달성할 수 있습니다.
+
+**병렬 스케일링과 결합**하면, NoThinking은  
+**budget forcing 없이 병렬 스케일링도 사용하지 않은 Thinking**—즉, **대표적인 순차적 스케일링 베이스라인**—과 **동일한 수준의 정확도를 달성하면서도**,  
+**지연 시간은 7배 감소**합니다.
+
+또한, **MiniF2F**와 **ProofNet** 데이터셋 모두에서, **NoThinking은 4배 적은 출력 토큰만으로 동일한 정확도를 달성**,  
+그 **계산 효율성(computational efficiency)** 을 강조합니다.
+
+이러한 결과는 **검증기가 사용 가능한 환경에서 병렬 샘플링의 효과성**을 강하게 뒷받침합니다.  
+**추가적인 세부 사항은 부록 B.1**에서 확인할 수 있습니다.
+
+### 단순 Best-of-N 방법 (Simple Best-of-N Methods)
+
+**NoThinking은 병렬 스케일링과 confidence 기반 선택 방식이 결합될 때**, 대부분의 벤치마크에서 **낮은 토큰 예산 조건 하에 Thinking을 일관되게 능가**합니다.  
+**그림 7의 마지막 다섯 개 플롯**은 여러 벤치마크에서 **Thinking과 NoThinking을 토큰 수를 맞춰 비교한 confidence 기반 선택 결과**를 보여줍니다.
+
+우리가 **저예산(low-budget) 구간에 집중하는 이유**는 다음 두 가지입니다:
+
+1. **효율적인 추론(inference efficiency)** 에 대한 본 연구의 주 관심사와 일치하며,
+2. **토큰 최대 길이를 너무 높게 설정하면**, **출력이 지나치게 길고 일관성 없는 "중얼거림(babbling)"**으로 이어져,  
+   지연 시간만 늘고 비교의 의미가 사라지기 때문입니다.
+
+예상대로 **병렬 스케일링은 Thinking과 NoThinking 모두의 pass@1 성능을 향상**시켰습니다.  
+그러나 모든 수학 벤치마크에서 **NoThinking은 병렬 스케일링이 적용된 Thinking보다 항상 더 우수한 Pareto frontier를 형성**하며,  
+**더 나은 정확도–예산 균형(accuracy–budget tradeoff)** 을 입증했습니다.
+
+**AMC 2023**과 **OlympiadBench**에서는, **병렬 스케일링 적용 여부와 무관하게 NoThinking이 항상 Thinking을 능가**했습니다.  
+특히, **full Thinking**(budget forcing 없이 Thinking)과 비교했을 때도,  
+**NoThinking은 pass@1 점수가 더 높았으며 (55.79 vs. 54.1)**, **지연 시간은 9배나 줄었습니다**.
+
+다만, **LiveCodeBench**에서는 NoThinking의 성능이 떨어졌으며, **예외적인(outlier) 결과**로 보입니다.  
+이는 **코딩 과제에서는 정확히 일치하는 정답이 없으면 voting 전략을 쓸 수 없어 confidence 기반 선택 방식의 한계**가 드러났기 때문일 수 있습니다.  
+이런 경우에는 **confidence가 가장 높은 응답을 선택하는 fallback 전략**을 사용하지만, 이 방식은 신뢰도가 낮습니다.  
+**표 2**에서 확인할 수 있듯, 이 방식은 voting을 사용할 수 있는 과제에서는 **일관되게(종종 큰 차이로) 열등한 성능**을 보였습니다.
+
+종합적으로 보면, **검증기가 없는 환경에서도**, **병렬 샘플링 및 강력한 선택 전략과 결합된 NoThinking**은 매우 효과적인 방법임을 보여줍니다.
+
+### 요약 (Summary)
+
+**NoThinking은 k가 증가할수록 놀라운 pass@k 성능을 보이며**,  
+**병렬 스케일링을 통해 이를 더욱 활용**하면, **비슷하거나 훨씬 낮은 지연 시간(최대 9배 감소)** 으로 **향상된 pass@1 성능**을 달성할 수 있습니다.  
+또한, **완벽한 검증기가 존재하는 과제에서는**, **정확도를 유지하거나 더 높은 정확도를 달성하면서도 전체 토큰 사용량을 최대 4배까지 줄일 수 있습니다**.
+
+## 5 결론 (Conclusion)
+
+지금까지 대형 언어 모델들은 **최종 해답을 생성하기 전에 긴 “사고(thinking)” 과정**을 거침으로써 추론 과제에서 높은 성능을 보여 왔습니다.  
+그러나 본 논문에서는 **이러한 사고 과정이 과연 필요한지를 다시 질문하며**, 이를 대신할 **간단하면서도 효과적인 프롬프트 기반 접근법인 NoThinking**을 제안했습니다.
+
+우리는 동일한 모델이라도 **긴 사고 체인 없이도**,  
+**pass@k 기준으로는 기존 Thinking 방식보다 성능이 동등하거나 더 우수**하며,  
+**사용하는 토큰 수는 훨씬 적을 수 있음**을 보였습니다.
+
+**동일한 토큰 예산 조건**에서도, **NoThinking은 대부분의 k 값에서 기존 Thinking 결과를 꾸준히 능가**했습니다.  
+또한, 우리는 **NoThinking을 Best-of-N 선택 전략과 결합**하여  
+**표준 Thinking 방식보다 더 나은 정확도–지연 시간 균형**을 달성할 수 있음을 보여주었습니다.
+
+본 연구가 **긴 사고 과정의 필요성에 대한 재고**를 유도하고,  
+**저예산 및 저지연 환경에서 강력한 추론 성능을 위한 실용적 기준선**을 제공하길 바랍니다.
+
+## 감사의 글 (Acknowledgements)
+
+이 연구는 **UC 버클리 Sky Computing Lab**의 지원을 받아 수행되었습니다.  
+**Databricks**로부터 컴퓨팅 자원을 제공받았으며, **Jonathan Frankle**에게 리소스 접근을 도와준 점에 감사드립니다.  
+또한, **Kaylo Littlejohn(UC Berkeley)**, **Zhaoyu Li(University of Toronto)**에게 초안에 대한 소중한 피드백을 제공해 주신 점을 감사드립니다.

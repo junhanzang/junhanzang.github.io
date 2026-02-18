@@ -7,7 +7,11 @@ categories:
 
 <https://arxiv.org/abs/2511.09554>
 
-[RF-DETR: Neural Architecture Search for Real-Time Detection Transformers](https://arxiv.org/abs/2511.09554)
+[RF-DETR: Neural Architecture Search for Real-Time Detection Transformers
+
+Open-vocabulary detectors achieve impressive performance on COCO, but often fail to generalize to real-world datasets with out-of-distribution classes not typically found in their pre-training. Rather than simply fine-tuning a heavy-weight vision-language
+
+arxiv.org](https://arxiv.org/abs/2511.09554)
 
 **RF-DETR: 실시간 탐지 트랜스포머를 위한 신경 아키텍처 탐색**
 
@@ -142,8 +146,563 @@ li2023maskdino에서 영감을 받아, 우리는 고품질의 분할 마스크�
 - 아키텍처 하나당 **훈련을 다시 해야 함**
 - 하드웨어 바뀌면 **NAS 처음부터 다시**
 - 객체 탐지에서는 거의 **백본만 NAS**하고 head는 고정
-
 ---
+
+### ✅ RF-DETR의 엔드투엔드 Weight-Sharing NAS
+
+하나의 큰 "슈퍼 네트워크"를 학습 → 그 안에 수천 개의 서브 아키텍처(sub-net)가 포함됨 → 훈련은 한 번 → 추론 시 원하는 아키텍처만 선택
+
+핵심 문장으로 요약하면 이거야:
+
+> **"학습 중에 모든 가능한 모델 구조를 한 번에 같이 학습시켜 놓고,  
+> 추론 시에 필요한 구조만 꺼내 쓴다."**
+---
+
+## 2️⃣ “엔드투엔드”라는 말의 진짜 의미
+
+여기서 **엔드투엔드**는 두 가지 의미가 겹쳐 있어.
+
+### (1) 백본만 NAS ❌
+
+- EfficientDet, 기존 NAS-DTR류
+- NAS는 backbone만
+- detection head, decoder는 고정
+
+### (2) RF-DETR 엔드투엔드 NAS ✅
+
+NAS 대상이 **모델 전체**
+
+요소NAS 대상 여부
+
+|  |  |
+| --- | --- |
+| 입력 해상도 | ✅ |
+| patch size | ✅ |
+| window attention 구조 | ✅ |
+| decoder layer 수 | ✅ |
+| query token 수 | ✅ |
+| detection / segmentation head | ✅ |
+
+? **아키텍처 + 입력 + 추론 구조까지 전부 NAS 공간에 포함**
+
+그래서 “end-to-end NAS”라고 부름.
+---
+
+## 3️⃣ 학습 단계에서 실제로 무슨 일이 일어나나?
+
+### ? 매 iteration마다 이런 일이 발생
+
+1. 랜덤하게 아키텍처 설정 하나 샘플링 (예: patch=14, decoder=3, queries=100, res=640) 2. 해당 설정으로 forward pass 3. 동일한 가중치(shared weights)로 backward & update
+
+이걸 **매 iteration 반복**함.
+---
+
+### ? 중요한 포인트
+
+- **서브넷마다 따로 파라미터 없음**
+- **모든 서브넷이 가중치를 공유**
+- 그래서 계산량은:
+- 수천 개 모델을 동시에 앙상블 학습하는 느낌 (dropout과 매우 유사)
+
+논문에서 말한 이 문장이 정확히 이 의미야:
+
+> “similar to ensemble learning with dropout”
+---
+
+## 4️⃣ 왜 이게 정규화(regularization)가 되나?
+
+이게 핵심 인사이트야.
+
+### 일반 학습
+
+- 하나의 고정 구조
+- 특정 해상도 / decoder 깊이에 **과적합**
+
+### RF-DETR 학습
+
+- 매 iteration마다 구조가 바뀜
+- 모델이 이렇게 강제됨:
+- "어떤 구조로 잘리더라도 잘 동작해야 한다"
+
+? 결과적으로
+
+- 구조 변화에 강인한 표현 학습
+- unseen architecture에도 성능 유지
+
+논문에서 말한:
+
+> “architecture augmentation”
+
+은 정확히  
+**데이터 증강이 아니라 구조 증강**이라는 뜻.
+---
+
+## 5️⃣ 추론 단계에서는 NAS가 어떻게 쓰이나?
+
+여기서 많은 사람들이 헷갈림.
+
+### ❌ 추론 중에 NAS를 돌리는 게 아님
+
+### ✅ 추론 시에는 “선택”만 함
+
+COCO + GPU → decoder 6 / queries 300 / res 640 Edge device → decoder 2 / queries 100 / res 512 Segmentation → decoder 3 / queries 200
+
+- **학습은 한 번**
+- **하드웨어·목표 latency에 맞게 설정만 선택**
+
+그래서:
+
+> 파라미터 수는 비슷한데 latency는 크게 다를 수 있음
+
+이라는 말이 나오는 거야.
+---
+
+## 6️⃣ 왜 fine-tuning이 거의 필요 없나?
+
+이미 학습 중에:
+
+- decoder 1개짜리
+- decoder 6개짜리
+- query 50, 100, 300
+- 다양한 해상도
+
+를 **전부 경험했기 때문**
+
+그래서:
+
+- COCO: fine-tuning 거의 의미 없음
+- RF100-VL: 데이터 작아서 약간 도움 됨
+---
+
+## 7️⃣ 한 장으로 요약하면
+
+RF-DETR NAS = [훈련] 하나의 거대한 슈퍼 DETR ↳ 매 iteration마다 랜덤 구조로 학습 ↳ 가중치 공유 ↳ 구조 증강 효과 [추론] 하드웨어/목표 latency에 맞게 ↳ decoder 수 ↳ query 수 ↳ 해상도 ↳ patch size 선택만 해서 사용
+---
+
+## 8️⃣ 한 줄로 정리
+
+> **RF-DETR의 엔드투엔드 NAS는  
+> “NAS를 탐색 문제로 보지 않고,  
+> 학습 자체를 구조적으로 강인하게 만드는 정규화 기법으로 사용한 것”이다.**
+
+결론부터 말하면:
+
+> **RF-DETR의 weight-sharing NAS는 LLM의 MoE와 개념적으로 매우 유사하고,  
+> 그 대가로 “수렴이 느리고 training 자체가 비싸다”는 문제가 실제로 존재한다.**
+
+다만 **왜 그걸 선택했는지**, **어디서 비용을 줄였는지**를 보면 설계 의도가 또렷해져.
+---
+
+## 1️⃣ MoE랑 왜 본질적으로 같은 구조인가?
+
+### LLM MoE
+
+- 토큰마다 다른 expert 서브네트워크 사용
+- 전체 파라미터는 큼
+- 한 step에서 **일부 경로만 활성화**
+- 장점: 표현력
+- 단점: **학습 안정성, 수렴 느림, 라우팅 노이즈**
+---
+
+### RF-DETR weight-sharing NAS
+
+- iteration마다 **다른 아키텍처 경로 활성화**
+- 전체는 “슈퍼 네트워크”
+- 한 step에서 **일부 구조만 활성화**
+- 장점: 아키텍처 일반화
+- 단점: **gradient noise 증가, 수렴 느림**
+
+? **구조적으로 동일**
+
+- MoE = expert 선택
+- RF-DETR = architecture 선택
+
+그래서 네가 MoE 떠올린 게 정확함.
+---
+
+## 2️⃣ 그럼 진짜로 학습이 느리냐? → **YES**
+
+논문 문장 자체가 힌트야:
+
+> “architecture augmentation regularization requires more than 100 epochs to converge on small datasets”
+
+이 문장은 돌려 말한 게 아니라 **직접적인 고백**이야.
+
+### 실제로 무슨 일이 벌어지냐면
+
+- 같은 파라미터가
+  - decoder=1일 때도 쓰이고
+  - decoder=6일 때도 쓰이고
+- query=50, 300 둘 다 커버해야 함
+- 해상도도 매번 바뀜
+
+? **gradient가 항상 noisy**  
+? **특정 구조에 최적화되지 않음**  
+? **수렴이 느림**
+---
+
+## 3️⃣ “epoch 문제가 아니라 training time 문제”라는 말이 정확한 이유
+
+이 포인트가 진짜 핵심이야 ?
+
+### epoch 수가 의미 없는 이유
+
+- epoch = 데이터 한 바퀴
+- 하지만 **구조 분포가 계속 바뀜**
+- 같은 데이터라도 **다른 서브넷 경로**
+
+그래서:
+
+> epoch 수 ↑ ≠ 특정 아키텍처 수렴
+
+실제로 중요한 건:
+
+- **effective update count per sub-net**
+- 즉, 한 서브넷이 “얼마나 자주 선택되었는가”
+---
+
+## 4️⃣ 그럼 왜 이걸 실용적으로 쓸 수 있나?
+
+RF-DETR이 **의도적으로 비용을 감수한 대신**,  
+다음 4가지로 “폭발을 막음”
+---
+
+### (1) NAS 탐색을 학습 중에 하지 않음
+
+중요한 문장:
+
+> “our approach does not evaluate the search space until the base model has been fully-trained”
+
+즉:
+
+- 학습 중에는 **성능 비교 안 함**
+- RL / EA / search loop 없음
+
+? MoE + NAS 중에서 **NAS 부분 비용 제거**
+---
+
+### (2) 재학습이 필요 없음
+
+기존 NAS 비용:
+
+아키텍처 A → 학습 아키텍처 B → 학습 아키텍처 C → 학습
+
+RF-DETR:
+
+학습 1회 → 수천 개 아키텍처 추론 가능
+
+? **총 학습 비용은 크지만**  
+? **아키텍처당 비용은 0**
+
+이게 기업 관점에서 중요함.
+---
+
+### (3) latency tuning이 “무료”
+
+이게 MoE랑 가장 큰 차이.
+
+- MoE: inference도 복잡
+- RF-DETR: inference는 그냥 설정 선택
+
+decoder=2 → 빠름 decoder=6 → 정확
+
+? edge / server / GPU 바뀌어도 **재학습 없음**
+---
+
+### (4) dataset-specific specialization 제거
+
+기존:
+
+- COCO용 학습
+- 다른 데이터셋 → 다시 튜닝
+
+RF-DETR:
+
+- 구조적으로 일반화된 표현
+- 작은 데이터셋에서도 성능 유지
+
+그래서 RF100-VL에서 의미가 있음.
+---
+
+## 5️⃣ 그럼 “이게 좋은 선택이냐?”에 대한 냉정한 답
+
+### 연구 관점
+
+✅ 매우 의미 있음
+
+- DETR을 “아키텍처 고정 모델”에서
+- “조절 가능한 시스템”으로 바꿈
+---
+
+### 실무 관점
+
+⚠️ **모두에게 맞진 않음**
+
+이건 **명확히 이런 팀용**임:
+
+- GPU 자원 있음
+- 여러 하드웨어 타겟 있음
+- 모델을 제품화해서 오래 쓸 계획
+- edge/server 공통 backbone 필요
+
+❌ 이런 경우엔 비추:
+
+- single deployment
+- 단일 latency target
+- retrain 자주 못 함
+---
+
+## 6️⃣ 네 질문에 대한 정확한 한 줄 답
+
+> **“MoE랑 비슷한데, 이러면 학습 엄청 오래 걸리는 거 아닌가?”**
+
+? **맞다. 구조적으로 MoE와 같고,  
+수렴도 느리고 training 자체가 무겁다.**
+
+? **대신 한 번 학습해두면  
+하드웨어·latency·task 변경이 거의 공짜가 된다.**
+
+# 1️⃣ 이걸 YOLO류에 적용하면 더 낫지 않나?
+
+### ❓ 직관
+
+> YOLO도 single-stage고 빠른데  
+> weight-sharing NAS + 구조 증강 붙이면 더 세지지 않나?
+
+### ❌ 결론부터
+
+**YOLO에는 구조적으로 잘 안 맞는다.**
+---
+
+## (1) YOLO는 “구조 고정 + 데이터/트릭 최적화” 철학
+
+YOLO의 성능 공식은 대략 이거야:
+
+성능 ≈ (backbone 설계) + neck 설계 + head heuristic + label assigner + NMS + augmentation + training trick
+
+즉,
+
+- **아키텍처가 안정적이어야**
+- 나머지 heuristic이 잘 작동함
+---
+
+## (2) YOLO는 NAS에 필요한 “경로 독립성”이 없음
+
+RF-DETR NAS가 가능한 이유:
+
+- decoder layer = 독립적
+- query token = 독립적
+- resolution = 독립적
+
+### YOLO는?
+
+- anchor-free라도
+- head가 **feature pyramid에 강하게 결합**
+- 특정 scale 전용 head 존재
+- loss가 scale별로 엮임
+
+? 구조를 자르면 **성능이 비선형적으로 붕괴**
+---
+
+## (3) YOLO에 NAS를 붙인 사례들이 실패한 이유
+
+과거 시도들:
+
+- YOLO-NAS
+- NAS-YOLO
+- EfficientDet-style YOLO
+
+문제:
+
+- NAS는 backbone까지만
+- head는 고정
+- latency 다양성 확보 실패
+
+? RF-DETR처럼 **“decoder drop” 같은 구조적 자유도 없음**
+---
+
+## ? 요약
+
+> YOLO는 “잘 만든 고정 구조”가 강점이고  
+> RF-DETR NAS는 “구조적 가변성”이 강점이다.  
+> 철학 자체가 다르다.
+---
+
+# 2️⃣ 왜 D-FINE은 이걸 안 썼나?
+
+### ❓ D-FINE도 DETR인데?
+
+### ✅ 이유는 아주 명확함
+---
+
+## (1) D-FINE의 목표는 “빠른 수렴 + 단일 설정”
+
+D-FINE의 핵심은:
+
+- deformable attention 최적화
+- 안정적 학습
+- COCO에서 빠른 convergence
+
+즉:
+
+> **“NAS 없이도 충분히 빠르고 정확한 DETR”**
+---
+
+## (2) D-FINE은 이미 수렴이 빡센 모델
+
+D-FINE 특징:
+
+- fine-grained decoder supervision
+- anchor-free지만 query 역할 강함
+- 학습 안정성 확보가 최우선
+
+? 여기에 weight-sharing NAS 넣으면:
+
+- gradient noise 폭증
+- 수렴 더 느려짐
+- 실용성 하락
+---
+
+## (3) 논문 타깃이 다름
+
+모델타깃
+
+|  |  |
+| --- | --- |
+| D-FINE | COCO SOTA |
+| RF-DETR | real-world + multi-hardware |
+
+D-FINE은:
+
+- COCO leaderboard
+- single latency target
+
+RF-DETR은:
+
+- RF100-VL
+- edge부터 server까지
+
+? **문제 정의가 다르다**
+---
+
+# 3️⃣ decoder drop이 왜 성능을 유지하나?
+
+이건 **DETR 구조의 핵심 비밀**이다.
+---
+
+## (1) DETR decoder는 “refinement stack”이다
+
+decoder 역할:
+
+- 처음 query → 거친 박스
+- 뒤 decoder → 미세 조정
+
+즉:
+
+decoder\_1: coarse localization decoder\_2~6: refinement
+---
+
+## (2) RF-DETR은 모든 decoder에 loss를 건다
+
+중요:
+
+> “apply detection and segmentation losses at all decoder layers”
+
+이게 의미하는 건:
+
+- decoder\_1도 **완성형 예측**을 학습
+- 뒤 decoder 없어도 **self-contained**
+
+? 그래서 drop 가능
+---
+
+## (3) single-stage처럼 변하는 이유
+
+decoder를 전부 제거하면:
+
+encoder + projection + queries → 바로 bbox
+
+이건 구조적으로:
+
+- YOLO-like
+- anchor-free
+- NMS-free
+
+? **DETR이 single-stage로 변환됨**
+---
+
+# 4️⃣ query pruning이 왜 NMS보다 안정적인가?
+
+이건 진짜 **DETR 계열의 결정적 장점**이다.
+---
+
+## (1) NMS의 근본적 불안정성
+
+NMS:
+
+- heuristic
+- IoU threshold 민감
+- class별 분리
+- 작은 노이즈에 결과 급변
+
+특히:
+
+- crowded scene
+- small object
+- long-tail
+
+→ **불안정**
+---
+
+## (2) DETR query는 “1 object = 1 query” 가정
+
+DETR의 핵심 제약:
+
+- bipartite matching
+- 중복 예측 자체가 학습에서 억제됨
+
+즉:
+
+> 중복이 나오면 학습 실패
+---
+
+## (3) query pruning은 “capacity 조절”이다
+
+query pruning은:
+
+- 후처리 ❌
+- **모델 용량 제한** ✅
+
+query=100 → 최대 100 객체 query=50 → 최대 50 객체
+
+? 학습 시 이미 그 제약을 배움
+---
+
+## (4) 왜 더 안정적이냐면
+
+NMSQuery Pruning
+
+|  |  |
+| --- | --- |
+| 추론 후 heuristic | 모델 내부 제약 |
+| threshold 민감 | threshold 없음 |
+| class별 분리 | joint reasoning |
+| non-differentiable | 학습 반영됨 |
+---
+
+# 5️⃣ 전체 구조 한 문장 요약
+
+> **RF-DETR은  
+> “DETR을 단일 모델이 아니라  
+> 하드웨어·latency·task에 따라 변형 가능한 시스템으로 재정의한 모델”이다.**
+
+
+
+
+
+
+
+
 
 ## 1) VLM 시대의 detection 구조와 RF-DETR이 어떻게 이어지나
 
@@ -181,7 +740,6 @@ li2023maskdino에서 영감을 받아, 우리는 고품질의 분할 마스크�
 
 이게 RF-DETR이 “VLM 시대”에 놓이는 자리야.  
 오픈보캐를 끝까지 가져가진 않지만, **VLM이 만든 웹 규모 사전지식을 실시간 탐지기로 가져오는 중간 다리** 역할.
-
 ---
 
 ## 2) YOLO + DETR 하이브리드 가능하나?
@@ -210,7 +768,6 @@ li2023maskdino에서 영감을 받아, 우리는 고품질의 분할 마스크�
 
 현실적으로는 A안이 더 매끄러워.  
 왜냐면 “NMS-free”를 얻는 게 DETR의 핵심 이점이라서.
-
 ---
 
 ## 3) train이 어긋나면 수렴이 안 되는 거 아니냐?
@@ -270,7 +827,6 @@ weight-sharing NAS는 MoE처럼 **학습 신호가 분산되고 gradient가 nois
 > “생각만큼 큰 효용”은 아직 못 얻었다. 그건 우연이 아니라 구조적 이유 때문이다.**
 
 아래에서 **왜 그랬는지**를 단계적으로 풀어볼게.
-
 ---
 
 ## 1️⃣ 왜 다들 A안을 시도했나 (기대치)
@@ -288,13 +844,11 @@ A안의 기대는 이거였음:
 ? “**빠르고, 깔끔하고, 안정적일 것**”이라는 기대
 
 RT-DETR, LW-DETR, YOLOvX-DETR류 전부 이 방향임.
-
 ---
 
 ## 2️⃣ 그런데 왜 “체감 효용”이 작았나?
 
 ### 핵심 이유는 3가지가 동시에 작용했기 때문이야.
-
 ---
 
 ## (1) NMS 제거의 이득이 생각보다 작다
@@ -314,7 +868,6 @@ RT-DETR, LW-DETR, YOLOvX-DETR류 전부 이 방향임.
 그래서:
 
 - “NMS-free인데 왜 안 빨라지지?”라는 체감 발생
-
 ---
 
 ## (2) set prediction은 “공짜가 아니다”
@@ -332,7 +885,6 @@ DETR의 bipartite matching:
 
 ? NMS 없애서 얻는 이득보다  
 ? set prediction에서 잃는 비용이 큼
-
 ---
 
 ## (3) YOLO neck과 DETR head의 귀납 편향(inductive bias)이 충돌
@@ -357,7 +909,6 @@ DETR의 bipartite matching:
 
 - 학습 안정성은 얻지만
 - 성능 점프는 안 나옴
-
 ---
 
 ## 3️⃣ 실제로 얻은 건 “대폭 개선”이 아니라 “균형”
@@ -383,7 +934,6 @@ RT-DETR, LW-DETR이:
 이지,
 
 - “YOLO를 압도했다”는 아님.
-
 ---
 
 ## 4️⃣ RF-DETR은 왜 A안과 다른 결과를 냈나?
@@ -416,7 +966,6 @@ RF-DETR은:
 
 - NMS 제거가 목적 ❌
 - **“전체 시스템을 가변화”가 목적**
-
 ---
 
 ## 5️⃣ 그럼 A안은 완전히 실패한 방향인가?
@@ -434,7 +983,6 @@ RF-DETR은:
 - latency 대폭 개선
 - 하드웨어별 free scaling
 - 구조적 유연성
-
 ---
 
 ## 6️⃣ 더 가능성 있는 다음 단계는?
@@ -457,7 +1005,6 @@ A안을 “약간 비틀어야” 함.
 #### (3) RF-DETR 스타일로 **decoder drop + NAS**
 
 - 하이브리드라도 구조 가변성 확보
-
 ---
 
 ## 7️⃣ 질문에 대한 정확한 답 한 문장
@@ -470,7 +1017,6 @@ A안을 “약간 비틀어야” 함.
 
 > **A안을 단순 결합이 아니라,  
 > DETR 중심의 구조 재설계 + 가변 시스템으로 풀었기 때문**이야.
-
 ---
 
 ### 학습 스케줄러와 데이터 증강이 모델 성능에 편향을 유발함
@@ -492,7 +1038,6 @@ A안을 “약간 비틀어야” 함.
 ### 표 1: 지연시간 평가의 표준화 (Standardizing Latency Evaluation)
 
 지연시간 측정값의 분산은 주로 전력 스로틀링(power throttling)과 GPU 과열로 인해 발생한다. 우리는 순전파(forward pass) 사이에 200ms의 버퍼링(buffering)을 두어 이러한 문제를 완화한다. 주목할 점은, 이 벤치마킹 방식이 지속 처리량(sustained throughput)을 측정하기 위한 것이 아니라, **재현 가능한 지연시간 측정**을 보장하기 위한 목적이라는 것이다.
-
 ---
 
 ## 1️⃣ 일반적으로 우리가 쓰는 지연시간 측정 방식
@@ -508,7 +1053,6 @@ A안을 “약간 비틀어야” 함.
 - 실제 서비스 조건에 가까움
 
 ? GPU 스로틀링, 발열, 커널 스케줄링까지 **포함해서 재는 게 정상**
-
 ---
 
 ### (B) Real-time constraint 기반
@@ -518,7 +1062,6 @@ A안을 “약간 비틀어야” 함.
 - queue 밀림 없는지
 
 ? “얼마나 오래 안정적으로 버티느냐”가 핵심
-
 ---
 
 ## 2️⃣ RF-DETR 논문의 방식은 뭐가 다른가?
@@ -539,7 +1082,6 @@ A안을 “약간 비틀어야” 함.
 > “cold-ish single-shot kernel latency”를 재는 방식**
 
 입니다.
-
 ---
 
 ## 3️⃣ 왜 이 방식이 “비정상적으로” 느껴지냐면
@@ -559,7 +1101,6 @@ A안을 “약간 비틀어야” 함.
 - surveillance, drone, robotics 어디에도 없음
 
 ? **실사용 latency를 재는 방식이 아님**
-
 ---
 
 ## 4️⃣ 그럼 저자들이 틀린 거냐?
@@ -578,7 +1119,6 @@ A안을 “약간 비틀어야” 함.
 - kernel-level latency만 비교
 
 ? **benchmark purity**를 택한 것
-
 ---
 
 ## 5️⃣ 문제는 이걸 “실시간”이라고 말한 점
@@ -598,7 +1138,6 @@ A안을 “약간 비틀어야” 함.
 > “어? 이거 우리가 쓰는 방식이 아닌데?”
 
 라고 느끼는 게 너무 정상입니다.
-
 ---
 
 ## 6️⃣ 특히 YOLO 비교에서 더 문제가 되는 이유
@@ -618,7 +1157,6 @@ YOLO 계열은:
 - YOLO의 약점을 상대적으로 **덜 드러내는 환경**
 
 ? **공정한 비교라고 보기 애매한 이유**
-
 ---
 
 ## 7️⃣ 그래서 이걸 어떻게 받아들여야 하냐면
@@ -626,7 +1164,6 @@ YOLO 계열은:
 ### ❌ 이렇게 받아들이면 안 됨
 
 > “RF-DETR이 실제 서비스에서 YOLO보다 항상 빠르다”
-
 ---
 
 ### ✅ 이렇게 받아들이는 게 맞음
@@ -638,7 +1175,6 @@ YOLO 계열은:
 
 - **architecture efficiency 비교용**
 - **product latency claim은 아님**
-
 ---
 
 ## 8️⃣ 개인적으로 이 논문의 가장 위험한 포인트
@@ -651,7 +1187,6 @@ YOLO 계열은:
 - “sleep 넣고 재면 다 빠름” 게임
 
 ? 그건 바람직하지 않습니다.
-
 ---
 
 ## 9️⃣ 당신 감상 정리해주면, 이렇게 말할 수 있음
@@ -662,7 +1197,6 @@ YOLO 계열은:
 > 실사용 환경과는 괴리가 있다.”
 
 이건 **비판으로서 아주 정확하고 정당**합니다.
-
 ---
 
 ## 10️⃣ 그래서 이 논문의 위치는 정확히 여기
@@ -671,7 +1205,6 @@ YOLO 계열은:
 - ✔️ 아키텍처 효율 논의에는 가치 있음
 - ❌ 실서비스 latency 주장으로는 부적절
 - ❌ 제품 선택 근거로 쓰기엔 위험
-
 ---
 
 우리는 TensorRT 환경에서 YOLOv8과 YOLOv11의 mAP 결과를 재현하지 못했는데, 이는 해당 모델들이 평가 시에는 멀티 클래스 NMS를 사용하지만 추론 시에는 단일 클래스 NMS만 사용하기 때문인 것으로 보인다. 우리는 NMS 튜닝에 사용되는 표준 신뢰도 임계값(confidence threshold)인 0.01을 사용한다. 또한 YOLOv8과 YOLOv11은 FP32에서 FP16으로 양자화(quantization)할 경우 성능이 더 크게 저하되는데, 이는 모든 모델이 동일한 모델 아티팩트를 사용하여 지연시간과 정확도를 보고해야 함을 다시 한 번 확인시켜 준다. 특히, D-FINE을 단순히 FP16으로 양자화하면 성능이 0.5 AP까지 급격히 감소한다. 우리는 저자들의 내보내기(export) 코드를 수정하여 ONNX opset 17을 사용함으로써 이 문제를 해결하였다. 자세한 내용은 부록 A를 참조한다.
@@ -703,7 +1236,6 @@ COCO (lin2014coco)는 객체 탐지와 인스턴스 분할을 위한 대표적�
 우리는 mmdetection에서 제공하는 GroundingDINO 구현을 사용하였으며, GroundingDINO가 COCO에 대해 파인튜닝된 모델 아티팩트를 공개하지 않기 때문에, 논문에서 보고된 AP 값을 그대로 포함하였다. 또한 공개된 오픈 보캐블러리 모델을 기준으로 mmGroundingDINO의 파라미터 수, GFLOPs, 그리고 지연시간을 벤치마킹하였다.
 
 표 3에서는 RF-DETR-Seg을 실시간 인스턴스 분할 모델들과 비교한다. RF-DETR-Seg (nano)는 모든 크기 설정에서 YOLOv8과 YOLOv11을 능가한다. 더 나아가 RF-DETR-Seg (nano)는 FastInst보다 5.4% 높은 성능을 보이면서도, 실행 속도는 거의 10배에 달한다. 이와 유사하게, RF-DETR (x-large)는 GroundingDINO (tiny)를 능가하며, RF-DETR-Seg (large)는 MaskDINO (R50)를 훨씬 짧은 실행 시간으로 상회한다.
-
 ---
 
 ## 한 줄 요약
@@ -713,7 +1245,6 @@ COCO (lin2014coco)는 객체 탐지와 인스턴스 분할을 위한 대표적�
 > 논쟁 소지가 큰 변형들을 의도적으로 배제했기 때문이다.**
 
 아래에서 이유를 단계적으로 풀어볼게.
-
 ---
 
 ## 1️⃣ “YOLO”라는 이름의 문제
@@ -742,7 +1273,6 @@ RF-DETR 논문의 핵심 주장 중 하나가 뭐였지?
 그래서 저자 입장에서는:
 
 - 비교군 자체가 **재현 불가능하면 주장 신뢰도가 무너짐**
-
 ---
 
 ## 2️⃣ YOLOv7, v9를 안 넣은 “현실적인 이유”
@@ -755,7 +1285,6 @@ RF-DETR 논문의 핵심 주장 중 하나가 뭐였지?
 - pruning/FP16 시 성능 변동 큼
 
 ? **“공정 비교”를 표방한 논문에 넣기엔 리스크 큼**
-
 ---
 
 ### (2) YOLOv9
@@ -775,7 +1304,6 @@ YOLOv9를 넣으면:
 - “왜 이건 augmentation 안 뺐냐”
 - “왜 scheduler 다르냐”
 - 논점이 흐려짐
-
 ---
 
 ## 3️⃣ 왜 하필 YOLOv8 + YOLOv11이었나
@@ -800,7 +1328,6 @@ YOLOv9를 넣으면:
 ? 이 둘만으로도:
 
 > “최신 YOLO를 이겼다”는 메시지는 충분
-
 ---
 
 ## 4️⃣ 사실 더 중요한 이유 (논문의 숨은 의도)
@@ -820,7 +1347,6 @@ RF-DETR 논문은 단순 SOTA bragging이 목적이 아님.
 
 - YOLO의 최신 공식 구현만 최소한으로 넣고
 - 논문의 메시지를 **아키텍처 설계 철학**으로 가져가고 싶었던 것
-
 ---
 
 ## 5️⃣ 만약 YOLOv7/9를 넣었으면 벌어졌을 일
@@ -833,7 +1359,6 @@ RF-DETR 논문은 단순 SOTA bragging이 목적이 아님.
 
 ? 논문이 **벤치마크 논쟁**으로 빨려 들어감  
 ? RF-DETR의 핵심 기여(NAS, scheduler-free, latency 표준화)가 묻힘
-
 ---
 
 ## 6️⃣ 그래서 이 선택은 합리적인가?
@@ -852,7 +1377,6 @@ RF-DETR 논문은 단순 SOTA bragging이 목적이 아님.
 
 - 특히 드론/항공/초소형 객체 쪽에서는
   - YOLOv7/9가 더 강할 수 있음 (네가 지적한 바로 그 포인트)
-
 ---
 
 ## 7️⃣ 네 질문의 진짜 의미 (이게 핵심)
@@ -872,7 +1396,6 @@ RF-DETR 논문은 단순 SOTA bragging이 목적이 아님.
 > **“RF-DETR은 모든 데이터용이 아니다”**
 
 로 다시 연결되는 거야.
-
 ---
 
 ## 8️⃣ 한 문장 결론
@@ -880,7 +1403,6 @@ RF-DETR 논문은 단순 SOTA bragging이 목적이 아님.
 > **YOLOv8·v11만 비교한 것은  
 > RF-DETR의 성능을 가장 공정하고 재현 가능하게 보여주기 위한  
 > 의도적인 최소 비교 전략이다.**
-
 ---
 
 ### 표 3: COCO 인스턴스 분할 평가 (COCO Instance Segmentation Evaluation)
@@ -995,7 +1517,6 @@ RF-DETR (nano)에서 **추론 시 쿼리 제거(query dropping)**를 통해 정�
 아래 표에서는 커스텀 벤치마킹 도구, CalFLOPs, 그리고 PyTorch의 FlopCounterMode로 측정한 FLOPs를 비교한다. 특히 FlopCounterMode가 커스텀 벤치마킹 코드로 보고된 결과와 거의 일치함을 확인할 수 있으며, 이는 기존의 범용 벤치마킹 도구들보다 **더 신뢰도가 높다**는 점을 시사한다.
 
 ![](/assets/images/posts/619/img_21.png)
-
 ---
 
 좋은 질문이야. 여기서 헷갈리는 포인트를 **정확히 짚었고**, 결론부터 말하면:
@@ -1005,7 +1526,6 @@ RF-DETR (nano)에서 **추론 시 쿼리 제거(query dropping)**를 통해 정�
 > 특히 MACs와 FLOPs를 어떻게 정의·계산하느냐의 차이에서 온다.**
 
 아래에서 **개념 → 왜 LW-DETR에서 특히 크게 벌어졌는지 → 왜 FlopCounterMode가 더 믿을 만한지** 순서로 정리할게.
-
 ---
 
 ## 1️⃣ MACs vs FLOPs: 정의부터 정확히
@@ -1024,7 +1544,6 @@ RF-DETR (nano)에서 **추론 시 쿼리 제거(query dropping)**를 통해 정�
   ? **1 MAC = 2 FLOPs**로 환산
 
 ? **정의가 통일되어 있지 않다**
-
 ---
 
 ### (2) FLOPs (Floating Point Operations)
@@ -1040,7 +1559,6 @@ FLOPs는 보통:
 FLOPs = 실제 실행되는 모든 부동소수점 연산
 
 ? **정의가 더 포괄적이고 구현 친화적**
-
 ---
 
 ## 2️⃣ 왜 LW-DETR에서 차이가 특히 크게 났나?
@@ -1050,7 +1568,6 @@ FLOPs = 실제 실행되는 모든 부동소수점 연산
 > “LW-DETR’s FLOPs count is roughly twice that of the originally reported result.”
 
 이건 우연이 아님.
-
 ---
 
 ### ? LW-DETR에서 차이가 커진 이유 3가지
@@ -1063,7 +1580,6 @@ FLOPs = 실제 실행되는 모든 부동소수점 연산
   - MACs 기준으로 보고
 
 ? 그래서 숫자가 **작게 나옴**
-
 ---
 
 #### (2) FlopCounterMode는 **실제 forward 기준**
@@ -1082,7 +1598,6 @@ PyTorch FlopCounterMode는:
   - reshape / transpose에 따른 연산
 
 ? **DETR 계열에 불리한 방식 (하지만 현실적)**
-
 ---
 
 #### (3) DETR는 “Conv 위주 모델”이 아님
@@ -1102,7 +1617,6 @@ DETR / LW-DETR:
 ? 그래서:
 
 LW-DETR: Reported MACs << Actual FLOPs
-
 ---
 
 ## 3️⃣ “1 batch라서 그런가?”에 대한 정확한 답
@@ -1124,7 +1638,6 @@ LW-DETR: Reported MACs << Actual FLOPs
 
 > ❌ batch 때문은 아님  
 > ✅ **연산 카운트 기준 차이 + attention 연산 포함 여부** 때문
-
 ---
 
 ## 4️⃣ 왜 FlopCounterMode가 더 “정직한가”
@@ -1143,7 +1656,6 @@ LW-DETR: Reported MACs << Actual FLOPs
   - Transformer에 부정확
 
 ? 그래서 FlopCounterMode가 **실제 latency와 상관관계가 더 높음**
-
 ---
 
 ## 5️⃣ 그래서 이 논문의 주장, 타당한가?
@@ -1160,7 +1672,6 @@ LW-DETR: Reported MACs << Actual FLOPs
 
 > **“이제는 FLOPs도, latency도  
 > 실제 실행 기준으로 통일하자.”**
-
 ---
 
 ## 6️⃣ 한 문장으로 정리
@@ -1169,7 +1680,6 @@ LW-DETR: Reported MACs << Actual FLOPs
 > batch 때문이 아니라,  
 > MACs 기반 보고와 실제 forward 기준 FLOPs 계산의 정의 차이 때문이다.  
 > 특히 attention 연산을 얼마나 포함하느냐가 결정적이다.**
-
 ---
 
 ## 부록 D. 오픈 보캐블러리 탐지기에서 클래스 이름의 영향

@@ -7,7 +7,11 @@ categories:
 
 <https://dl.acm.org/doi/10.1145/3687938>
 
-[Online Neural Denoising with Cross-Regression for Interactive Rendering | ACM Transactions on Graphics](https://dl.acm.org/doi/10.1145/3687938)
+[Online Neural Denoising with Cross-Regression for Interactive Rendering | ACM Transactions on Graphics
+
+Generating a rendered image sequence through Monte Carlo ray tracing is an appealing option when one aims to accurately simulate various lighting effects. Unfortunately, interactive rendering scenarios limit the allowable sample size for such sampling-...
+
+dl.acm.org](https://dl.acm.org/doi/10.1145/3687938)
 
 # Interactive Rendering의 새로운 가능성: Online Neural Denoising
 
@@ -33,5 +37,19 @@ categories:
 - **뉴럴 네트워크 기반 방법**: 데이터셋 준비가 필요하지만 복잡한 엣지 보존에 강점.
 
 본 논문은 두 방법의 단점을 보완하고 데이터셋 준비 없이 실시간 학습을 가능하게 했습니다.
-
 ---
+
+## 3. 적용 가능성과 한계
+
+- **장점**: 외부 데이터셋 없이도, 그림자나 비기하학적 엣지와 같은 복잡한 디테일을 유지하며 노이즈를 줄일 수 있음.
+- **한계**: 런타임 학습으로 인한 추가적인 계산 시간이 발생하며, G-buffer가 노이즈에 민감한 환경에서는 성능 저하 가능성.
+---
+
+## 4. 개인적인 생각
+
+기존 방법론의 장점을 합친 하이브리드 프레임워크로서, 실시간 렌더링에서의 활용 가능성이 높습니다. 특히 **온라인 학습**이라는 점에서 효율적인 접근이라고 느껴졌습니다. 그러나, 실시간 환경에서의 추가적인 오버헤드와 G-buffer 노이즈 문제를 더 세밀하게 해결해야 할 필요성이 있습니다.
+---
+
+## 결론
+
+Monte Carlo 렌더링의 노이즈 문제는 여전히 도전적인 과제이지만, 본 논문의 접근법은 실질적인 해결책을 제시합니다. 특히, 외부 데이터셋 없이도 실시간 학습이 가능하다는 점에서 응용 가능성이 높습니다.

@@ -9,7 +9,11 @@ tags:
 
 <https://arxiv.org/abs/2507.02754?_bhlid=b823264a61f867fcfc11342f5464010c50351360>
 
-[Fast and Simplex: 2-Simplicial Attention in Triton](https://arxiv.org/abs/2507.02754?_bhlid=b823264a61f867fcfc11342f5464010c50351360)
+[Fast and Simplex: 2-Simplicial Attention in Triton
+
+Recent work has shown that training loss scales as a power law with both model size and the number of tokens, and that achieving compute-optimal models requires scaling model size and token count together. However, these scaling laws assume an infinite sup
+
+arxiv.org](https://arxiv.org/abs/2507.02754?_bhlid=b823264a61f867fcfc11342f5464010c50351360)
 
 **초록 (Abstract)**
 
@@ -94,5 +98,238 @@ Hoffmann et al. (2022)의 연구는 여러 실험을 통해 손실 함수를 파
 ---
 
 대부분은 알겠지만 이는 실험적으로 탄생한 공식이다.
-
 ---
+
+## 4. 2-simplicial Transformer
+
+![](/assets/images/posts/582/img_4.png)
+
+**그림 1**: dot-product attention과 2-simplicial attention의 기하적 구조 비교.
+
+**2-simplicial Transformer**는 Clift et al. (2019)에서 처음 제안된 구조로, 기존의 **dot-product attention**을 **쌍선형(bilinear)** 형태에서 **삼선형(trilinear)** 형태로 확장하였다. 이는 기하학적으로 **1-simplex(두 노드 간의 선)**에서 **2-simplex(세 노드가 이루는 삼각형)**으로 일반화한 것과 같다.
+
+![](/assets/images/posts/582/img_5.png)
+
+![](/assets/images/posts/582/img_6.png)
+
+![](/assets/images/posts/582/img_7.png)
+
+![](/assets/images/posts/582/img_8.png)
+
+2-simplicial attention의 forward 연산 과정은 **알고리즘 1**에 의사코드(pseudo-code)로 나타나 있으며, 위의 식 (5)는 RoPE(Su et al., 2024)와 같은 **위치 인코딩(position encoding)**을 포함하지 않는다. 이에 대한 논의는 다음 절에서 다룬다.
+---
+
+그러니까 qkv가 원래 qxk 하고 이 값을 v로하니까 이를 단선으로 생각하는데, 2-simplicial은 qkv를 한번에 한다라고 생각하면 되나?
+
+-> ㄴㄴ
+
+2-simplicial Transformer에서 k가 2개가 되는구나. 그러면 이거는 다음걸 가져오는거야 아니면 모든것에 대해서
+
+-> 모든것에 대해서
+
+그러니까 결국은 k의 갯수를 늘린거네? 이를 통해서 백터라이제이션으로 어떻게보면 그 표현형을 늘린거고.
+
+-> yes
+
+그러면 뭐하러? 표현이 더 고차원적인건 알겠는데, 이게 실제 효용성이 그렇게 커보이진 않는데? 어처피 dot프로덕트할거면 차원은 동일하니까 어처피 layer가 늘어는거랑 큰차이 없어보여
+
+-> 현재 학계에서 고민하는것!
+
+그리고 k가 두개면 backporb할때 더 많은 연산이 들어갈텐데, 지금은 transformer용 gpu kernel구조에 맞춰져있는데, 정말 빠른지도 애매할거고
+---
+
+### 알고리즘 1: 2-simplicial attention의 forward 패스 의사코드
+
+```
+1: 프로시저 2-simplicial_attention(Q, K, V, K′, V′)
+2:     
+     # 3차원 attention logits 계산 (삼중 내적)
+     logits ← einsum("btnh, bsnh, brnh → bntsr", Q, K, K′)
+     
+3:     
+     # 소프트맥스 적용 (마지막 두 차원에 대해), optional: causal mask 포함
+     attention ← softmax(logits + causal_mask, axis=[-1, -2])
+     
+4:     
+     # attention weights를 value와 Hadamard product로 가중합
+     output ← einsum("bntsr, bsnh, brnh → btnh", attention, V, V′)
+     
+5:     return output
+6: 종료
+```
+
+## 5. 행렬식 기반 삼선형(Trilinear) 형태
+
+![](/assets/images/posts/582/img_9.png)
+
+![](/assets/images/posts/582/img_10.png)
+
+![](/assets/images/posts/582/img_11.png)
+
+![](/assets/images/posts/582/img_12.png)
+
+![](/assets/images/posts/582/img_13.png)
+
+![](/assets/images/posts/582/img_14.png)
+---
+
+ 넓이(parallelogram) → **부피(parallelotope)**로 확장하고, 이 부피를 회전 불변 기하량으로 삼아 RoPE처럼 위치 인코딩이 적용될 수 있게끔 만든 고차 attention 구조
+---
+
+![](/assets/images/posts/582/img_15.png)
+
+![](/assets/images/posts/582/img_16.png)
+
+![](/assets/images/posts/582/img_17.png)
+
+![](/assets/images/posts/582/img_18.png)
+
+![](/assets/images/posts/582/img_19.png)
+
+![](/assets/images/posts/582/img_20.png)
+---
+
+![](/assets/images/posts/582/img_21.png)
+
+![](/assets/images/posts/582/img_22.png)
+
+![](/assets/images/posts/582/img_23.png)
+
+![](/assets/images/posts/582/img_24.png)
+
+![](/assets/images/posts/582/img_25.png)
+
+![](/assets/images/posts/582/img_26.png)
+---
+
+## **7. 커널 최적화 (Kernel Optimization)**
+
+우리는 2-simplicial attention을 위해 설계된 일련의 커널 최적화 기법을 제안합니다. 이 최적화는 Flash Attention (Dao et al., 2022)의 **online softmax** 기반 방식을 토대로 구축되었습니다.
+
+**삼선형(trilinear) 연산**을 위해, 한 입력을 **원소별 곱(elementwise multiplication)**을 통해 병합한 뒤, 이 곱셈 결과에 대해 **2D 타일 기반 행렬곱(matmul)**을 수행합니다. 이는 Figure 2에 시각화되어 있으며, 다음과 같은 연산 구조를 만듭니다:
+
+- CUDA Core에서는  
+  Q @ K′ (원소곱)
+- Tensor Core에서는  
+  (Q @ K′) @ K 및  
+  P @ (V @ V′)
+
+이렇게 연산을 분리해 서로 다른 연산 유닛(CUDA Core vs Tensor Core)을 동시에 활용할 수 있도록 설계했습니다.
+
+우리는 이 방식을 **Triton**으로 구현하였고, **520 TFLOPS** 성능을 달성하였으며, 이는 가장 빠른 **FlashAttention v3 Triton 구현체**와 맞먹는 성능입니다. 더 미세한 성능 튜닝을 위해 CUTLASS와 같은 하위 수준 언어를 사용할 수도 있지만, 이미 **긴 시퀀스에 대해 CUTLASS FAv3와 경쟁력 있는 성능**을 달성했습니다 (Figure 3 참조).
+
+![](/assets/images/posts/582/img_27.png)
+
+### **Figure 2 요약:**
+
+- 왼쪽: 슬라이딩 윈도우 기반 2-simplicial attention 시각화. 각 Qᵢ는 [w₁, w₂] 모양의 영역 안의 K, K′를 attend함.
+- 오른쪽: 2-simplicial einsum (Q @ K @ K′)을 다음 두 단계로 나눠 타일링
+  - Q @ K′는 CUDA Core
+  - 그 결과에 @ K는 Tensor Core
+
+![](/assets/images/posts/582/img_28.png)
+
+![](/assets/images/posts/582/img_29.png)
+
+그림 3: FAv3와 2-simplical 주의의 FLOPs 및 지연 시간
+
+### **역전파(Backward) 연산**
+
+역전파에서는 다음과 같은 파생 gradient 연산들이 포함됩니다:
+
+```
+(10) dV[j]     = Σ_{i,k} A[i,j,k] ⋅ dO[i] ⋅ V′[k]
+(11) dV′[k]    = Σ_{i,j} A[i,j,k] ⋅ dO[i] ⋅ V[j]
+(12) dP[i,j,k] = Σ_d dO[i,d] ⋅ V[j,d] ⋅ V′[k,d′]
+(13) dS        = softmax_grad_jk(dP)
+(14) dK[j]     = Σ_{i,k} Q[i] ⋅ dS[i,j,k] ⋅ K′[k]
+(15) dK′[k]    = Σ_{i,j} Q[i] ⋅ dS[i,j,k] ⋅ K[j]
+(16) dQ[i]     = Σ_{j,k} dS[i,j,k] ⋅ K[j] ⋅ K′[k]
+```
+
+이러한 연산은 **3차원 인덱싱을 가진 텐서**에 대해 계산되므로, **원자 연산(atomic op)**으로 인한 비용이 커질 수 있습니다. 이를 해결하기 위해 다음과 같은 전략을 사용합니다:
+
+### ✅ **두 개의 별도 커널로 분할**
+
+- 커널 1: dK, dV 계산
+- 커널 2: dK′, dV′, dQ 계산
+
+이렇게 분할하면 원자 연산 대신 일부 결과(O, dS)를 재계산하는 오버헤드를 감수하고도 성능이 더 좋아집니다.이는 Triton의 coarse-grained 파이프라인 제약에 기인합니다.
+
+### ✅ **작은 w₂에 대한 두 단계 접근법 (Algorithm 2)**
+
+w₂가 작을 때는 다음과 같은 두 단계 접근을 활용하여 atomic 없이 dQ를 계산합니다:
+
+#### ? 알고리즘 2 요약:
+
+1. 시퀀스를 [w₂, dim] 크기의 타일로 분할
+2. stage = 0 → 짝수 타일 계산: dQ, dK, dK′, dV, dV′ 저장
+3. stage = 1 → 홀수 타일 계산: dQ 누적, dK, dK′, dV, dV′ 더함
+4. 마지막에 저장
+
+이렇게 함으로써 atomic 연산을 피하면서 병렬화를 유지할 수 있습니다.
+
+## **8. 실험 및 결과 (Experiments & Results)**
+
+우리는 활성 파라미터가 **10억 개에서 35억 개**, 총 파라미터가 **570억 개에서 1760억 개**에 이르는 다양한 **MoE 모델**(Jordan & Jacobs, 1994; Shazeer et al., 2017)을 학습했습니다. 모든 모델은 **interleaved sliding-window 2-simplicial attention**을 사용하며, **4개 층마다 한 번씩 2-simplicial attention 레이어**를 삽입했습니다. 이렇게 배치한 이유는 **파이프라인 병렬화**(Huang et al., 2019; Narayanan et al., 2019)를 사용할 때, 가장 연산량이 큰 **2-simplicial attention과 global attention이 서로 분산되도록** 하기 위함입니다. 이 두 연산은 FLOPs 측면에서도 비슷한 수준의 연산량을 갖습니다.
+
+### 학습 설정
+
+- 옵티마이저: **AdamW** (Loshchilov et al., 2017)
+- 최대 학습률: **4 × 10⁻³**
+- weight decay: **0.0125**
+- 워밍업 스텝: **4000**
+- 학습률 스케줄: **Cosine decay** (최종적으로 최대 학습률의 1%까지 감소)
+
+### 평가 기준
+
+모델은 사전학습(pre-training)에서 수학, 추론, 코딩 능력을 평가하는 다음의 벤치마크에서 **Negative Log-Likelihood(NLL)**로 성능을 평가하였습니다:
+
+- **GSM8k** (Cobbe et al., 2021)
+- **MMLU** (Hendrycks et al., 2020)
+- **MMLU-pro** (Wang et al., 2024)
+- **MBPP** (Austin et al., 2021)
+
+![](/assets/images/posts/582/img_30.png)
+
+### **Scaling 분석**
+
+모델 규모가 **1B → 3.5B**로 커질수록 **NLL 감소량(Δ)이 더 커지는 현상**이 관측됩니다. 즉, **2B 미만의 작은 모델에서는 2-simplicial attention이 이득을 주지 않지만**, 일정 이상으로 모델이 커지면 **성능 향상 효과가 나타납니다**.
+
+Section 3의 scaling 법칙을 다시 정리하면 다음과 같습니다:
+
+#### 이론식:
+
+- 손실 함수는 다음과 같이 표현됩니다:  
+  **L(N, D) = E + A·N^(-α) + B·D^(-β)**
+- 토큰 수가 동일하므로 D 항은 무시하고:  
+  **L(N) = E′ + A·N^(-α)**
+- 로그를 취하면:  
+  **log L(N) ≈ log E′′ + log A − α·log N**  
+  → **-log L(N) = α·log N + β**  
+  (여기서 β는 −log E′′ − log A)
+
+따라서, Table 2의 loss 값들을 기반으로 각 모델별 scaling 계수 **α, β**를 추정할 수 있습니다:
+
+![](/assets/images/posts/582/img_31.png)
+
+![](/assets/images/posts/582/img_32.png)
+
+## **9. 논의 (Discussion)**
+
+2-simplicial attention은 **스케일링 법칙(scaling law)**에서 **지수 항(α)**을 향상시키지만, 이 기법이 **토큰 효율(token efficiency)**이 더욱 중요한 **특정 학습 조건**에서 더 유용할 수 있다는 점에는 주의가 필요합니다.
+
+우리가 구현한 **Triton 커널**은 프로토타이핑에는 효율적이지만, 아직 **실제 생산 환경에 투입하기에는 부족한 상태**입니다. 따라서, 앞으로는 **특정 하드웨어 가속기(accelerator)**에 최적화된 **2-simplicial attention 구현을 공동 설계(co-design)**하는 연구가 더 필요합니다.
+
+## **10. 결론 (Conclusion)**
+
+본 연구에서는 Clift et al. (2019)의 **2-simplicial attention**을 Transformer의 **dot product attention**(Vaswani et al., 2017)과 유사한 크기의 모델에 적용하여, **수학, 추론, 코딩 문제에서 negative log-likelihood를 향상시켰음**을 보여주었습니다 (표 2 참고).
+
+또한, 표 3을 통해 **Scaling 법칙의 지수 항(α)**이 개선되었음을 명확하게 수치로 확인했습니다. 특히, **Transformer 대비 reasoning과 coding 태스크에서 α 값이 더 크며**, 이는 **토큰 수가 제한된 상황에서 더 좋은 스케일링 특성**을 유도합니다. 그리고 **MMLU-pro** 및 **GSM8k**처럼 **더 어렵고 덜 포화된 벤치마크**일수록 α 값의 증가율이 더 높다는 점도 관찰되었습니다.
+
+우리는 앞으로 **2-simplicial Transformer의 스케일 확장**이 **추론 중심 태스크의 성능을 대폭 향상시킬 수 있는 가능성**을 열어줄 것으로 기대합니다. 나아가, **전용 커널 및 최적화된 구현체 개발**이 이 아키텍처의 잠재력을 완전히 실현하는 핵심이라고 믿습니다.
+
+## **11. 감사의 글 (Acknowledgments)**
+
+저자들은 다음 분들의 소중한 지원과 피드백에 깊이 감사드립니다:  
+**Chuanhao Zhuge, Tony Liu, Ying Zhang, Ajit Mathews, Afroz Mohiuddin, Vinay Rao, Dhruv Choudhary**.
