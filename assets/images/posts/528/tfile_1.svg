@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 580">
+  <!-- 배경 -->
+  <rect width="800" height="580" fill="#f8f9fa"/>
+  
+  <!-- 제목 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">4Sum 문제에서의 두 포인터 기법 설명 (계속)</text>
+  
+  <!-- 배열 예시 -->
+  <text x="400" y="80" font-family="Arial" font-size="16" text-anchor="middle">배열: [-2, -1, 0, 0, 1, 2]   타겟: 0</text>
+  
+  <!-- 네 번째 단계: 목표 합 찾음 -->
+  <text x="100" y="130" font-family="Arial" font-size="18" font-weight="bold">4단계: 목표 합 찾음</text>
+  
+  <rect x="100" y="150" width="600" height="60" fill="#e9ecef" rx="5" ry="5"/>
+  <text x="150" y="187" font-family="Arial" font-size="16" text-anchor="middle">-2</text>
+  <text x="230" y="187" font-family="Arial" font-size="16" text-anchor="middle">-1</text>
+  <text x="310" y="187" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="390" y="187" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="470" y="187" font-family="Arial" font-size="16" text-anchor="middle">1</text>
+  <text x="550" y="187" font-family="Arial" font-size="16" text-anchor="middle">2</text>
+  
+  <circle cx="150" cy="187" r="25" fill="none" stroke="#dc3545" stroke-width="3"/>
+  <circle cx="230" cy="187" r="25" fill="none" stroke="#0d6efd" stroke-width="3"/>
+  <circle cx="390" cy="187" r="25" fill="none" stroke="#28a745" stroke-width="3"/>
+  <circle cx="550" cy="187" r="25" fill="none" stroke="#6f42c1" stroke-width="3"/>
+  
+  <text x="150" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#dc3545">i</text>
+  <text x="230" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#0d6efd">j</text>
+  <text x="390" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#28a745">left</text>
+  <text x="550" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#6f42c1">right</text>
+  
+  <text x="400" y="250" font-family="Arial" font-size="14" text-anchor="middle">현재 합: -2 + (-1) + 0 + 2 = -1 (타겟보다 작음)</text>
+  <text x="400" y="270" font-family="Arial" font-size="14" text-anchor="middle">left를 계속 오른쪽으로 이동하고, 다음 반복에서 합은:</text>
+  <text x="400" y="290" font-family="Arial" font-size="14" text-anchor="middle">-2 + (-1) + 1 + 2 = 0 = 타겟! 목표 합을 찾음!</text>
+  
+  <!-- 다섯 번째 단계: 결과 기록 및 포인터 이동 -->
+  <text x="100" y="330" font-family="Arial" font-size="18" font-weight="bold">5단계: 결과 기록 및 포인터 이동</text>
+  
+  <rect x="100" y="350" width="600" height="60" fill="#e9ecef" rx="5" ry="5"/>
+  <text x="150" y="387" font-family="Arial" font-size="16" text-anchor="middle">-2</text>
+  <text x="230" y="387" font-family="Arial" font-size="16" text-anchor="middle">-1</text>
+  <text x="310" y="387" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="390" y="387" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="470" y="387" font-family="Arial" font-size="16" text-anchor="middle">1</text>
+  <text x="550" y="387" font-family="Arial" font-size="16" text-anchor="middle">2</text>
+  
+  <circle cx="150" cy="387" r="25" fill="none" stroke="#dc3545" stroke-width="3"/>
+  <circle cx="230" cy="387" r="25" fill="none" stroke="#0d6efd" stroke-width="3"/>
+  <circle cx="470" cy="387" r="25" fill="none" stroke="#28a745" stroke-width="3"/>
+  <circle cx="550" cy="387" r="25" fill="none" stroke="#6f42c1" stroke-width="3"/>
+  
+  <text x="150" y="430" font-family="Arial" font-size="14" text-anchor="middle" fill="#dc3545">i</text>
+  <text x="230" y="430" font-family="Arial" font-size="14" text-anchor="middle" fill="#0d6efd">j</text>
+  <text x="470" y="430" font-family="Arial" font-size="14" text-anchor="middle" fill="#28a745">left</text>
+  <text x="550" y="430" font-family="Arial" font-size="14" text-anchor="middle" fill="#6f42c1">right</text>
+  
+  <rect x="120" y="450" width="560" height="30" fill="#d1e7dd" rx="5" ry="5"/>
+  <text x="400" y="470" font-family="Arial" font-size="14" text-anchor="middle">결과에 [-2, -1, 1, 2] 추가</text>
+  
+  <path d="M390 430 L470 430" stroke="#28a745" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)" fill="none"/>
+  <path d="M550 430 L550 430" stroke="#6f42c1" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  
+  <!-- 여섯 번째 단계: 다음 반복으로 이동 -->
+  <text x="100" y="510" font-family="Arial" font-size="18" font-weight="bold">6단계: 다음 반복으로 이동</text>
+  
+  <text x="400" y="540" font-family="Arial" font-size="14" text-anchor="middle">left와 right가 만나면 내부 루프가 종료되고, j가 증가하여 새로운 고정점을 선택합니다.</text>
+  <text x="400" y="560" font-family="Arial" font-size="14" text-anchor="middle">이 과정이 모든 가능한 조합에 대해 반복됩니다.</text>
+  
+  <!-- 화살표 마커 정의 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#28a745"/>
+    </marker>
+  </defs>
+</svg>

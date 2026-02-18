@@ -1,0 +1,62 @@
+<svg width="1200" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 화살표 마커 정의 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+    </marker>
+    <!-- 캐시 필요 항목을 강조하기 위한 스타일 -->
+    <style>
+      .cache { fill: #BBDEFB; stroke: #000; }
+      .process { fill: #FFF9C4; stroke: #000; }
+      .rope { fill: #FFCCBC; stroke: #000; }
+      .final { fill: #D1C4E9; stroke: #000; }
+    </style>
+  </defs>
+  
+  <!-- 1. 입력 임베딩 h_t -->
+  <rect x="20" y="20" width="100" height="40" class="cache"/>
+  <text x="30" y="45" font-size="12" fill="#000">입력 𝒉ₜ</text>
+  
+  <!-- 2. Down-projection: W_D_KV -->
+  <line x1="120" y1="40" x2="200" y2="40" stroke="#000" marker-end="url(#arrow)"/>
+  <rect x="200" y="10" width="120" height="60" class="process"/>
+  <text x="210" y="40" font-size="12" fill="#000">W_D_KV</text>
+  <text x="210" y="55" font-size="12" fill="#000">↓ 𝒄ₜ^(KV)</text>
+  
+  <!-- 3. Key 경로: Up-projection for Keys -->
+  <line x1="320" y1="40" x2="400" y2="40" stroke="#000" marker-end="url(#arrow)"/>
+  <rect x="400" y="10" width="120" height="60" class="process"/>
+  <text x="410" y="40" font-size="12" fill="#000">Wᵁ_K</text>
+  <text x="410" y="55" font-size="12" fill="#000">→ 𝒌ₜᶜ</text>
+  
+  <!-- 4. Key 경로: RoPE 적용 -->
+  <line x1="200" y1="70" x2="200" y2="130" stroke="#000" marker-end="url(#arrow)"/>
+  <line x1="200" y1="130" x2="320" y2="130" stroke="#000" marker-end="url(#arrow)"/>
+  <rect x="320" y="100" width="120" height="60" class="rope"/>
+  <text x="330" y="130" font-size="12" fill="#000">W_K_R + RoPE</text>
+  <text x="330" y="145" font-size="12" fill="#000">→ 𝒌ₜᴿ</text>
+  
+  <!-- 5. Key Concatenation -->
+  <line x1="520" y1="40" x2="580" y2="40" stroke="#000" marker-end="url(#arrow)"/>
+  <line x1="520" y1="130" x2="580" y2="130" stroke="#000" marker-end="url(#arrow)"/>
+  <rect x="580" y="30" width="150" height="80" class="final"/>
+  <text x="590" y="70" font-size="12" fill="#000">
+    Concat: [𝒌ₜᶜ; 𝒌ₜᴿ]
+  </text>
+  <text x="590" y="85" font-size="12" fill="#000">→ 최종 Key</text>
+  
+  <!-- 6. Value 경로: Up-projection for Values -->
+  <line x1="320" y1="40" x2="320" y2="200" stroke="#000" marker-end="url(#arrow)"/>
+  <rect x="320" y="200" width="120" height="60" class="process"/>
+  <text x="330" y="230" font-size="12" fill="#000">Wᵁ_V</text>
+  <text x="330" y="245" font-size="12" fill="#000">→ 𝒗ₜ^(C)</text>
+  
+  <!-- 캐시 안내 박스 -->
+  <rect x="750" y="20" width="200" height="60" fill="#E1F5FE" stroke="#000" stroke-dasharray="4"/>
+  <text x="760" y="45" font-size="12" fill="#000">
+    캐시 대상: 𝒄ₜ^(KV), 𝒌ₜᴿ
+  </text>
+  <text x="760" y="60" font-size="12" fill="#000">
+    (메모리 절약 효과)
+  </text>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 580">
+  <!-- 배경 -->
+  <rect width="800" height="580" fill="#f8f9fa"/>
+  
+  <!-- 제목 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">4Sum 문제에서의 두 포인터 기법 설명</text>
+  
+  <!-- 배열 예시 -->
+  <text x="400" y="80" font-family="Arial" font-size="16" text-anchor="middle">배열: [-2, -1, 0, 0, 1, 2]   타겟: 0</text>
+  
+  <!-- 첫 번째 단계: i와 j 고정 -->
+  <text x="100" y="130" font-family="Arial" font-size="18" font-weight="bold">1단계: i와 j 고정</text>
+  
+  <rect x="100" y="150" width="600" height="60" fill="#e9ecef" rx="5" ry="5"/>
+  <text x="150" y="187" font-family="Arial" font-size="16" text-anchor="middle">-2</text>
+  <text x="230" y="187" font-family="Arial" font-size="16" text-anchor="middle">-1</text>
+  <text x="310" y="187" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="390" y="187" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="470" y="187" font-family="Arial" font-size="16" text-anchor="middle">1</text>
+  <text x="550" y="187" font-family="Arial" font-size="16" text-anchor="middle">2</text>
+  
+  <circle cx="150" cy="187" r="25" fill="none" stroke="#dc3545" stroke-width="3"/>
+  <circle cx="230" cy="187" r="25" fill="none" stroke="#0d6efd" stroke-width="3"/>
+  
+  <text x="150" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#dc3545">i</text>
+  <text x="230" y="230" font-family="Arial" font-size="14" text-anchor="middle" fill="#0d6efd">j</text>
+  
+  <text x="400" y="250" font-family="Arial" font-size="14" text-anchor="middle">i와 j는 외부 반복문에서 고정됩니다. (i=-2, j=-1)</text>
+  
+  <!-- 두 번째 단계: 두 포인터 초기화 -->
+  <text x="100" y="290" font-family="Arial" font-size="18" font-weight="bold">2단계: 두 포인터 초기화</text>
+  
+  <rect x="100" y="310" width="600" height="60" fill="#e9ecef" rx="5" ry="5"/>
+  <text x="150" y="347" font-family="Arial" font-size="16" text-anchor="middle">-2</text>
+  <text x="230" y="347" font-family="Arial" font-size="16" text-anchor="middle">-1</text>
+  <text x="310" y="347" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="390" y="347" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="470" y="347" font-family="Arial" font-size="16" text-anchor="middle">1</text>
+  <text x="550" y="347" font-family="Arial" font-size="16" text-anchor="middle">2</text>
+  
+  <circle cx="150" cy="347" r="25" fill="none" stroke="#dc3545" stroke-width="3"/>
+  <circle cx="230" cy="347" r="25" fill="none" stroke="#0d6efd" stroke-width="3"/>
+  <circle cx="310" cy="347" r="25" fill="none" stroke="#28a745" stroke-width="3"/>
+  <circle cx="550" cy="347" r="25" fill="none" stroke="#6f42c1" stroke-width="3"/>
+  
+  <text x="150" y="390" font-family="Arial" font-size="14" text-anchor="middle" fill="#dc3545">i</text>
+  <text x="230" y="390" font-family="Arial" font-size="14" text-anchor="middle" fill="#0d6efd">j</text>
+  <text x="310" y="390" font-family="Arial" font-size="14" text-anchor="middle" fill="#28a745">left</text>
+  <text x="550" y="390" font-family="Arial" font-size="14" text-anchor="middle" fill="#6f42c1">right</text>
+  
+  <text x="400" y="410" font-family="Arial" font-size="14" text-anchor="middle">left는 j 다음 위치(j+1)에서 시작, right는 배열 끝에서 시작합니다.</text>
+  <text x="400" y="430" font-family="Arial" font-size="14" text-anchor="middle">현재 합: -2 + (-1) + 0 + 2 = -1 ≠ 0 (타겟), 합이 타겟보다 작으므로 left를 오른쪽으로 이동</text>
+  
+  <!-- 세 번째 단계: 포인터 이동 1 -->
+  <text x="100" y="470" font-family="Arial" font-size="18" font-weight="bold">3단계: left 포인터 이동</text>
+  
+  <rect x="100" y="490" width="600" height="60" fill="#e9ecef" rx="5" ry="5"/>
+  <text x="150" y="527" font-family="Arial" font-size="16" text-anchor="middle">-2</text>
+  <text x="230" y="527" font-family="Arial" font-size="16" text-anchor="middle">-1</text>
+  <text x="310" y="527" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="390" y="527" font-family="Arial" font-size="16" text-anchor="middle">0</text>
+  <text x="470" y="527" font-family="Arial" font-size="16" text-anchor="middle">1</text>
+  <text x="550" y="527" font-family="Arial" font-size="16" text-anchor="middle">2</text>
+  
+  <circle cx="150" cy="527" r="25" fill="none" stroke="#dc3545" stroke-width="3"/>
+  <circle cx="230" cy="527" r="25" fill="none" stroke="#0d6efd" stroke-width="3"/>
+  <circle cx="390" cy="527" r="25" fill="none" stroke="#28a745" stroke-width="3"/>
+  <circle cx="550" cy="527" r="25" fill="none" stroke="#6f42c1" stroke-width="3"/>
+  
+  <text x="150" y="570" font-family="Arial" font-size="14" text-anchor="middle" fill="#dc3545">i</text>
+  <text x="230" y="570" font-family="Arial" font-size="14" text-anchor="middle" fill="#0d6efd">j</text>
+  <text x="390" y="570" font-family="Arial" font-size="14" text-anchor="middle" fill="#28a745">left</text>
+  <text x="550" y="570" font-family="Arial" font-size="14" text-anchor="middle" fill="#6f42c1">right</text>
+  
+  <path d="M310 390 L390 560" stroke="#28a745" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)" fill="none"/>
+  
+  <!-- 화살표 마커 정의 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#28a745"/>
+    </marker>
+  </defs>
+</svg>

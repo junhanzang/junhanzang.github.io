@@ -1,0 +1,61 @@
+<svg width="1200" height="650" xmlns="http://www.w3.org/2000/svg">
+  <!-- 화살표 마커 정의 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+    </marker>
+  </defs>
+
+  <!-- 입력 토큰 h_t -->
+  <rect x="20" y="50" width="100" height="40" fill="#E0F7FA" stroke="#000"/>
+  <text x="30" y="75" font-size="12" fill="#000">Input 𝒉ₜ</text>
+  
+  <!-- 쿼리 압축: W_D_Q -->
+  <line x1="120" y1="70" x2="200" y2="70" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="200" y="40" width="100" height="60" fill="#FFF9C4" stroke="#000"/>
+  <text x="210" y="70" font-size="12">W_D_Q</text>
+  <text x="210" y="85" font-size="12">↓ 𝒄ₜ^(Q)</text>
+  
+  <!-- 분기: 쿼리 업-프로젝션 및 RoPE 적용 -->
+  <!-- 왼쪽 경로: W_U_Q -->
+  <line x1="300" y1="70" x2="380" y2="30" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="380" y="10" width="100" height="40" fill="#C8E6C9" stroke="#000"/>
+  <text x="390" y="35" font-size="12">W_U_Q</text>
+  <text x="390" y="50" font-size="12">→ 𝒒ₜ^(C)</text>
+  
+  <!-- 오른쪽 경로: W_Q_R + RoPE -->
+  <line x1="300" y1="70" x2="380" y2="110" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="380" y="90" width="100" height="40" fill="#FFCCBC" stroke="#000"/>
+  <text x="390" y="115" font-size="12">W_Q_R</text>
+  <text x="390" y="130" font-size="12">+ RoPE</text>
+  <text x="390" y="145" font-size="12">→ 𝒒ₜ^(R)</text>
+  
+  <!-- 두 경로의 결합: Concatenation -->
+  <line x1="480" y1="30" x2="540" y2="70" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="480" y1="130" x2="540" y2="90" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="540" y="40" width="150" height="100" fill="#D1C4E9" stroke="#000"/>
+  <text x="550" y="95" font-size="12">
+    Concat: [𝒒ₜ^(C); 𝒒ₜ^(R)] = 𝒒ₜ,ᵢ
+  </text>
+  
+  <!-- 어텐션 연산: 쿼리, 키, 값 결합 -->
+  <line x1="690" y1="90" x2="770" y2="150" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="770" y="130" width="200" height="100" fill="#FFE082" stroke="#000"/>
+  <text x="780" y="170" font-size="12">Attention 계산</text>
+  <text x="780" y="185" font-size="12">
+    𝒐ₜ,ᵢ = Σⱼ Softmax(𝒒ₜ,ᵢᵀ𝒌ⱼ,ᵢ/√(dₕ+dₕ^(R))) 𝒗ⱼ,ᵢ^(C)
+  </text>
+  
+  <!-- 출력 프로젝션: W_O -->
+  <line x1="970" y1="180" x2="1050" y2="180" stroke="#000" stroke-width="1" marker-end="url(#arrow)"/>
+  <rect x="1050" y="160" width="100" height="40" fill="#B3E5FC" stroke="#000"/>
+  <text x="1060" y="185" font-size="12">W_O</text>
+  <text x="1060" y="200" font-size="12">→ 𝒖ₜ</text>
+  
+  <!-- 주석 박스 -->
+  <rect x="540" y="150" width="200" height="60" fill="none" stroke="#888" stroke-dasharray="4"/>
+  <text x="550" y="180" font-size="10" fill="#555">
+    여러 헤드의 𝒐ₜ,ᵢ를 Concatenation 후 출력
+  </text>
+</svg>
+
