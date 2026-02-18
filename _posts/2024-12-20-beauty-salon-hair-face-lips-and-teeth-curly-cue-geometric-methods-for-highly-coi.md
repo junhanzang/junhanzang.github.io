@@ -4,7 +4,7 @@ date: 2024-12-20 15:58:10
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - curly-cue: geometric methods for highly coiled hair
+  - "curly-cue: geometric methods for highly coiled hair"
 ---
 
 <https://dl.acm.org/doi/10.1145/3680528.3687641>

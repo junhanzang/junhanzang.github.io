@@ -4,7 +4,7 @@ date: 2024-12-20 16:06:33
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - spark: self-supervised personalized real-time monocular face capture
+  - "spark: self-supervised personalized real-time monocular face capture"
 ---
 
 <https://arxiv.org/abs/2409.07984>

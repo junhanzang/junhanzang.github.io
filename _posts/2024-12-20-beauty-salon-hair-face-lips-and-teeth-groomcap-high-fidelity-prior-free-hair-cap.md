@@ -4,7 +4,7 @@ date: 2024-12-20 16:16:36
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - groomcap: high-fidelity prior-free hair capture
+  - "groomcap: high-fidelity prior-free hair capture"
 ---
 
 <https://dl.acm.org/doi/10.1145/3687768>

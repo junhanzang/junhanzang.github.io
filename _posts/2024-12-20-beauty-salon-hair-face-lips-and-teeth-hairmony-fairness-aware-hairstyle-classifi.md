@@ -4,7 +4,7 @@ date: 2024-12-20 16:51:05
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - hairmony: fairness-aware hairstyle classification
+  - "hairmony: fairness-aware hairstyle classification"
 ---
 
 <https://dl.acm.org/doi/10.1145/3680528.3687582>

@@ -4,7 +4,7 @@ date: 2024-12-20 17:15:21
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - dreamudf: generating unsigned distance fields from a single image
+  - "dreamudf: generating unsigned distance fields from a single image"
   - dreamudf
   - generating unsigned distance fields from a single image
 ---

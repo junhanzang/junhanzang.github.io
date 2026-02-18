@@ -4,7 +4,7 @@ date: 2024-12-20 16:59:01
 categories:
   - 컨퍼런스/ASIA SIGGRAPH 2024
 tags:
-  - façaid: a transformer model for neuro-symbolic facade reconstruction
+  - "façaid: a transformer model for neuro-symbolic facade reconstruction"
 ---
 
 <https://dl.acm.org/doi/10.1145/3680528.3687657>

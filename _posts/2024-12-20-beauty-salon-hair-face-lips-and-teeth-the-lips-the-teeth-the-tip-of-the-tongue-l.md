@@ -6,7 +6,7 @@ categories:
 tags:
   - the lips
   - the teeth
-  - the tip of the tongue: ltt tracking
+  - "the tip of the tongue: ltt tracking"
 ---
 
 <https://dl.acm.org/doi/10.1145/3680528.3687691>
