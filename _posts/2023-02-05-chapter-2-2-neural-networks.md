@@ -30,7 +30,7 @@ Shallow Network와 Deep Network
 
 그림에서 나타난 식(chapter2-1에서 더보기에서 수식을 설명했다.)에 문제점이 무엇일까?
 
-Onk가 바로 sigmoid 함수라는 것이다.
+O<sub>nk</sub>가 바로 sigmoid 함수라는 것이다.
 
 ![](/assets/images/posts/6/img_2.png)
 
@@ -38,13 +38,13 @@ Onk가 바로 sigmoid 함수라는 것이다.
 
 Vanishing Gradient Problem과 Saturation Problem이다.
 
-Vanishing Gradient Problem: Sigmoid 함수의 기울기는 0에 가까워질수록 점점 작아고 이는 Onk(1-Onk)가 0이 된다는 뜻으로 깊은 네트워크에서 학습이 잘 이루어지지 않게 된다다.
+Vanishing Gradient Problem: Sigmoid 함수의 기울기는 0에 가까워질수록 점점 작아고 이는 O<sub>nk</sub>(1-O<sub>nk</sub>)가 0이 된다는 뜻으로 깊은 네트워크에서 학습이 잘 이루어지지 않게 된다다.
 
 Saturation Problem: Sigmoid 함수의 기울기는 1또는 0에 가까워질수록 점점 작아고 이는 Activation function 값이 1 또는 0이 된다는 뜻으로  이는 각 뉴런의 출력이 일정한 값으로 수렴하는 현상을 일으킨다.
 
 조금 더 수식적으로 생각해보면 아래와 같다.
 
-**Vanishing Gradient Problem**: Onk(1-Onk) => 작은 값으로 수렴하게 되기 때문에, 깊은 네트워크에서의  Onk(1-Onk)값이 0으로 수렴되는것과 같은 현상을 보인다.
+**Vanishing Gradient Problem**: O<sub>nk</sub>(1-O<sub>nk</sub>) => 작은 값으로 수렴하게 되기 때문에, 깊은 네트워크에서의  O<sub>nk</sub>(1-O<sub>nk</sub>)값이 0으로 수렴되는것과 같은 현상을 보인다.
 
 **Saturation Problem**: Output 값 => 1 or 0으로 수렴하면 각 뉴런의 출력이 일정한 값인 경우는 sigmoid 자체가 상수 값으로 대체되기 때문에 미분시 항상 0으로되어 문제를 발생한다.
 
