@@ -5,6 +5,7 @@ name: "JunHan"
 description: "Object Detection, YOLO, Deep Learning, and AI Research"
 url: "https://junhanzang.github.io"
 baseurl: ""
+repository: "junhanzang/junhanzang.github.io"
 
 # Theme
 remote_theme: "mmistakes/minimal-mistakes@4.26.2"
@@ -22,6 +23,17 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/junhanzang"
+
+# Comments
+comments:
+  provider: "giscus"
+  giscus:
+    repo_id: "R_kgDORSwx8Q"
+    category_name: "General"
+    category_id: "DIC_kwDORSwx8c4C2tFb"
+    discussion_term: "pathname"
+    reactions_enabled: "1"
+    theme: "dark_dimmed"
 
 # Reading Files
 include:
