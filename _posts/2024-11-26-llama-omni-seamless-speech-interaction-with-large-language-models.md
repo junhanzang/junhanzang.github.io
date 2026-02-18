@@ -1,8 +1,6 @@
 ---
 title: "LLaMA-Omni: Seamless Speech Interaction with Large Language Models"
 date: 2024-11-26 00:43:54
-categories:
-  - 인공지능
 ---
 
 <https://arxiv.org/abs/2409.06666>
@@ -23,7 +21,7 @@ LLM과의 음성 상호작용을 가능하게 하는 가장 간단한 방법은 
 
 본 논문에서는 저지연, 고품질 상호작용을 가능하게 하는 새로운 모델 아키텍처인 LLaMA-Omni를 제안한다. LLaMA-Omni는 음성 인코더, 음성 어댑터, LLM, 스트리밍 음성 디코더로 구성된다. 사용자의 음성 지시는 음성 인코더를 거쳐 음성 어댑터에서 처리되고, 이후 LLM에 입력된다. LLM은 음성을 텍스트로 먼저 전사하지 않고 직접 텍스트 응답을 디코딩한다. 음성 디코더는 비자기회귀(NAR) 스트리밍 Transformer(Ma 등, 2023)로, LLM의 출력 은닉 상태를 입력으로 받아 연결주의 시계열 분류(CTC; Graves 등, 2006a)를 사용하여 음성 응답에 해당하는 이산 단위의 시퀀스를 예측한다. 추론 과정에서 LLM이 텍스트 응답을 자동 회귀적으로 생성하는 동시에 음성 디코더는 이에 해당하는 이산 단위를 생성한다. 음성 상호작용 시나리오의 특성과 더 잘 일치하도록 하기 위해, 기존의 텍스트 지시 데이터를 재작성하고 음성 합성을 수행하여 InstructS2S-200K라는 데이터셋을 구축하였다. 실험 결과, LLaMA-Omni는 고품질의 텍스트와 음성 응답을 동시에 매우 낮은 226ms의 지연 시간으로 생성할 수 있음을 보여준다. 또한, 이전 음성-언어 모델인 SpeechGPT(Zhang 등, 2023)와 비교할 때, LLaMA-Omni는 필요한 훈련 데이터와 계산 자원을 크게 줄여 최신 LLM을 기반으로 강력한 음성 상호작용 모델을 효율적으로 개발할 수 있다.
 
-![](/assets/images/posts/326/img.png)
+![](https://blog.kakaocdn.net/dna/blPkHT/btsKWKqFq5N/AAAAAAAAAAAAAAAAAAAAAJgNR595I3lfXnbfCe4U99ezcQt4QoqT0b6Pysmf0ixO/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=7MCr21jel0KK75JV5ml8f0JTrd0%3D)
 
 **그림 1**: LLaMA-Omni는 매우 낮은 응답 지연 시간으로 음성 지시에 기반하여 텍스트와 음성 응답을 동시에 생성할 수 있다.
 
@@ -33,67 +31,61 @@ LLM과의 음성 상호작용을 가능하게 하는 가장 간단한 방법은 
 
 ### 2.1 음성 인코더
 
-우리는 Whisper-large-v3 ([Radford et al., 2023](https://huggingface.co/openai/whisper-large-v3))의 인코더를 음성 인코더 *ℰ*로 사용한다. Whisper는 다량의 오디오 데이터를 학습한 범용 음성 인식 모델로, 음성으로부터 의미 있는 표현을 추출할 수 있는 능력을 가지고 있다. 특히, 사용자의 음성 지시 *XS*에 대해 인코딩된 음성 표현은 *? = ℰ(XS)*로 주어지며, 여기서 *? = [?1, …, ?N]*는 길이 *N*의 음성 표현 시퀀스를 나타낸다. 우리는 전체 학습 과정 동안 음성 인코더의 파라미터를 고정시킨다.
+우리는 Whisper-large-v3 ([Radford et al., 2023](https://huggingface.co/openai/whisper-large-v3))의 인코더를 음성 인코더 *ℰ*로 사용한다. Whisper는 다량의 오디오 데이터를 학습한 범용 음성 인식 모델로, 음성으로부터 의미 있는 표현을 추출할 수 있는 능력을 가지고 있다. 특히, 사용자의 음성 지시 *XS*에 대해 인코딩된 음성 표현은 *𝐇 = ℰ(XS)*로 주어지며, 여기서 *𝐇 = [𝐡1, …, 𝐡N]*는 길이 *N*의 음성 표현 시퀀스를 나타낸다. 우리는 전체 학습 과정 동안 음성 인코더의 파라미터를 고정시킨다.
 
 ### 2.2 음성 어댑터
 
-LLM이 입력된 음성을 이해할 수 있도록, 우리는 음성 표현을 LLM의 임베딩 공간으로 매핑하는 학습 가능한 음성 어댑터 *?*를 추가한다. Ma et al. (2024c)을 따라, 음성 어댑터는 먼저 음성 표현 *?*을 다운샘플링하여 시퀀스 길이를 줄인다. 구체적으로, 매 *k*개의 연속적인 프레임을 특성 차원에서 연결한다:
+LLM이 입력된 음성을 이해할 수 있도록, 우리는 음성 표현을 LLM의 임베딩 공간으로 매핑하는 학습 가능한 음성 어댑터 *𝒜*를 추가한다. Ma et al. (2024c)을 따라, 음성 어댑터는 먼저 음성 표현 *𝐇*을 다운샘플링하여 시퀀스 길이를 줄인다. 구체적으로, 매 *k*개의 연속적인 프레임을 특성 차원에서 연결한다:
 
 ```
-?′ = [?′1, …, ?′⌊N/k⌋],
+𝐇′ = [𝐡′1, …, 𝐡′⌊N/k⌋],
 ```
 
 여기서
 
 ```
-?i′ = [?k×(i−1)+1 ⊕ ?k×(i−1)+2 ⊕ ⋯ ⊕ ?k×i].
+𝐡i′ = [𝐡k×(i−1)+1 ⊕ 𝐡k×(i−1)+2 ⊕ ⋯ ⊕ 𝐡k×i].
 ```
 
-다음으로, *?′*는 선형 레이어 사이에 ReLU 활성화 함수를 사용하는 2층 퍼셉트론을 통과하며, 최종 음성 표현 *?*를 생성한다. 위 과정을 다음과 같이 공식화할 수 있다:
+다음으로, *𝐇′*는 선형 레이어 사이에 ReLU 활성화 함수를 사용하는 2층 퍼셉트론을 통과하며, 최종 음성 표현 *𝐒*를 생성한다. 위 과정을 다음과 같이 공식화할 수 있다:
 
 ```
-? = ?(?) = Linear(ReLU(Linear(DownSample(?)))).
+𝐒 = 𝒜(𝐇) = Linear(ReLU(Linear(DownSample(𝐇)))).
 ```
 
-![](/assets/images/posts/326/img_1.png)
+![](https://blog.kakaocdn.net/dna/Ougzh/btsKXzaZwzh/AAAAAAAAAAAAAAAAAAAAAFTLqzgm7ph2nKVPbBJdqv5IwaLLEUwTd22tDEd3PjYr/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=OIsL6DHacdy6a1bOdf6zNJi8O6c%3D)
 
 그림 2: 왼쪽: LLaMA-Omni의 모델 아키텍처. 오른쪽: LLaMA-Omni의 두 단계 학습 전략의 일러스트레이션.
 
 ### 2.3 대형 언어 모델(LLM)
 
-![](/assets/images/posts/326/img_2.png)
-
-![](/assets/images/posts/326/img_3.png)
-
-![](/assets/images/posts/326/img_4.png)
+![](https://blog.kakaocdn.net/dna/MDt87/btsKWptwoHv/AAAAAAAAAAAAAAAAAAAAAHrG0QfuTpJW1UKV8utiOq6Bt45KeFzRj5paoFYwSFNZ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=0Z7ota%2BF0jQMjurovkF545PbsHw%3D)
+![](https://blog.kakaocdn.net/dna/GHfeh/btsKU5vjyE7/AAAAAAAAAAAAAAAAAAAAANe8SU66AuLmDb3HXQMcFxYUnfQqIG53TgUwvEYgqcdM/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=9aQ5Ub8l1wim7KYdOfVoJq7hlMg%3D)
+![](https://blog.kakaocdn.net/dna/ddk3Ib/btsKV3c5Fbx/AAAAAAAAAAAAAAAAAAAAAEMmFBldIrblWZ9_uF0uPP-d9Mubc3c-yvAerTar9x7y/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=GkAEt0K3rlrfA7Q0DCHCWVZGvuU%3D)
 
 ### 2.4 음성 디코더(Speech Decoder)
 
-![](/assets/images/posts/326/img_5.png)
+![](https://blog.kakaocdn.net/dna/vn5y5/btsKUjO0NaS/AAAAAAAAAAAAAAAAAAAAAFH5fpPBRJ0HPGyrR8QKUhbRCSa06D7e79ejCEr6OwJD/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Hz5LJh3f8cy%2Bp%2FNMHUkZL3KJ1M0%3D)
 
-![](/assets/images/posts/326/img_6.png)
+![](https://blog.kakaocdn.net/dna/CMkc1/btsKVRjQsOf/AAAAAAAAAAAAAAAAAAAAAPqjbeC5hQkgHM8CAm1vOjcXb0lX6MPBXu-rBRevfKyk/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=RfT%2BGSXvFemqc2AUVGUHcIIgpt0%3D)
 
-![](/assets/images/posts/326/img_7.png)
+![](https://blog.kakaocdn.net/dna/b1D6U5/btsKW34Af82/AAAAAAAAAAAAAAAAAAAAAM2CULqEjO0skRNaWV9BTU0Lsi7WS_Sp7RhknauoUd26/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=hu1eBtfE%2FE2BvTH1nNSAqsszJD8%3D)
 
-![](/assets/images/posts/326/img_8.png)
-
-![](/assets/images/posts/326/img_9.png)
-
-![](/assets/images/posts/326/img_10.png)
-
-![](/assets/images/posts/326/img_11.png)
+![](https://blog.kakaocdn.net/dna/clYWHn/btsKU6PbrvE/AAAAAAAAAAAAAAAAAAAAADRauH8d7_mU5j4dacecIdeZuRQLVkbWZGjVFLWn1CUf/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=v6zbpov9KmmsaeW1Cir40yXAMJY%3D)
+![](https://blog.kakaocdn.net/dna/opPPY/btsKUjO0Ncy/AAAAAAAAAAAAAAAAAAAAAD8o-s0h6pS7d4E0IFotdwqN0vojl_Lrrg2F0gV4qXj7/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=tMTOE5y5wxcHQGstcmRe0tXQVcs%3D)
+![](https://blog.kakaocdn.net/dna/vPv28/btsKVyYYBAm/AAAAAAAAAAAAAAAAAAAAAF6F9gAtAcqGfshkZYLekw_057zrjBwaBisUhwGptjVh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=DLukSmwNQlCCBbxMjE6F%2Bw50Ze4%3D)
+![](https://blog.kakaocdn.net/dna/plEcd/btsKVAbvy31/AAAAAAAAAAAAAAAAAAAAAPqXt5IRQQ5WtT-Oxfu2e5LYfslscKeI4VR7fX86wSA8/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=B1vwUgEcYklIPo57nwWPA3yUNg4%3D)
 
 **그림 3: LLaMA-Omni의 프롬프트 템플릿**
 
 ### 2.5 학습(Training)
 
-![](/assets/images/posts/326/img_12.png)
+![](https://blog.kakaocdn.net/dna/rVkpf/btsKW7eTb5x/AAAAAAAAAAAAAAAAAAAAACDyP0pa6CmllRz2ldZSWzF_Tm6Ed-5JDtbJLWbvQjZ_/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=7mzS7EZ%2FqlTMw0EGXmIX3UYkkls%3D)
 
 ### 2.6 추론(Inference)
 
-![](/assets/images/posts/326/img_13.png)
-
-![](/assets/images/posts/326/img_14.png)
+![](https://blog.kakaocdn.net/dna/V14Zn/btsKWhIX6Pj/AAAAAAAAAAAAAAAAAAAAALk24TCfJA5tuIuuT3CgfnM1QZKexqAxxhxKshQIO5X0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=qhf4lUQDd2CuKs%2BR7hfaC7ZRSPE%3D)
+![](https://blog.kakaocdn.net/dna/c2VjC5/btsKWnJjRqJ/AAAAAAAAAAAAAAAAAAAAAARK-Oem7RNbTkxwxdfeBFnRijkNP6jYET51vPcR3Zwh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2BjSGb3d4Z4EcS41vdrr7QkRdKOY%3D)
 
 ### 3. 음성 명령 데이터 구성: InstructS2S-200K
 
@@ -143,7 +135,7 @@ LLaMA-Omni는 음성 명령을 바탕으로 텍스트와 음성 응답을 모두
 
 **표 1: InstructS2S-Eval 벤치마크에서 S2TIF와 S2SIF 작업에 대한 ChatGPT 점수 및 음성-텍스트 응답 간의 정렬 점수. 여기서 S2SIF 작업을 위해 Ω=+∞로 설정하였다.**
 
-![](/assets/images/posts/326/img_15.png)
+![](https://blog.kakaocdn.net/dna/AZyPx/btsKVBhcLLd/AAAAAAAAAAAAAAAAAAAAADAyNG42UG76D4RFYWs8bs66hBSBTBcKneJaLy5BwgJT/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=znVzTx0SuK6KWeA9e%2FODHrLLP78%3D)
 
 **표 1**에는 InstructS2S-Eval 벤치마크에 대한 주요 결과가 나와 있다. 먼저, S2TIF 작업에서 콘텐츠 관점에서 보면 LLaMA-Omni는 이전 모델들에 비해 상당한 개선을 보인다. 이는 주로 LLaMA-Omni가 최신 Llama-3.1-8B-Instruct 모델을 기반으로 개발되어 강력한 텍스트 명령 수행 능력을 활용했기 때문이다. 스타일 관점에서 보면, SALMONN과 Qwen2-Audio는 낮은 점수를 받았는데, 이는 이들이 음성-텍스트 모델이기 때문이다. 이들의 출력 스타일은 음성 상호작용 시나리오와 맞지 않아 포맷된 콘텐츠나 불필요한 설명을 자주 포함한다. 반면, SpeechGPT는 음성-음성 모델로서 더 높은 스타일 점수를 얻었고, 마찬가지로 우리 LLaMA-Omni도 가장 높은 스타일 점수를 얻어 InstructS2S-200K 데이터셋에서 학습된 후, 출력 스타일이 음성 상호작용 시나리오에 잘 맞춰졌음을 보여준다.
 
@@ -205,7 +197,7 @@ S2SIF 작업에서도 LLaMA-Omni는 콘텐츠와 스타일 점수에서 모두 �
 
 **표 2: 다양한 단위 청크 크기에서 지연 시간, 음성-텍스트 정렬 및 음성 품질**
 
-![](/assets/images/posts/326/img_16.png)
+![](https://blog.kakaocdn.net/dna/bc3ZEx/btsKVSXjs6R/AAAAAAAAAAAAAAAAAAAAAODHVXo-vwv1NR4HfzeQtdcRY2AcFy_Z2nLs9R53nOzG/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Jg73FW2WC5hWrV2SZMJM738k9nc%3D)
 
 LLaMA-Omni는 텍스트 응답과 음성 응답에 해당하는 이산 단위를 동시에 생성할 수 있다. 2.6절에서 설명한 대로, 파형을 스트리밍 방식으로 생성하기 위해 생성된 이산 단위의 수가 일정한 청크 크기 Ω에 도달하면, 해당 단위 청크를 보코더에 입력하여 음성을 합성하고 재생한다. Ω 값을 조정함으로써 시스템의 지연 시간을 제어할 수 있으며, 작은 Ω값은 낮은 시스템 지연에 해당한다. Ω=+∞로 설정하면 모든 단위가 생성될 때까지 기다렸다가 음성을 합성하게 된다. 동시에, Ω 값은 생성된 음성의 품질에도 영향을 미친다. 작은 Ω 값은 음성이 더 많은 부분으로 나뉘어 합성됨을 의미하며, 이는 각 구간 간의 불연속성을 유발하여 전체적인 음성의 일관성을 떨어뜨릴 수 있다.
 
@@ -219,7 +211,7 @@ ASR-WER 및 ASR-CER 지표를 보면, 청크 크기가 증가함에 따라 오�
 
 **표 3: S2TIF와 S2SIF 작업에서 다양한 모델의 평균 디코딩 시간 (초)**
 
-![](/assets/images/posts/326/img_17.png)
+![](https://blog.kakaocdn.net/dna/nGNcr/btsKXgbG44D/AAAAAAAAAAAAAAAAAAAAAItyOmRxLBXR35e4q9Eirlfadm3ORUCMCcb0T_X39dBh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Lrzc97jukyO7uvXWNxKshSODrQ8%3D)
 
 **표 3**은 S2TIF와 S2SIF 작업에서 각 모델의 평균 디코딩 시간을 보여준다. **S2TIF 작업**에서 SpeechGPT는 텍스트 명령을 먼저 출력하고 그 후에 텍스트 응답을 생성해야 하므로 디코딩 시간이 비교적 길다. 반면, SALMONN과 Qwen2-Audio는 대체로 길고 상세한 응답을 생성하는 경향이 있어 시간이 오래 걸린다. 이에 비해, LLaMA-Omni는 간결한 답변을 직접 제공하여 명령당 평균 1.49초로 상당히 낮은 디코딩 시간을 기록하였다. (확인 필요)
 
@@ -235,7 +227,7 @@ ASR-WER 및 ASR-CER 지표를 보면, 청크 크기가 증가함에 따라 오�
 
 **표 4: "How do I wrap a present neatly?"라는 명령에 대한 다양한 모델의 응답**
 
-![](/assets/images/posts/326/img_18.png)
+![](https://blog.kakaocdn.net/dna/b7h6DW/btsKXyXsRyy/AAAAAAAAAAAAAAAAAAAAADOlrtyiiEYtix5HX-p2dp0n4bw7GNHPuzZd87TDbqxH/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=CYjewPsxUPhlstTEED4%2BRmIlwmY%3D)
 
 **표 4**에서 다양한 모델이 "선물을 깔끔하게 포장하는 방법"에 대해 어떻게 응답하는지 살펴볼 수 있다. **Qwen2-Audio**의 응답은 상당히 길고, 줄 바꿈과 괄호와 같은 음성으로 합성하기 어려운 요소들을 포함하고 있다. **SALMOON**의 응답도 다소 긴 편이다. **SpeechGPT**의 응답은 음성 상호작용 시나리오에 더 적합한 스타일이지만, 포함된 정보의 양이 적다. 반면, **LLaMA-Omni**의 응답은 간결한 스타일을 유지하면서도 보다 상세하고 유용하여, 음성 상호작용 시나리오에서 이전 모델들보다 뛰어난 성능을 보인다.
 
@@ -257,7 +249,7 @@ ASR-WER 및 ASR-CER 지표를 보면, 청크 크기가 증가함에 따라 오�
 
 [2409.06666v1.pdf
 
-2.19MB](./file/2409.06666v1.pdf)
+2.19MB](https://blog.kakaocdn.net/dna/yzTH0/btsKWP6tgDH/AAAAAAAAAAAAAAAAAAAAAArrmxRrkYXowo8EZqdoiuDUCpcHRvHp7vYi6ZseepTI/2409.06666v1.pdf?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=FNImZZTYXslowHiC2wo1WJhzfvE%3D&attach=1&knm=tfile.pdf)
 
 ### A. 프롬프트 (PROMPT)
 

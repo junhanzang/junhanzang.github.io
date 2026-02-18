@@ -1,21 +1,19 @@
 ---
 title: "Chapter 10. Exploration"
 date: 2023-05-30 14:10:51
-categories:
-  - 강화학습
 tags:
   - Exploration
 ---
 
 Exploration vs. Exploitation을 다시 되돌아보자. 아래의 이미지를 통해 항상 가던 길을 가는게 Exploitation, 새로운 곳으로 가는게 Exploration이라는 것을 이전 chapter에서 배웠다.
 
-![](/assets/images/posts/85/img.png)
+![](https://blog.kakaocdn.net/dna/cZ1qwr/btsg2YGiPKf/AAAAAAAAAAAAAAAAAAAAAA7QsFw_m3zpT25c7oH8Z0ZzOeZh1uHeelFNaa9emoL1/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=yYP506JUpcyhTelNvUqu2chY%2FxM%3D)
 
 **Exploration vs. Exploitation Dilemma**
 
 그지만 우리는 새로운 상태나 행동을 탐색하면서 최적의 정책을 찾아야 하지만, 이미 알고 있는 지식을 이용하여 최대한의 보상을 얻어야 합니다. 이런 걸 Exploration vs. Exploitation Dilemma라고 합니다.
 
-![](/assets/images/posts/85/img_1.png)
+![](https://blog.kakaocdn.net/dna/N33RM/btshRy6Ic4u/AAAAAAAAAAAAAAAAAAAAAI__fKGo_kaq2kAZqEQI6sXixfsMN283-7969kVXH-AR/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Ey%2F%2Fm2i7brT2bOxE0eeLDp7cjNg%3D)
 
 탐색과 이용의 딜레마(Exploration vs. Exploitation Dilemma)은 온라인 의사 결정에서 기본적인 선택을 의미합니다. 이는 다음과 같은 선택 사항을 포함합니다:
 
@@ -51,7 +49,7 @@ Exploration vs. Exploitation을 다시 되돌아보자. 아래의 이미지를 �
 
 탐색 방법:
 
-- 단순한 탐색: 탐색적인 정책에 노이즈를 추가함 (예: ?-탐욕 정책)
+- 단순한 탐색: 탐색적인 정책에 노이즈를 추가함 (예: 𝜖-탐욕 정책)
 - 낙관적 초기화: 뒷받침되지 않는 한 가장 좋은 상태로 가정함
 - 불확실성에서의 낙관: 불확실한 가치를 가진 행동을 선호함
 - 내재적 보상으로의 탐구: 내재적 동기 (예: 호기심)를 활용함
@@ -63,19 +61,19 @@ Exploration vs. Exploitation을 다시 되돌아보자. 아래의 이미지를 �
 
 다중 암기된 밴딧(Multi-Armed Bandit)은 다음과 같은 튜플로 구성됩니다.
 
-- ?는 알려진 m개의 행동(또는 "팔")의 집합입니다.
-- ??r은 알려지지 않은 보상에 대한 확률 분포입니다.
-- 각 단계 ?에서 에이전트는 행동 ??를 선택합니다 (?? ∈ ?).
-- 환경은 보상 ??~???을 생성합니다.
-- 목표는 누적 보상을 최대화하는 것입니다 (σ ?=1 ? ??).
+- 𝐴는 알려진 m개의 행동(또는 "팔")의 집합입니다.
+- 𝑅𝑎r은 알려지지 않은 보상에 대한 확률 분포입니다.
+- 각 단계 𝑡에서 에이전트는 행동 𝑎𝑡를 선택합니다 (𝑎𝑡 ∈ 𝐴).
+- 환경은 보상 𝑟𝑡~𝑅𝑎𝑡을 생성합니다.
+- 목표는 누적 보상을 최대화하는 것입니다 (σ 𝑡=1 𝑇 𝑟𝑡).
 
-다중 암기된 밴딧 문제에서는 에이전트가 초기에 ??r을 모르기 때문에 최적의 행동을 선택하는 것이 도전입니다. 에이전트는 탐험과 이용의 균형을 고려하여 최대한 많은 보상을 얻을 수 있는 행동을 찾아야 합니다.
+다중 암기된 밴딧 문제에서는 에이전트가 초기에 𝑅𝑎r을 모르기 때문에 최적의 행동을 선택하는 것이 도전입니다. 에이전트는 탐험과 이용의 균형을 고려하여 최대한 많은 보상을 얻을 수 있는 행동을 찾아야 합니다.
 
-![](/assets/images/posts/85/img_2.png)
+![](https://blog.kakaocdn.net/dna/sDtmz/btshHNDrbnP/AAAAAAAAAAAAAAAAAAAAAH1uWqmZi8PWbCX0ht-upRQvwljvrkdt_3ign5ZSlzIe/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=636e4fAJjTTxIgaNKbktAzB1ULQ%3D)
 
 **Regret**
 
-행동 가치(Action value)는 행동 ?에 대한 평균 보상으로 정의됩니다 (??=??|?). 최적 가치(Optimal value) ?∗는 ?∗=??∗=max?∈??(?)로 표현됩니다. 손실(regret)은 한 단계에 대한 기회 손실로 정의되며 ??=??∗−?(??)로 계산됩니다. 전체 손실(total regret)은 총 기회 손실을 나타내며 ??=?∑???∗−?(??)로 계산됩니다. **누적 보상을 최대화하는 것은 총 손실을 최소화하는 것과 동일합니다.**   
+행동 가치(Action value)는 행동 𝑎에 대한 평균 보상으로 정의됩니다 (𝑄𝑎=𝔼𝑟|𝑎). 최적 가치(Optimal value) 𝑉∗는 𝑉∗=𝑄𝑎∗=max𝑎∈𝐴𝑄(𝑎)로 표현됩니다. 손실(regret)은 한 단계에 대한 기회 손실로 정의되며 𝑙𝑡=𝔼𝑉∗−𝑄(𝑎𝑡)로 계산됩니다. 전체 손실(total regret)은 총 기회 손실을 나타내며 𝐿𝑇=𝔼∑𝑡𝑇𝑉∗−𝑄(𝑎𝑡)로 계산됩니다. **누적 보상을 최대화하는 것은 총 손실을 최소화하는 것과 동일합니다.**   
   
 이러한 개념에서 "손실"은 최적의 행동과 실제 선택한 행동 사이의 기회 손실을 나타냅니다. 최적 행동을 항상 선택한다면 손실은 0이 될 것이지만, 실제 행동 선택에서는 항상 최적이 아니기 때문에 손실이 발생합니다. 누적 보상을 최대화하는 것은 이러한 손실을 최소화하고 가능한 한 많은 보상을 얻는 것을 의미합니다. 따라서 "손실"을 최소화하는 것과 "누적 보상"을 최대화하는 것은 동일한 목표를 가지고 있습니다.
 
@@ -85,13 +83,13 @@ Exploration vs. Exploitation을 다시 되돌아보자. 아래의 이미지를 �
   
 네, 서브리니어 총 손실을 달성하는 것은 가능합니다. 좋은 탐색 전략과 알고리즘 디자인을 통해 서브리니어 총 손실을 달성할 수 있습니다. 서브리니어 총 손실을 달성하려면 최적 행동에 대한 정보를 빠르게 습득하고, 잘못된 행동을 피하기 위해 효율적으로 탐색하는 알고리즘이 필요합니다. 이를 위해 다양한 탐색 전략과 알고리즘을 적용하여 탐색과 활용 사이의 균형을 유지하며, 최적 행동에 대한 추정을 개선하고 보상을 최대화하는 방향으로 진화시킬 수 있습니다.
 
-![](/assets/images/posts/85/img_3.png)
+![](https://blog.kakaocdn.net/dna/bxOPjK/btshCb5Yts8/AAAAAAAAAAAAAAAAAAAAAAZV9VvbAvOBoQNSZCEQPttAljkc7293Zy9x4AREN68F/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=4GLMPX8%2BcZhq7%2B0YwH8FF3ndf3I%3D)
 
 **Optimistic Initialization**
 
-낙관적 초기화(Optimistic Initialization)는 간단하고 실용적인 아이디어입니다. ?(?)를 높은 값으로 초기화하는 것입니다. 이후에는 점진적인 몬테카를로 방법을 사용하여 행동 가치를 업데이트합니다. 이 방법은 초기에 체계적인 탐색을 유도합니다. 그러나 여전히 부적절한 행동에 고정될 수 있습니다.
+낙관적 초기화(Optimistic Initialization)는 간단하고 실용적인 아이디어입니다. 𝑄(𝑎)를 높은 값으로 초기화하는 것입니다. 이후에는 점진적인 몬테카를로 방법을 사용하여 행동 가치를 업데이트합니다. 이 방법은 초기에 체계적인 탐색을 유도합니다. 그러나 여전히 부적절한 행동에 고정될 수 있습니다.
 
-![](/assets/images/posts/85/img_4.png)
+![](https://blog.kakaocdn.net/dna/dUZj0x/btshTw8P8zR/AAAAAAAAAAAAAAAAAAAAAAowt3KqhttO2141ifCOiiJR4t5nUkqq8ABcw0r6A__u/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=RMHPx4USww0F6w6wfXiNgSGNqTw%3D)
 
 낙관적 초기화는 모든 행동에 대해 높은 가치를 부여함으로써 초기에 모든 행동을 적극적으로 탐색하는 것입니다. 이렇게 하면 초기에는 보다 많은 행동을 시도하고 탐험할 수 있습니다. 그러나 이 방법은 최적 행동에 대한 추정치를 과도하게 높게 설정할 수 있으며, 결과적으로 하나의 행동에만 고착되는 문제가 발생할 수 있습니다. 따라서 다양한 탐색 전략과 조절 가능한 초기화 값을 사용하여 효과적인 탐색과 활용 사이의 균형을 유지하는 것이 중요합니다.
 
@@ -100,7 +98,7 @@ Optimism in the Face of Uncertainty
 어떤 행동을 선택해야 할까요?   
 우리가 특정 행동 가치에 대해 더 불확실할수록, 그 행동을 탐색하는 것이 더 중요해집니다. 그 행동이 최선의 행동일 수도 있기 때문입니다.
 
-![](/assets/images/posts/85/img_5.png)
+![](https://blog.kakaocdn.net/dna/sVHQS/btshTv29GI2/AAAAAAAAAAAAAAAAAAAAAKdXS-4hsJCbYrc0SkJsvjQOB9GqB70G0MdWh1yW4T6u/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=EFtopMba1hA59kAr6UKqjE60y6I%3D)
 
 파란색 행동을 선택한 후, 우리는 해당 가치에 대해 더 확실해집니다.   
 그리고 다른 행동을 선택할 가능성이 높아집니다 (예: 빨간색 행동).   
@@ -116,7 +114,7 @@ Optimism in the Face of Uncertainty
   
 상한 신뢰 구간의 크기는 선택된 횟수에 따라 조절됩니다. 선택된 횟수가 적을수록 큰 상한 신뢰 구간이 설정되며, 이는 더 많은 탐색을 유도합니다. 선택된 횟수가 많을수록 작은 상한 신뢰 구간이 설정되며, 이는 더 많은 활용을 유도합니다.
 
-![](/assets/images/posts/85/img_6.png)
+![](https://blog.kakaocdn.net/dna/G0nkH/btshBmGOMTl/AAAAAAAAAAAAAAAAAAAAAMjA3OHZljgtn91CcEpF75gIDzIh0LpAWNFRQUCiEhKB/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=hCmANhywMKw3HE0faUTcsuUHt80%3D)
 
 Upper Confidence Bounds
 
@@ -126,7 +124,7 @@ Upper Confidence Bounds
   
 강화학습에서 탐색은 정책을 개선하는데 필수적입니다. 초기에는 환경에 대해 알려지지 않은 정보가 많기 때문에 다양한 행동을 시도하고 그 결과를 관찰하여 얻은 지식을 바탕으로 정책을 개선해야 합니다. 탐색을 통해 새로운 행동을 시도하고 불확실성을 해소하기 위해 더 많은 경험을 쌓을 수 있습니다.
 
-![](/assets/images/posts/85/img_7.png)
+![](https://blog.kakaocdn.net/dna/dxXjib/btshCbEWBUK/AAAAAAAAAAAAAAAAAAAAADvBg1c5lsieJR2NB4uR_Fxg8tcEZmRA0ek4djq0dPHr/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=F%2FBdiFeWv5i%2FCctrEYj3xpx3Hws%3D)
 
 **Trouble with Counts**
 
@@ -152,11 +150,9 @@ Upper Confidence Bounds
   
 내재적 동기는 학습 시스템에 추가적인 특성을 부여하여 탐색의 영역을 확장시킵니다. 이는 환경의 불확실성을 줄이고 새로운 정보를 얻기 위해 탐구적인 행동을 촉진합니다. 내재적 동기는 목표 달성에 초점을 맞춘 외부적 보상만으로는 얻을 수 없는 추가적인 동기부여를 제공합니다.
 
-![](/assets/images/posts/85/img_8.png)
-
-![](/assets/images/posts/85/img_9.png)
-
-![](/assets/images/posts/85/img_10.png)
+![](https://blog.kakaocdn.net/dna/7sqTv/btshPpbaSHr/AAAAAAAAAAAAAAAAAAAAAPJitrVey7FHw_RL4WHgEAwfrd3YWFyVDkkdBkNSitCG/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=XksOfPaopTE%2BaaWqbM1085G%2B1JM%3D)
+![](https://blog.kakaocdn.net/dna/6W0W5/btsh17mM7T3/AAAAAAAAAAAAAAAAAAAAADQLaw_zeyjSxTjinzjdcDCYaAgBAE2lwQxu2qHPcZ27/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=MIWSUL%2B5RwiDCnt%2FkpQDSYw7F7s%3D)
+![](https://blog.kakaocdn.net/dna/dspOXl/btshTw8UKCq/AAAAAAAAAAAAAAAAAAAAABpeE_Kttq7FvYIaJ7UZdwBBs9XlmMNluecMmJvG33eB/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=9uUgPUGfGNwjs0uU3SxummDxUP0%3D)
 
 위의 의견을 바탕으로 아래의 논문이 나왔다.
 
@@ -172,7 +168,7 @@ Upper Confidence Bounds
   
 자기 지도학습 예측을 통해 얻은 호기심 보상은 새로운 경험과 지식의 획득을 장려하며, 더 넓은 탐색 공간을 탐구하도록 유도합니다. 이를 통해 강화학습 에이전트는 보다 효과적이고 지속적인 탐색을 수행하며, 더 많은 경험을 얻어 성능을 향상시킬 수 있습니다.
 
-![](/assets/images/posts/85/img_11.png)
+![](https://blog.kakaocdn.net/dna/d6MdiD/btshRxz7sMD/AAAAAAAAAAAAAAAAAAAAAJ-KPWXv9k38YvYTMA7jb5ufWY4E6V9r12lEEzxoQyt3/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=jBWGx9%2Ba4dPBNfPo0eAVbExWUrw%3D)
 
 **Curiosity driven Exploration by Self supervised Prediction [2017 CVPRW]**
 
@@ -182,7 +178,7 @@ Upper Confidence Bounds
   
 호기심 보상은 예측 오차의 크기를 기반으로 계산되며, 큰 오차를 가진 상태에 대해 더 큰 보상을 부여합니다. 이를 통해 에이전트는 더 많은 탐색을 수행하고 새로운 경험을 얻을 수 있게 됩니다. 이러한 호기심 기반의 탐색은 강화학습 에이전트의 학습과 성능 향상에 도움을 줄 수 있습니다.
 
-![](/assets/images/posts/85/img_12.png)
+![](https://blog.kakaocdn.net/dna/AGIPW/btsh04KEVRA/AAAAAAAAAAAAAAAAAAAAAJURAkzC4tysHwJx05jrubSfC9S_aG7c_rE_tDhJeLPQ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=dDbBzBXVNIAGAFnG%2B4WML%2Fm7aus%3D)
 
 **Noisy TV Problem**
 
@@ -210,13 +206,12 @@ Random Network Distillation은 주어진 환경에서 다음 상태를 �
   
 탐색 보너스는 이 예측 오류를 기반으로 계산됩니다. 예측 오류가 크다는 것은 예측기가 적절한 정보를 얻지 못했거나 예측이 어려운 상태를 나타냄을 의미합니다. 이러한 경우, 탐색 보너스를 적용하여 에이전트가 해당 상태를 더 많이 탐색하도록 유도합니다. 이는 환경을 더 잘 이해하고 더 효과적인 정책을 학습하기 위해 필요한 탐색을 촉진하는 역할을 합니다.
 
-![](/assets/images/posts/85/img_13.png)
-
-![](/assets/images/posts/85/img_14.png)
+![](https://blog.kakaocdn.net/dna/5G5IS/btshHMY3pxI/AAAAAAAAAAAAAAAAAAAAABmtzJgrSdsGy3nv9kq0OACsbpgNoAIbUSwH0RPcrPjD/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2BhEk9snnFQbuYpX0TekG%2Bi2tRG8%3D)
+![](https://blog.kakaocdn.net/dna/pcxR7/btshYcCc7NE/AAAAAAAAAAAAAAAAAAAAAMoKEWqTCQGUP-SYaTS9jrslGPeZJmEeQWmKfsWFLc76/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=68FW3hnnIwgSzGY%2F001hpstTIk8%3D)
 
 APEX DQN, R2D2가 약점이었던 montezuma\_revenge에서 다음과 같은 성능을 보여주었다. Random Network Distillation [ICLR 2019]의 결과는 다음과 같다.
 
-![](/assets/images/posts/85/img_15.png)
+![](https://blog.kakaocdn.net/dna/l69WF/btshKRMEpwd/AAAAAAAAAAAAAAAAAAAAAJX16kICCwbmAwAi-0c49WDpT0P4-ZLk2PY2mWl59eYB/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=m2kAcErNOxHOLb3mdPVTzvVrxGQ%3D)
 
 사람을 능가하는 성능을 보여주었다!
 
@@ -228,7 +223,7 @@ APEX DQN, R2D2가 약점이었던 montezuma\_revenge에서 다음과 같은 성�
   
 이 논문에서 제안하는 내재적 보상은 에피소드별 신묘성과 평생 신묘성을 결합하여 에이전트가 환경의 모든 제어 가능한 상태를 반복적으로 방문하도록 명확히 장려합니다. 에피소드별 신묘성은 에이전트가 여러 에피소드 동안 익숙하지만 아직 완전히 탐색되지 않은 상태를 주기적으로 다시 방문하도록 장려합니다.
 
-![](/assets/images/posts/85/img_16.png)
+![](https://blog.kakaocdn.net/dna/bell2t/btshPpPW9AF/AAAAAAAAAAAAAAAAAAAAAKG12LTPOSN6Oypz23dAx55fPp_c7erXb0ct_YQVWB0Y/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=H7JQPc9ehBMXDu6ps%2Bo3ZjoxslQ%3D)
 
 Never Give Up: Feature Embedding
 
@@ -238,20 +233,18 @@ Never Give Up: Feature Embedding
   
 논문에서는 특징 임베딩을 사용하여 상태-액션 예측 문제를 해결하고, 상태의 조종 가능성을 평가하는 방법을 제안합니다.
 
-![](/assets/images/posts/85/img_17.png)
+![](https://blog.kakaocdn.net/dna/uU0KU/btsh17AxZuS/AAAAAAAAAAAAAAAAAAAAANJ5dVRjJw4ekObYCeVdGdp6vN5uI7BLY52lakb8KsRE/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=A4xOCERCUqHimJZ1QkqgnS0N4Mk%3D)
 
 1. 에피소드 간에 여러 번 방문된 상태에 대한 방문을 점차적으로 억제합니다. 이는 에이전트가 이미 많이 방문한 상태를 계속 방문하는 것을 막기 위한 전략입니다. 에이전트는 상태를 다양하게 탐색하고 더 많은 정보를 얻기 위해 이전에 자주 방문한 상태를 피하려고 합니다.
 2. 같은 에피소드 내에서 같은 상태를 다시 방문하는 것을 빠르게 억제합니다. 이는 에이전트가 같은 상태를 반복해서 방문하여 시간을 낭비하는 것을 막기 위한 전략입니다. 에이전트는 가능한 한 빨리 다른 상태로 이동하여 더 다양한 경험을 얻을 수 있도록 합니다.
 
-![](/assets/images/posts/85/img_18.png)
+![](https://blog.kakaocdn.net/dna/btmANJ/btshHMEWPaX/AAAAAAAAAAAAAAAAAAAAAHKXi86F1il0cANisWIj3wc58aOazyuoMMHc71Qzfn6U/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=wqrY%2BdmUFn%2F5bJUmBKE59LZ0wd8%3D)
 
 다음은 결과입니다.
 
-![](/assets/images/posts/85/img_19.png)
-
-![](/assets/images/posts/85/img_20.png)
-
-![](/assets/images/posts/85/img_21.png)
+![](https://blog.kakaocdn.net/dna/Cegkz/btshCfub0be/AAAAAAAAAAAAAAAAAAAAAM4KgvdKVxA_ziLXpfnoLLVarGe7ixTOYMvx_3w551OD/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=QrcawJcYvM%2Be8MWNmI7vBBeJ6wA%3D)
+![](https://blog.kakaocdn.net/dna/dxH5rA/btshYcvB1SV/AAAAAAAAAAAAAAAAAAAAAFCIaO1l7Yo8_BGEzUPMDfUGK4-x4cz9dElPdNyzHpEl/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=P3GHFz00ckmuPiUrvODJi6eY8gU%3D)
+![](https://blog.kakaocdn.net/dna/H4ub4/btshWuJYlg2/AAAAAAAAAAAAAAAAAAAAABTbQt8aInNQUBmDGUH7fDHqw_k_B53zZRk87sm-hz2k/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=ykyDzUGbWd7AKTrqhucS7eU7h8g%3D)
 
 **Self-Supervised Exploration via Disagreement [2019 ICML]**
 
@@ -262,7 +255,7 @@ Never Give Up: Feature Embedding
 
 Main Idea : Disagreement
 
-![](/assets/images/posts/85/img_22.png)
+![](https://blog.kakaocdn.net/dna/bSAMyX/btshE1JhuK5/AAAAAAAAAAAAAAAAAAAAAAg9MKuZwSv1vyDQWzaXWByo7dKtuHhjncQiJzT2b1rO/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=jDQnyrAsQuwBmeygDXBieK8b1%2Bs%3D)
 
 주요 아이디어는 '의견의 불일치'입니다.   
   
@@ -272,23 +265,23 @@ Main Idea : Disagreement
 
 Results in Non-Stochastic Environments
 
-![](/assets/images/posts/85/img_23.png)
+![](https://blog.kakaocdn.net/dna/yMxcf/btshZuCYTyH/AAAAAAAAAAAAAAAAAAAAACHH-XrI6EF-Nb3G7-mYklINU5mmXn-2hP_TxM_cwJ6s/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=blC41o6GrDV8pJYbKI%2Brm7l1UUQ%3D)
 
 Intrinsic Reward : Less vs. High Stochastic
 
-![](/assets/images/posts/85/img_24.png)
+![](https://blog.kakaocdn.net/dna/s0lEc/btshCdb2PLO/AAAAAAAAAAAAAAAAAAAAACdxaCJJLFDMbznyMgTk-j8e7GqRLrFC05UIOo1klPNm/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=7B6cXXTY9Vd7ol2YPx%2B8bv3bQM0%3D)
 
 Results: 3D Navigation with / without noisy TV
 
-![](/assets/images/posts/85/img_25.png)
+![](https://blog.kakaocdn.net/dna/LbxJV/btshRy0poR7/AAAAAAAAAAAAAAAAAAAAABGwiLcZT20Hpn7mL56pbdo8v56XKRTY2U6De-MLZuAd/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=8MhCaCYGoXMoeC%2FEYutCxe0KJCU%3D)
 
 Results: Stochastic Atari Games
 
-![](/assets/images/posts/85/img_26.png)
+![](https://blog.kakaocdn.net/dna/cagXl9/btshWs6ykpH/AAAAAAAAAAAAAAAAAAAAACYLlQt_un3eO96nRzpz_56IcsVQEWdTRM2UGvrjk4yV/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=NBR6QWkPjqyGlOgg3OLReKqsLpM%3D)
 
 Results: Real-World Robotic Manipulation
 
-![](/assets/images/posts/85/img_27.png)
+![](https://blog.kakaocdn.net/dna/daj4Gi/btshYcbqMJM/AAAAAAAAAAAAAAAAAAAAAL8JeMfxKUTbk9sXZdgybwTp8JkVlWdHt-zO5E5I_iju/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=s1t3nXqFAHyq37%2ByYCvsEVpG8VE%3D)
 
 https://pathak22.github.io/exploration
 by disagreement/
@@ -303,21 +296,21 @@ AGAC는 "적대적인 요소"라는 세 번째 구성요소를 도입합�
   
 AGAC는 기존의 Actor-Critic 방법에 적대적인 학습 요소를 추가하여 탐사와 학습을 보다 효과적으로 이루어낼 수 있는 방법입니다.
 
-![](/assets/images/posts/85/img_28.png)
+![](https://blog.kakaocdn.net/dna/br84PF/btshE9mZgRB/AAAAAAAAAAAAAAAAAAAAAAIZi4C4w6poCVRAYuakISb309gXwd1rHugDqd29GeKb/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=julW1lb%2BJBhIkl2AJuMrmrILmEk%3D)
 
 AGAC
 
-![](/assets/images/posts/85/img_29.png)
+![](https://blog.kakaocdn.net/dna/efMivt/btshE0DLEXF/AAAAAAAAAAAAAAAAAAAAAPK1KkuMxapJVmoSO1W-LL-6FfXvUc5gXD8R-pIwx-B3/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=EYSfpxsjlO7XFBGg7OyhlXzQTQ8%3D)
 
 AGAC: Overview
 
 AGAC: Loss Functions
 
-![](/assets/images/posts/85/img_30.png)
+![](https://blog.kakaocdn.net/dna/b8XbVa/btshYduHKow/AAAAAAAAAAAAAAAAAAAAAAMdT3p6sR92I452UZMUU4vAdvFa95XVDp8EdL5Bwv8_/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=z1WHpiM6uV%2FtFfRTvzRe4igpFz4%3D)
 
 Performance on 3D Navigation Task (Vizdoom)
 
-![](/assets/images/posts/85/img_31.png)
+![](https://blog.kakaocdn.net/dna/GdkhR/btshE1vQtJT/AAAAAAAAAAAAAAAAAAAAAEuKHNvwi_ONlGgMW0ivu4b8anip_qma2A7IIx0-G54g/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=mgIkG%2B%2FaVf4Q495N4mxC1PnMPUY%3D)
 
 MinigGid Environment
 
@@ -327,22 +320,20 @@ MiniGrid 환경은 일반적으로 작은 격자 세계로 구성되어 �
   
 MiniGrid 환경에서는 에피소드마다 다른 구성을 가지기 때문에, 에이전트는 각 에피소드에서 다양한 상황과 도전에 직면하게 됩니다. 
 
-![](/assets/images/posts/85/img_32.png)
+![](https://blog.kakaocdn.net/dna/ZQel5/btsh2tQ7Dlf/AAAAAAAAAAAAAAAAAAAAADrcJsOZd1V4iPNNTrXjJPyJmtj_irkuJGy893lYf4an/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Zeiq5TDdyST%2FC9c0FEP%2F1inQtSo%3D)
 
 https://github.com/maximecb/gym
 minigrid
 
 Performance evaluation of AGAC
 
-![](/assets/images/posts/85/img_33.png)
+![](https://blog.kakaocdn.net/dna/vnugg/btshMW1LCoS/AAAAAAAAAAAAAAAAAAAAAK89ffFRL_Q_JYYa3XYw3cHxhn8nXFkzJDIog8onXZ4K/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=O1REjEp9MChVV9zUeUZi9RxIzGs%3D)
 
 Exploration in Reward Free Environment
 
-![](/assets/images/posts/85/img_34.png)
-
-![](/assets/images/posts/85/img_35.png)
-
-![](/assets/images/posts/85/img_36.png)
+![](https://blog.kakaocdn.net/dna/bBmMjT/btsh2tjhGnl/AAAAAAAAAAAAAAAAAAAAAGS700Vh451Z33ae72JfzJjYrkz2_FAHr00S1OpiGoAA/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=bAOpU4Iaa1lcdzEbMXxfFGFQz88%3D)
+![](https://blog.kakaocdn.net/dna/6KMeI/btsh2Rxpzi0/AAAAAAAAAAAAAAAAAAAAABczB3JGgew0S1Ff5nCglTpq0O0K0Pc4DamnCBGgVW7d/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=dSHcPAyjLQhn6R2ra%2B7ax2UjHU4%3D)
+![](https://blog.kakaocdn.net/dna/bmkg6J/btshTwnZWsl/AAAAAAAAAAAAAAAAAAAAAB0CspFL7ITXjin_NfY2fiKfUP_c48qKTf8gnSD5DAzu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=rWCkt9VqDmXv7N7W8oU1has3pSg%3D)
 
 Partially Observed vs. Full Observed
 
@@ -352,8 +343,6 @@ Partially Observed vs. Full Observed
   
 따라서 탐사를 강조하는 경우에는 부분적인 관찰이 더 선호될 수 있습니다. 완전한 관찰은 탐사보다는 최적화에 더 적합한 상황에서 활용될 수 있습니다.
 
-![](/assets/images/posts/85/img_37.png)
-
-![](/assets/images/posts/85/img_38.png)
-
-![](/assets/images/posts/85/img_39.png)
+![](https://blog.kakaocdn.net/dna/bYKURt/btshTw9njwS/AAAAAAAAAAAAAAAAAAAAAO1ztEIhUXNR8224HxG9OxuWMZrE0tDpFfOwcM4ezsYt/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=I%2Bdrg7AeLZxzAfVsQW7DDa5%2BODQ%3D)
+![](https://blog.kakaocdn.net/dna/bUVhln/btshKRzypsF/AAAAAAAAAAAAAAAAAAAAAG8Agfip4o3cml2NoOsjyxnraDpLdmMkda01R3ed_08B/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=l3ZWpq6ujnku8ZvrPTbCU4zE5cc%3D)
+![](https://blog.kakaocdn.net/dna/c4ew9e/btsh169IQIR/AAAAAAAAAAAAAAAAAAAAAKPqhRbKF40KvuEcW8MXgdHmyTzeaRLcdaBXEOCv3Sji/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=cp5z3B9tR95ChLQrMVVNuRffdpw%3D)

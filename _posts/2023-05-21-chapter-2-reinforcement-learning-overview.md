@@ -1,8 +1,6 @@
 ---
 title: "Chapter 2 Reinforcement Learning Overview"
 date: 2023-05-21 00:08:53
-categories:
-  - 강화학습
 tags:
   - Reinforcement Learning
 ---
@@ -20,7 +18,7 @@ Reinforcement Learning (RL)은 불확실성 하에서의 의사 결정 및 경�
 
 그래서 agent라고 명명되는 NN(설명하기 쉽게 NN이라고 하자)은 다음 그림처럼 environment에 어떤 행동을하고 경험을 학습하게 된다.
 
-![](/assets/images/posts/76/img.gif)
+![](https://blog.kakaocdn.net/dna/tsjzd/btsgEc5dsf7/AAAAAAAAAAAAAAAAAAAAAD_YpflM3lSLKKhWv4rR6xJOSts3nFBzdoDY0hz2Ksuk/img.gif?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=vapCdsAfgOTCrPThYAU1XRqMMOY%3D)
 
 어떤 행동을 우리는 action a라 말하고 경험을 state s, reward r로 정의한다.
 
@@ -29,7 +27,7 @@ Reinforcement Learning (RL)은 불확실성 하에서의 의사 결정 및 경�
 **reward**는 다음과 같은 특성을 가진다.
 
 • reward r은 스칼라 피드백 신호이다.  
-• 에이전트가 ?단계에서 얼마나 잘하고 있는지 나타낸다  
+• 에이전트가 𝑡단계에서 얼마나 잘하고 있는지 나타낸다  
 • 에이전트의 임무는 누적 보상을 최대화하는 것이다
 
 reward에 대한 예시를 들어보면 다음과 같다. 알파고를 학습시킨다고 예를 들면 이기면 긍정적인 보상 r이 돌아오고, 지면 부정적 보상 r이 돌아온다. ex) +1, -1
@@ -49,9 +47,9 @@ reward에 대한 예시를 들어보면 다음과 같다. 알파고를 학습시
 
 **Agent와 Environment**에 대해서 알아보자.
 
-Step t에 agent는 observation ??, scalar reward ??를 받는다. 그리고 action ?? 실행한다.
+Step t에 agent는 observation 𝑂𝑡, scalar reward 𝑅𝑡를 받는다. 그리고 action 𝐴𝑡 실행한다.
 
-그러면 해당 Environment는 action ??를 받고 observation ??, scalar reward ??를 agent에게 전달한다.
+그러면 해당 Environment는 action 𝐴𝑡를 받고 observation 𝑂𝑡, scalar reward 𝑅𝑡를 agent에게 전달한다.
 
 그리고 t는 Environment에서 1 step 또는 정해진 시간만큼 증가한다.
 
@@ -59,11 +57,11 @@ reward를 극대화하기 위해서는 이전 단계들의 observation, scalar r
 
 따라서 다음과 같은 형식으로 저장하여 사용한다.
 
-![](/assets/images/posts/76/img.png)
+![](https://blog.kakaocdn.net/dna/qiaNI/btsgFeOYWTs/AAAAAAAAAAAAAAAAAAAAAGzNPOajo63BIv58bW4MsUS9XfC0jT74_8eJipit_CMh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=KXP4HWHBzxIlUQ2OJQ1JOedgxj4%3D)
 
 이 저장된 정보를 사용하면 좋은 건 당연히 안다. 그렇다면 어디에 사용할까? 다음 state를 예측하는데 사용하면 좋을 것이다. 내가 이런 행동을 했고, 이전에 어떤 state와 비슷하기 때문에 state 형태는 이럴것이다라고 생각하는 것처럼 말이다.
 
-![](/assets/images/posts/76/img_1.png)
+![](https://blog.kakaocdn.net/dna/cJIwH1/btsgClIWnyN/AAAAAAAAAAAAAAAAAAAAAOvvdCCRH85veUkMjRLHngd9Pj0M7nsaLPMpVdzQ2bVX/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=sv%2FEukU5%2Bn36UaV52hCP4W%2F5%2B6M%3D)
 
 환경 상태 S는 환경의 개인 표현이며, 일반적으로 상담원에게 보이지 않으며 보이는 경우에도 관련 없는 정보를 포함할 수 있다
 
@@ -71,9 +69,9 @@ reward를 극대화하기 위해서는 이전 단계들의 observation, scalar r
 
 **Markov State**
 
-Markov State는 기록의 모든 유용한 정보가 포함되어 state ??는 Markov인 경우에 다음의 수식을 사용할 수 있다.
+Markov State는 기록의 모든 유용한 정보가 포함되어 state 𝑆𝑡는 Markov인 경우에 다음의 수식을 사용할 수 있다.
 
-![](/assets/images/posts/76/img_2.png)
+![](https://blog.kakaocdn.net/dna/bXkWJi/btsgG5xz9qn/AAAAAAAAAAAAAAAAAAAAAGg_lXgK63YKG6Id_t0J7sfH14vzr2bimQxSx2H9BeZU/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=UqwgPirQ7qqtUX2BihrNyawumX0%3D)
 
 하지만 미래는 주어진 현재와 과거로부터 독립적이며, state는 미래에 대한 충분한 통계이다.
 
@@ -93,30 +91,28 @@ RL 에이전트에는 다음 구성 요소 중 하나 이상이 포함될어야 
 
 **Policy**   
 Policy는 agent의 action입니다. 이를 통해, state에서 action으로의 지도/함수입니다.  
-Deterministic policy: a=?(?) - 바로 action이 나온다.  
-Stochastic policy: ?(a|s) = P[At = a | St = s] - 확률에 따라 나온다.
+Deterministic policy: a=𝝅(𝒔) - 바로 action이 나온다.  
+Stochastic policy: 𝝅(a|s) = P[At = a | St = s] - 확률에 따라 나온다.
 
 **Value Function**
 
 Value Function는 미래 보상에 대한 예측이다. state의 좋음/나쁨을 평가하는 데 사용됨. 따라서 작업 중에서 선택된다.
 
-![](/assets/images/posts/76/img_3.png)
+![](https://blog.kakaocdn.net/dna/Kxzq1/btsgGjbrRPr/AAAAAAAAAAAAAAAAAAAAAJvYcEA1ZP1h4PDFdJwnpMDO7b8mF-vQtYvjVry1gdTa/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=GeDrJRdjt0SfnHA8nPwvOhaTbbA%3D)
 
 **Model**
 
-Model은 환경이 다음에 무엇을 할지 예측한다. ? 다음 상태 예측, ? 다음(즉각적인) 보상 예측
+Model은 환경이 다음에 무엇을 할지 예측한다. 𝑃 다음 상태 예측, 𝑅 다음(즉각적인) 보상 예측
 
-![](/assets/images/posts/76/img_4.png)
-
-![](/assets/images/posts/76/img_5.png)
-
-![](/assets/images/posts/76/img_6.png)
+![](https://blog.kakaocdn.net/dna/Euqje/btsgEB44XkG/AAAAAAAAAAAAAAAAAAAAACJStF6Lz3c78jj9nGWGj-TmhDI7CHf9PPF2e12CvCDX/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=24tqmUWPrRFCA9UNyPNl0KNHNGc%3D)
+![](https://blog.kakaocdn.net/dna/b7VlPc/btsgDL7Qnn3/AAAAAAAAAAAAAAAAAAAAANmkUhfaxbfqNj45Dr1zyKfKJFGP0RAUXLkSFwHiyUuc/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=cjVqt%2Bmd2HmfPOyl%2FTa8Md17wzg%3D)
+![](https://blog.kakaocdn.net/dna/rAEEV/btsgJ1hnER9/AAAAAAAAAAAAAAAAAAAAAFXdP5pJsBYDPwSmV0AMq_QB4A04rxQDLH_iD9CZGv7W/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=ihyUKuvoPCJBijkHswyYg%2FASAlQ%3D)
 
 일정 경험을 진행하면 우리는 Deterministic policy형식으로 해당 위치에서 에로우를 따라가게된다.
 
 이를 Value 상태로 보면 다음과 같다.
 
-![](/assets/images/posts/76/img_7.png)
+![](https://blog.kakaocdn.net/dna/cbo4dT/btsgEgz8uTb/AAAAAAAAAAAAAAAAAAAAAGxzmozyetiWJxqZRRjJVEHH2NgYBR54xfMSQstFkUaz/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=CoqGQLTSV8qXUtL2WmioC05yYk4%3D)
 
 즉, 옳은 방향으로 인도한다는 것이다.
 
@@ -142,11 +138,11 @@ RL agents 분류는 다음과 같다.
 
 RL도 다음 그림과 같이 많이 엮여있다. 그 만큼 종류가 다양하다는 것이다.
 
-![](/assets/images/posts/76/img_8.png)
+![](https://blog.kakaocdn.net/dna/TKzkQ/btsgCjj3wom/AAAAAAAAAAAAAAAAAAAAAH8VwdSPPsf7RDq7kohj2A6f2q9CMgKPEqSMyVSaNH6z/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=noPfWsn1dSUwUs%2FAKFtoq4k8zzU%3D)
 
 이것은 RL을 분류하는 대표적인 그림이다.
 
-![](/assets/images/posts/76/img_9.png)
+![](https://blog.kakaocdn.net/dna/bDjrG8/btsgL9sGzWY/AAAAAAAAAAAAAAAAAAAAADadyK0RLka8x4rkrLBDfPbR7GAIEavopVe13QUlWyKq/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=kt%2FzJgmiLHl45HQgAFG6XP9GEJc%3D)
 
 **Learning and Planning**
 
@@ -165,10 +161,10 @@ Example: Planning
 
 • 게임의 규칙은 알려져 있다  
 • (완벽한) 모델이 있는 시뮬레이터를 쿼리할 수 있게 된다  
-• 상태 ?에서 ?조치를 취하면 다음 상태는 무엇입니까? 점수는 어떻게 될까요?에 대한 정보를 알 수 있다.  
+• 상태 𝑠에서 𝑎조치를 취하면 다음 상태는 무엇입니까? 점수는 어떻게 될까요?에 대한 정보를 알 수 있다.  
 • 최적의 정책을 찾기 위한 사전 계획을 위해 트리 검색과 같은 것을 사용한다.
 
-![](/assets/images/posts/76/img_10.png)
+![](https://blog.kakaocdn.net/dna/Tz3P1/btsgEfBdnOt/AAAAAAAAAAAAAAAAAAAAAEy0l_R338C5MTqeHd54MIZLYEeuW8l-qzu6S8pdvAYB/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=M9930vmjIyWRF4ExicxFggPViss%3D)
 
 **Example: Reinforcement Learning**
 
@@ -178,7 +174,7 @@ Example: Planning
 
 이를 반복한다. 아래 그림은 이를 보여주고 있다.
 
-![](/assets/images/posts/76/img_11.png)
+![](https://blog.kakaocdn.net/dna/JnIyc/btsgNXlkVL7/AAAAAAAAAAAAAAAAAAAAAN-Tg7MqG0qHElk3ulck9FWpl1KX8bR_Dg4CYp3vhGfe/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=12QAafDAYEB%2BRkGmHV1s5A4Tlj4%3D)
 
 **Exploration and Exploitation**
 
@@ -206,7 +202,7 @@ Exploration : 새로운 위치에서 드릴
 Exploitation : 최선이라고 생각하는 수를 사용해  
 Exploration : 실험적인 움직임을 재생
 
-![](/assets/images/posts/76/img_12.png)
+![](https://blog.kakaocdn.net/dna/bw29ze/btsgEKUWGM8/AAAAAAAAAAAAAAAAAAAAAL0Y8w6A2Dklz1nhUO5phHZ2ySVZMgMlkFmej9VG1GxP/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=GLw1GafNeEAhuaEsNpFyP%2Fkomng%3D)
 
 Exploration and Exploitation
 
@@ -223,7 +219,7 @@ Control: 최상의 정책 찾아 미래를 최적화하다
 보상(Reward): Prediction 문제에서는 목표 지점에 대한 보상이 주어지지 않는다. 대신, 각 상태의 가치를 정확하게 예측하는 것이 중요하다.  
 목표(Goal): 목표는 주어진 상태에서 정확한 가치를 예측하는 것이다. 이를 위해 최적의 가치 함수를 학습하는 것이 목표다.
 
-![](/assets/images/posts/76/img_13.png)
+![](https://blog.kakaocdn.net/dna/mpaYB/btsgEbFa0op/AAAAAAAAAAAAAAAAAAAAAEeQiexeJ02uDC5Pp31PgUkOeu46kN_gaFMb4tyjCebQ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=emjx%2FUWUCxYsqyjPOOlRI3tQ3qM%3D)
 
 Gridworld Example: Prediction
 
@@ -235,7 +231,7 @@ Gridworld Example: Prediction
 보상(Reward): 목표 지점에 도달하면 양의 보상을 받고, 벽에 부딪히거나 비효율적인 경로를 선택할 경우 음의 보상을 받는다.   
 목표(Goal): 목표는 최소의 행동으로 목표 지점에 도달하는 것이다. 즉, 최적의 정책을 찾아내는 것이 목표이다.
 
-![](/assets/images/posts/76/img_14.png)
+![](https://blog.kakaocdn.net/dna/8MWUk/btsgFeuFlOU/AAAAAAAAAAAAAAAAAAAAAJUeNDOpu0w658RrqwloSDBkWN85d_zXTw15OG30xeJq/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=bD3gAw9BzX%2F2Sn6%2FMxx4C68usrs%3D)
 
 Gridworld  Example: Control
 

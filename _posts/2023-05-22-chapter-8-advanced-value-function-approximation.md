@@ -1,11 +1,9 @@
 ---
 title: "Chapter 8. Advanced Value Function Approximation"
 date: 2023-05-22 01:35:43
-categories:
-  - 강화학습
 tags:
-  - dueling dqn
   - Double DQN
+  - dueling dqn
   - Prioritized Replay
 ---
 
@@ -32,11 +30,11 @@ DQN을 기반으로 한 연구는 계속해서 진화하고 있으며, �
   
 심층 강화학습에서의 대규모 병렬화 방법에 대한 논문인 "Massively Parallel Methods for Deep Reinforcement Learning"은 DQN을 단일 기기에서만 사용하여 학습 시간이 오래 걸린다는 한계를 극복하기 위해 제안되었습니다. 병렬 처리를 통해 심층 강화학습 알고리즘을 확장하고자 하며, 심층 학습 연산은 병렬화될 수 있는 특성을 가지고 있습니다. 이 논문에서는 강화학습의 특성을 고려하여 대규모 병렬화를 통해 학습 속도와 성능을 향상시키는 방법을 제시하고 있습니다.
 
-![](/assets/images/posts/82/img.png)
+![](https://blog.kakaocdn.net/dna/lj3zQ/btsgEc5DD1G/AAAAAAAAAAAAAAAAAAAAAFGYUZaYbGHpeEd_LknQApvfOX9KZ1vhrRx23mmaKmQg/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=pIqS8qbryAr3J%2FqX1OXN9Nzcszo%3D)
 
 Review: DQN Algorithm
 
-![](/assets/images/posts/82/img_1.png)
+![](https://blog.kakaocdn.net/dna/bsfF5K/btsgDK2zVRn/AAAAAAAAAAAAAAAAAAAAALHjH12VllnY7-E4KKW-FOuq_ybF_Uu9bLDCrvaSKsn3/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=xdA3%2FLbc2U%2B3Wxz%2BHSiTYXsus8w%3D)
 
 Gorila DQN
 
@@ -55,7 +53,7 @@ Gorila DQN
 • Gorila DQN은 최대 6일 동안 학습되었습니다.   
 • Gorila DQN은 단일 DQN에 비해 우수한 성능을 보였으며, 49개 게임 중 41개 게임에서 성능이 뛰어났습니다.
 
-![](/assets/images/posts/82/img_2.png)
+![](https://blog.kakaocdn.net/dna/otpY1/btsgC2oYdXZ/AAAAAAAAAAAAAAAAAAAAAEsKv-YfzOTPlKhrwlBu1-Wg4ilKRVOyxDeh8BrW66De/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=IXyQsL9CGuYgoMIIQUNjb5qgjzc%3D)
 
 위의 평가 결과에 따르면, 단일 DQN은 12~14일 동안 학습되었고, Gorila DQN은 최대 6일 동안 학습되었습니다. 이 중 Gorila DQN은 단일 DQN에 비해 우수한 성능을 보여주었으며, 49개의 게임 중 41개 게임에서 더 뛰어난 성능을 보였습니다. 이를 통해 Gorila DQN의 병렬화된 학습 방법이 단일 DQN에 비해 효과적임을 확인할 수 있었습니다.
 
@@ -68,20 +66,19 @@ Gorila DQN
 
 Double DQN은 Double Q-Learning을 DQN에 적용한 방식이다.
 
-• 현재의 Q 네트워크 ?는 행동을 선택하는 데 사용됩니다.   
-• 과거의 Q 네트워크 ?−는 행동을 평가하는 데 사용됩니다.   
+• 현재의 Q 네트워크 𝑤는 행동을 선택하는 데 사용됩니다.   
+• 과거의 Q 네트워크 𝑤−는 행동을 평가하는 데 사용됩니다.   
   
-기존의 Q 네트워크 ?는 행동을 선택하는 데 사용되며, 과거의 Q 네트워크 ?−는 행동을 평가하는 데 사용됩니다. 이를 통해 Q-learning에서 발생하는 overestimation bias 문제를 완화할 수 있습니다. Double DQN은 Q 네트워크의 선택과 평가를 분리함으로써 더 정확한 행동 가치를 추정할 수 있습니다.
+기존의 Q 네트워크 𝑤는 행동을 선택하는 데 사용되며, 과거의 Q 네트워크 𝑤−는 행동을 평가하는 데 사용됩니다. 이를 통해 Q-learning에서 발생하는 overestimation bias 문제를 완화할 수 있습니다. Double DQN은 Q 네트워크의 선택과 평가를 분리함으로써 더 정확한 행동 가치를 추정할 수 있습니다.
 
-![](/assets/images/posts/82/img_3.png)
+![](https://blog.kakaocdn.net/dna/bxok7d/btsgMbq17Tf/AAAAAAAAAAAAAAAAAAAAAJp_QB0Uv7e88Z3eLJmv3azVk33ztgYCHruS8d91WO4X/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=udDdzP1sYewsc2dh0GexeeDywGA%3D)
 
-![](/assets/images/posts/82/img_4.png)
+![](https://blog.kakaocdn.net/dna/catJML/btsgUsTdyzH/AAAAAAAAAAAAAAAAAAAAAILXRCv0pM42KdJjUd78s9cPzm8eFeTi45oupTHLmwNi/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=4knH1UXtFjiv34tPZ27HxlyFiNQ%3D)
 
 DQN vs. Double DQN
 
-![](/assets/images/posts/82/img_5.png)
-
-![](/assets/images/posts/82/img_6.png)
+![](https://blog.kakaocdn.net/dna/bGX7e3/btsgJZYEfLX/AAAAAAAAAAAAAAAAAAAAAB0vy2SPNv_NQ_9RoBxd2CIF7ie-0sYHatsJxDi8DNf2/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=cJIbNx4Ntv38vPiHZrGTxUWuEes%3D)
+![](https://blog.kakaocdn.net/dna/dNLMlY/btsgQqVHj8Y/AAAAAAAAAAAAAAAAAAAAAKn4CPt0sgmu17MPCI0eyedAUToGdFunCop5ziIS8uMp/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2FrC82vqFRzOKUUmQWBW1V0eU9pM%3D)
 
 **Double DQN Summary**
 
@@ -115,58 +112,58 @@ Prioritized Experience Replay (PER)에서는 TD 오류에 따라 경험�
 • TD 오류가 낮은 경험은 오랜 시간 동안 다시 재생되지 않을 수 있습니다.   
 • 잡음 스파이크에 민감합니다 (보상이 확률적인 경우)   
 • 확률적인 단조 샘플링을 제안합니다. 경험 우선순위를 유지하면서 0 이상의 확률을 보장합니다.  
-• 경험 ?의 샘플링 확률은 ?(?)=???/Σ????로 나타낼 수 있습니다. 여기서 ??>0입니다.   
-• 지수 ?∈[0,1]는 우선순위 지정의 정도를 결정합니다. ?=0은 균등한 경우에 해당합니다.)   
-• 옵션 1 (비례 우선순위 지정) : ??=??+?   
-• 옵션 2 (순위 기반 우선순위 지정) : ??=1/????(?) 여기서 ????(?)는 정렬된 replay memory에서 경험 ?의 순위입니다.
+• 경험 𝑖의 샘플링 확률은 𝑃(𝑖)=𝑝𝑖𝛼/Σ𝑘𝑝𝑘𝛼로 나타낼 수 있습니다. 여기서 𝑝𝑖>0입니다.   
+• 지수 𝛼∈[0,1]는 우선순위 지정의 정도를 결정합니다. 𝛼=0은 균등한 경우에 해당합니다.)   
+• 옵션 1 (비례 우선순위 지정) : 𝑝𝑖=𝛿𝑖+𝜖   
+• 옵션 2 (순위 기반 우선순위 지정) : 𝑝𝑖=1/𝑟𝑎𝑛𝑘(𝑖) 여기서 𝑟𝑎𝑛𝑘(𝑖)는 정렬된 replay memory에서 경험 𝑖의 순위입니다.
 
 편향 보정   
 • 우선순위 리플레이는 경험 분포를 변경하여 편향을 도입합니다.   
-• 중요도 샘플링 (IS) 가중치를 사용하여 이러한 편향을 보정할 수 있습니다. 만약 ?=1이면 비균등 확률 ?(?)를 완전히 보상하는 IS 가중치를 사용합니다.   
-??=1/?∙1/?(?)?   
-• δ?대신 ??δ?를 사용하여 Q 학습 업데이트 수행   
-• ?를 초기 값 ?0에서 1로 선형으로 감소시킴으로써 편향을 보정합니다.
+• 중요도 샘플링 (IS) 가중치를 사용하여 이러한 편향을 보정할 수 있습니다. 만약 𝛽=1이면 비균등 확률 𝑃(𝑖)를 완전히 보상하는 IS 가중치를 사용합니다.   
+𝑤𝑖=1/𝑁∙1/𝑃(𝑖)𝛽   
+• δ𝑖대신 𝑤𝑖δ𝑖를 사용하여 Q 학습 업데이트 수행   
+• 𝛽를 초기 값 𝛽0에서 1로 선형으로 감소시킴으로써 편향을 보정합니다.
 
-![](/assets/images/posts/82/img_7.png)
+![](https://blog.kakaocdn.net/dna/cHNOTC/btsgL97MfDG/AAAAAAAAAAAAAAAAAAAAABs08g8S-D1hSPGy4RcN5oNSp9SpqXUE_6YGOZhe85Ox/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=F4BSrW13UvtiltfzfoA7pMVQI%2F8%3D)
 
 PRIORITIZED EXPERIENCE REPLAY (PER) 알고리즘
 
 1. 초기화:
-   - 재현 메모리 ? 초기화
-   - ? 초기화
-   - ?, ?0, ? 초기화
-   - ?, ?₀ 초기화
-   - ?, ? 초기화
+   - 재현 메모리 𝐷 초기화
+   - 𝑤 초기화
+   - 𝛽, 𝛽0, 𝜖 초기화
+   - 𝛼, 𝜖₀ 초기화
+   - 𝐾, 𝑎 초기화
 2. 경험 샘플링:
-   - ?(?) = ??^? / Σ? ??^? (??는 경험 ?의 우선순위)
-   - ? = {?, ?, ?, ?′, ????}을 ?(?)에 따라 ?개 샘플링
+   - 𝑃(𝑖) = 𝑝𝑖^𝛼 / Σ𝑘 𝑝𝑘^𝛼 (𝑝𝑖는 경험 𝑖의 우선순위)
+   - 𝑏 = {𝑠, 𝑎, 𝑟, 𝑠′, 𝑑𝑜𝑛𝑒}을 𝑃(𝑖)에 따라 𝑁개 샘플링
 3. IS 가중치 계산:
-   - ?? = (1 / (? ∙ ?(?)))^? / ???(??)
-   - ?? 정규화
+   - 𝑤𝑖 = (1 / (𝑁 ∙ 𝑃(𝑖)))^𝛽 / 𝑚𝑎𝑥(𝑤𝑖)
+   - 𝑤𝑖 정규화
 4. 학습:
-   - ?(?, ?; ?)의 값 계산
-   - ?(?′, ?′; ?)의 값 계산 (타겟 네트워크 사용)
-   - ? = ? + ????(?(?′, ?′; ?))
-   - ? = ?에 대해 ?와 ?(?, ?; ?)의 차이를 줄이기 위한 손실 함수 최적화
-   - ? 업데이트
+   - 𝑄(𝑠, 𝑎; 𝑤)의 값 계산
+   - 𝑄(𝑠′, 𝑎′; 𝑤)의 값 계산 (타겟 네트워크 사용)
+   - 𝑦 = 𝑟 + 𝛾𝑚𝑎𝑥(𝑄(𝑠′, 𝑎′; 𝑤))
+   - 𝜃 = 𝑤에 대해 𝑦와 𝑄(𝑠, 𝑎; 𝑤)의 차이를 줄이기 위한 손실 함수 최적화
+   - 𝑤 업데이트
 5. 타겟 네트워크 업데이트:
-   - 일정 주기(?)마다 타겟 네트워크를 현재 네트워크로 업데이트
-6. ? 업데이트:
-   - ? = min(? + ?0, 1)
-7. ?, ?₀ 업데이트:
-   - ?, ?₀ 선형 감소
+   - 일정 주기(𝐾)마다 타겟 네트워크를 현재 네트워크로 업데이트
+6. 𝛽 업데이트:
+   - 𝛽 = min(𝛽 + 𝛽0, 1)
+7. 𝛼, 𝜖₀ 업데이트:
+   - 𝛼, 𝜖₀ 선형 감소
 8. 반복:
    - 2단계부터 7단계까지 반복
 
-![](/assets/images/posts/82/img_8.png)
+![](https://blog.kakaocdn.net/dna/zmmE5/btsgEhsMsmj/AAAAAAAAAAAAAAAAAAAAACH6XNKqxcrYk8BFObPJ-Eghh8mB7i-kX62VGlvyeMih/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=IOAiGcfyP4qnMW%2B%2FxLFWNtF6iYw%3D)
 
 DQN vs. DQN with PER
 
-![](/assets/images/posts/82/img_9.png)
+![](https://blog.kakaocdn.net/dna/dsA5tf/btsgMb5BxEF/AAAAAAAAAAAAAAAAAAAAAHxDntCqPoOVj-mU4hEtLFdtpq0OFkqnxUYGOqdXKUtI/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=R04bBRCxhwXkKMPgohiBSxhhZPQ%3D)
 
 Double DQN vs. Double DQN with PER
 
-![](/assets/images/posts/82/img_10.png)
+![](https://blog.kakaocdn.net/dna/nx8CA/btsgTjPybFs/AAAAAAAAAAAAAAAAAAAAACkDfQnzsQDBnUpYZo0wcBN9x05rA36QhbdELjyBwfed/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=2TmHvWpKAgqkQ14c69HTxjhCia0%3D)
 
 **Prioritized Experience Replay Summary**
 
@@ -182,7 +179,7 @@ Double DQN vs. Double DQN with PER
   
 이 신경망 구조는 모델 프리 강화학습에 사용되며, 기존 및 미래의 강화학습 알고리즘과 쉽게 결합할 수 있습니다. 이 구조는 상태-가치와 장기-이익을 분리하여 독립적으로 학습할 수 있도록 해줍니다. 이는 강화학습의 학습 과정을 효율적으로 만들어주고 더 나은 학습 성능을 이끌어냅니다.
 
-![](/assets/images/posts/82/img_11.png)
+![](https://blog.kakaocdn.net/dna/LcmJM/btsgMbYPubY/AAAAAAAAAAAAAAAAAAAAAO6FYMFzIvaZS4YEo-Dv8OZZcJQhG-1dkg-cVrl8oTYT/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=UbwmTWINtOta%2BPKSXr5zllqKYms%3D)
 
 Dueling Network Architecture는 상태 가치와 행동 이득을 분리하고 공통의 CNN 모듈을 공유하는 구조입니다.   
   
@@ -192,57 +189,54 @@ Dueling Network Architecture의 핵심 아이디어는 각 상태의 가�
 
 Dueling Network은 다음과 같은 구조로 설계됩니다:   
   
-??,?=??+??,?   
+𝑄𝑠,𝑎=𝑉𝑠+𝐴𝑠,𝑎   
   
-이 구조는 ?와 ?를 구별하기 어렵다는 의미에서 구별불가능(unidentifiable)합니다. 즉, ?가 주어졌을 때 ?와 ?를 유일하게 복원할 수 없습니다. 예를 들어, ?=4일 때 ?+?는 1+3, 2+2, 또는 3+1이 될 수 있습니다.   
+이 구조는 𝑉와 𝐴를 구별하기 어렵다는 의미에서 구별불가능(unidentifiable)합니다. 즉, 𝑄가 주어졌을 때 𝑉와 𝐴를 유일하게 복원할 수 없습니다. 예를 들어, 𝑄=4일 때 𝑉+𝐴는 1+3, 2+2, 또는 3+1이 될 수 있습니다.   
   
 이러한 구별불가능성은 이 식을 직접 사용할 때 실용적인 성능이 저하된다는 것을 의미합니다.
 
 • 이 식별 가능성 문제를 해결하기 위해  
-• Option1 : ?가 조치를 취한 경우 강제 ?(?,?)=0
+• Option1 : 𝑎가 조치를 취한 경우 강제 𝐴(𝑠,𝑎)=0
 
-![](/assets/images/posts/82/img_12.png)
+![](https://blog.kakaocdn.net/dna/K27hN/btsgEbey3tF/AAAAAAAAAAAAAAAAAAAAALOIC5ncNAILJviO5pDQr272y-Abfr3bUkd8bUtDpnfC/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=0rXpcExcmKLKZ9JZY6NwrO3q5Zs%3D)
 
 • Option2: 평균을 기준선으로 사용(더 안정적)
 
-![](/assets/images/posts/82/img_13.png)
+![](https://blog.kakaocdn.net/dna/cfDs4D/btsgKoqnuBZ/AAAAAAAAAAAAAAAAAAAAAKFW6-Hgm9hj2S9RWU_SeoUgBBeMEGobNaVzrOUIZsV2/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=O30IwRgOjg7ntJ%2BZN1wqbq3fjKY%3D)
 
 이로인한 Value and Advantage 예시
 
-![](/assets/images/posts/82/img_14.png)
+![](https://blog.kakaocdn.net/dna/XYs6i/btsgECQXmJq/AAAAAAAAAAAAAAAAAAAAAGlu2YSNh_fVLasH8F6oKJmD5QaQgApBWFB5C84zHcEb/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=qywpJLiw4nXi0bVDl7NM9e5V3VM%3D)
 
 단순과제 평가결과
 
-![](/assets/images/posts/82/img_15.png)
+![](https://blog.kakaocdn.net/dna/vTUOK/btsgTipzyJA/AAAAAAAAAAAAAAAAAAAAAEd_1v3hBfTrv7c5NvanVfyUotCbbuwndXxF0knAPVWu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=wxtwCm2c42eVuTCxqKcFqXsbECc%3D)
 
 Performance on Atari Games
 
 Baseline : Double DQN vs. Dueling Double DQN
 
-![](/assets/images/posts/82/img_16.png)
-
-![](/assets/images/posts/82/img_17.png)
+![](https://blog.kakaocdn.net/dna/b8yJNf/btsgGjJGHMn/AAAAAAAAAAAAAAAAAAAAAJE_9JTQ2hMhl4SHCwLXlpx-e4kicyGTzeFfnP1RZhAx/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=OeKffGGeRCakalzNtOPoFfE2J4g%3D)
+![](https://blog.kakaocdn.net/dna/b3ga27/btsgFwbEu7W/AAAAAAAAAAAAAAAAAAAAALPK5fm9DDnGoDubcgQRFwL_0L56sM-dADB-E_JmP78v/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=5L0JCOOEh1zQwiXMtdX9DsdSU9M%3D)
 
 **Distributional RL [ICML 2017]**   
 분포적 강화학습은 기존의 단일 값 추정 대신, 강화학습 에이전트의 상태-행동 쌍에 대한 보상의 분포를 모델링하는 방법입니다. 즉, 강화학습 문제를 해결하기 위해 단일 값을 예측하는 대신, 각 상태-행동 쌍에 대한 보상의 확률 분포를 학습하고 활용합니다.
 
-![](/assets/images/posts/82/img_18.png)
+![](https://blog.kakaocdn.net/dna/sgp34/btsgNWUE5SY/AAAAAAAAAAAAAAAAAAAAAJZMiZt_EIhx_H44oyABJZ2D1yqkWOH44DA6bbapVcCJ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2Fm56DM4vqJqBH7Sq8K4CjCod1%2BI%3D)
 
 이 방법은 보상의 불확실성을 더 잘 다룰 수 있으며, 확률적인 성격을 갖는 문제에 적용할 수 있습니다. 분포적 강화학습은 기존의 강화학습 알고리즘에 확장하여 더 정확하고 안정적인 결과를 얻을 수 있도록 도와줍니다.   
   
 분포적 강화학습은 더 나은 리워드 추정, 더 효과적인 탐색 및 활용, 그리고 보상 분포의 변화에 대한 강건한 학습을 제공할 수 있습니다. 이를 통해 강화학습의 성능과 안정성을 향상시킬 수 있습니다.
 
-![](/assets/images/posts/82/img_19.png)
-
-![](/assets/images/posts/82/img_20.png)
-
-![](/assets/images/posts/82/img_21.png)
+![](https://blog.kakaocdn.net/dna/chaXxQ/btsgEcLjagC/AAAAAAAAAAAAAAAAAAAAAOE76Qy78t5rQ9H5uhQK_MIf27pt9sa5924ga5eFvyOX/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=O%2F0sIGKQNyExUlSJlj%2BLm85GaVE%3D)
+![](https://blog.kakaocdn.net/dna/U582A/btsgC4UyRlO/AAAAAAAAAAAAAAAAAAAAAHCIci-R8zfzO1vsj33jURdh6VejXwOdx3LnJpmTOUvS/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=MIig8oBjm7U01tn9X6t3NMHAevU%3D)
+![](https://blog.kakaocdn.net/dna/ErMQ0/btsgQpWM5fi/AAAAAAAAAAAAAAAAAAAAAFEDen_vkpR2hj2EvQ0-3SQ_mPiKDellikhPFURiUZjN/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=hsLjb%2BUE4Yh0vU4XHn1d2I3Aito%3D)
 
 **Noisy Network [ICLR 2018]**
 
 노이즈 네트워크는 딥 뉴럴 네트워크의 가중치에 일정한 노이즈를 주어 더욱 강력한 탐색과 활용 능력을 갖게 하는 방법입니다. 일반적인 딥 뉴럴 네트워크에서는 가중치가 고정된 상태에서 학습이 이루어지지만, 노이즈 네트워크에서는 가중치에 노이즈를 주어 학습 과정에서의 불확실성을 증가시킵니다.
 
-![](/assets/images/posts/82/img_22.png)
+![](https://blog.kakaocdn.net/dna/ehKiBs/btsgUtEAMBk/AAAAAAAAAAAAAAAAAAAAAOkDroj-LgjOYDoa1NPEopZ-Rju3l86n0pyIi_fzASiq/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=B3x4dUKYjD1k81937arFHIPKbJA%3D)
 
 노이즈 네트워크는 강화학습에서의 탐색과 활용 간의 균형을 조절하는 데 도움을 줍니다. 노이즈가 주어진 네트워크는 탐색을 통해 새로운 상태와 행동을 탐색하고, 동시에 활용을 통해 학습한 지식을 활용할 수 있게 됩니다.   
   
@@ -250,9 +244,8 @@ Baseline : Double DQN vs. Dueling Double DQN
 
 Noisy Network
 
-![](/assets/images/posts/82/img_23.png)
-
-![](/assets/images/posts/82/img_24.png)
+![](https://blog.kakaocdn.net/dna/buxTkh/btsgEbFz0XX/AAAAAAAAAAAAAAAAAAAAAIkD7LVjwoiZCTEC8W5ILTIByr4iGqRXL67i0rksoKws/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=WUaObMZYfWD96%2B1ldT3jU45OYYk%3D)
+![](https://blog.kakaocdn.net/dna/r4XXk/btsgEf2OpHr/AAAAAAAAAAAAAAAAAAAAAKkMbtPCbmgivuJ68KuYOlvhGHODwA3i1Of9Xwf0T7HK/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=TJCc7iDs3Dh4WH0sxYr08BxiZfw%3D)
 
 RAINBOW [AAAI 2018]
 
@@ -271,41 +264,38 @@ RAINBOW는 이러한 다양한 기법들을 통합하여 강화학습 알�
 
 57개 Atari 게임의 성능 비교
 
-![](/assets/images/posts/82/img_25.png)
+![](https://blog.kakaocdn.net/dna/wpyjv/btsgE6ROgEF/AAAAAAAAAAAAAAAAAAAAABfHY3-7WOcErcviKW1eAnKJ26BgxeWLBcPPH3A2rTIU/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=lpVCISNKgoBemfH3VOSkaZNGmM8%3D)
 
 성능 분석
 
-![](/assets/images/posts/82/img_26.png)
+![](https://blog.kakaocdn.net/dna/bYFoNy/btsgC5FW0cG/AAAAAAAAAAAAAAAAAAAAAOPbB6IitlGMbHoEr4ntkVE6wanbCQoVfUDcTmlrfRmt/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=H7ODFpZ7R3Mtf8sgXslGe2Yh5Mk%3D)
 
 **Distributed Prioritized Experience Replay [ICLR 2018]**
 
 Distributed Prioritized Experience Replay는 ICLR 2018에서 발표된 연구로, Prioritized Experience Replay를 기반으로 한 분산 아키텍처입니다.   
   
-이 연구에서는 여러 개의 액터(Actor)가 동시에 작동하며 공유 메모리에 경험을 저장합니다. 각 액터는 ?-탐욕적(epsilon-greedy) 방법을 사용하는 데에 있어 다른 엡실론 값을 사용합니다. 주기적으로, 액터들은 학습자(Learner)로부터 ?(모델의 가중치)를 복사합니다.   
+이 연구에서는 여러 개의 액터(Actor)가 동시에 작동하며 공유 메모리에 경험을 저장합니다. 각 액터는 𝜖-탐욕적(epsilon-greedy) 방법을 사용하는 데에 있어 다른 엡실론 값을 사용합니다. 주기적으로, 액터들은 학습자(Learner)로부터 𝜃(모델의 가중치)를 복사합니다.   
   
 단일 GPU를 사용하는 학습자는 공유 경험 재생 메모리로부터 학습을 수행합니다. 이 학습자는 Prioritized Experience Replay와 Multi Step, 그리고 Dueling Double Q-learning 기법을 함께 사용하여 학습합니다.   
   
 Distributed Prioritized Experience Replay는 분산 환경에서 Prioritized Experience Replay를 활용하여 학습 속도를 향상시키고, 여러 액터들이 경험을 공유하면서 학습자가 보다 효율적으로 학습할 수 있도록 하는 아키텍처입니다.
 
-![](/assets/images/posts/82/img_27.png)
+![](https://blog.kakaocdn.net/dna/bBv08I/btsgKoRsMXo/AAAAAAAAAAAAAAAAAAAAANSKL7TU4G1Psl63Jz9a236-xOz-YnHIqPaND8MeTRsR/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Q5kCrAlraX4UQSZnRxm9Q5zmGV8%3D)
 
 **Ape-X Algorithms**
 
 Ape-X 알고리즘은 Prioritized Experience Replay와 강화 학습을 결합하여 성능을 향상시키는 방법을 제시합니다. 이 알고리즘은 여러 개의 작은 학습 그룹(learner group)과 대규모의 경험 저장소(replay buffer)로 구성됩니다. 각 학습 그룹은 독립적으로 학습하고, 일정한 간격으로 다른 그룹과 경험을 공유합니다. 이를 통해 경험의 다양성을 확보하고, 효율적인 학습을 진행할 수 있습니다.
 
-![](/assets/images/posts/82/img_28.png)
-
-![](/assets/images/posts/82/img_29.png)
+![](https://blog.kakaocdn.net/dna/dLrRVx/btsgMbduxAe/AAAAAAAAAAAAAAAAAAAAADIBtmcTDxLzzLF-KD56q4SgsXecLJv-vIGpdOCLsqB0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Sbq7e%2BhNfqVCrNoPrjZrhYHY79I%3D)
+![](https://blog.kakaocdn.net/dna/oKQ3K/btsgDM7a7m6/AAAAAAAAAAAAAAAAAAAAAHCBB-vMSZSezN13IiwOUtQzcy5RYpQ6iC1SIdqXrG0v/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=N3AjmWZMkdyhjhu7N6i8TBJ0Jc8%3D)
 
 Ape-X 알고리즘은 많은 작은 학습 그룹이 각각의 역할을 수행하면서 공동으로 성능을 향상시키는 효과적인 분산 학습 방식을 제공합니다. 이를 통해 학습 속도를 높이고, 안정적인 성능 향상을 이끌어냅니다.
 
 Performance Results
 
-![](/assets/images/posts/82/img_30.png)
-
-![](/assets/images/posts/82/img_31.png)
-
-![](/assets/images/posts/82/img_32.png)
+![](https://blog.kakaocdn.net/dna/ZCVQ4/btsgEebNjKl/AAAAAAAAAAAAAAAAAAAAABC4gUIohkNY3By99wrv9yDspnflEqiduU76M651wb28/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=NX5Aa7hn%2BgXbD8q79q0RF2PyqY8%3D)
+![](https://blog.kakaocdn.net/dna/zWfE8/btsgUtEARof/AAAAAAAAAAAAAAAAAAAAANh8TEQdC41vuZzjDkHxkKL_X8xMe95TMOH6N8pB_b0j/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=O672MIVwekGj7rPp7oLZKBZPNgs%3D)
+![](https://blog.kakaocdn.net/dna/cfZKin/btsgNWUE8Lg/AAAAAAAAAAAAAAAAAAAAAH_hvE0YIy_r05LKL-dVREFaRZ6fPa519PoXKc6-1KGb/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=qUFWJUz1uSqpjnoQEO4XJ0UC0yk%3D)
 
 부분 관찰 가능성으로 넘어가보자.
 
@@ -319,19 +309,19 @@ Deep Recurrent Q-Learning은 이러한 부분 관측 MDP에서 강화 학습을 
   
 Deep Recurrent Q Learning은 에이전트가 관측 가능한 정보의 제한된 상황에서도 강력한 학습 성능을 발휘할 수 있습니다.
 
-![](/assets/images/posts/82/img_33.png)
+![](https://blog.kakaocdn.net/dna/bPOQae/btsgMcKdYpO/AAAAAAAAAAAAAAAAAAAAAGWonwBJrcj2zircBbzMJYzJMA5gLS93IuLbPilrHlal/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=0GYfcBybnZm%2F0XRyPJUhsnghAEg%3D)
 
-DRQN의 목표는 부분 관측 MDP에서 Deep Q Network에 순환성을 추가하여 ?(?,?|?)와 ?(?,?|?) 사이의 간격을 줄이는 것입니다.   
+DRQN의 목표는 부분 관측 MDP에서 Deep Q Network에 순환성을 추가하여 𝑄(𝑜,𝑎|𝜃)와 𝑄(𝒔,𝑎|𝜃) 사이의 간격을 줄이는 것입니다.   
   
 부분 관측 MDP에서 에이전트는 전체 상태를 관찰하지 못하고 일부 상태만을 관측할 수 있습니다. 이로 인해 에이전트는 현재의 관측값만을 기반으로 행동을 선택해야 합니다. 하지만 이전 상태에 대한 정보가 중요할 수 있습니다.   
   
-DRQN은 이전 상태의 정보를 기억하기 위해 순환성을 도입한 Deep Q Network입니다. 순환 신경망(RNN)을 사용하여 에이전트는 이전 상태에 대한 정보를 유지하면서 현재의 관측값을 해석하고, 이를 기반으로 행동을 선택합니다. 이를 통해 에이전트는 부분 관측 상태에서도 보다 정확하게 ?값을 추정할 수 있습니다.   
+DRQN은 이전 상태의 정보를 기억하기 위해 순환성을 도입한 Deep Q Network입니다. 순환 신경망(RNN)을 사용하여 에이전트는 이전 상태에 대한 정보를 유지하면서 현재의 관측값을 해석하고, 이를 기반으로 행동을 선택합니다. 이를 통해 에이전트는 부분 관측 상태에서도 보다 정확하게 𝑄값을 추정할 수 있습니다.   
   
-DRQN은 부분 관측 MDP에서 ?(?,?|?)와 ?(?,?|?) 사이의 차이를 줄이는 것을 목표로 하여, 보다 효과적인 학습과 결정을 가능하게 합니다.
+DRQN은 부분 관측 MDP에서 𝑄(𝑜,𝑎|𝜃)와 𝑄(𝒔,𝑎|𝜃) 사이의 차이를 줄이는 것을 목표로 하여, 보다 효과적인 학습과 결정을 가능하게 합니다.
 
 DRQN Architecture
 
-![](/assets/images/posts/82/img_34.png)
+![](https://blog.kakaocdn.net/dna/1eWD9/btsgMcpUfrT/AAAAAAAAAAAAAAAAAAAAAFytkixtEAPEa96VhWQV8nN9kifXYYLQLj1yzXT8uwAf/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=J0NbNGJ%2FOBKrCtn%2Bb0k3zzE0j8I%3D)
 
 순환 업데이트는 다음 두 가지 방식으로 진행됩니다.
 
@@ -362,11 +352,11 @@ lickering Pong 실험은 각 타임스텝에서 화면이 완전히 드러나거
 
 Flickering Pong Results
 
-![](/assets/images/posts/82/img_35.png)
+![](https://blog.kakaocdn.net/dna/vL9Py/btsgUsloTbb/AAAAAAAAAAAAAAAAAAAAAM-eE05v_aZlSc2qqZmMLuP0NdM9qmLP0K69w-j97crA/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=M7eKhlagCkBkgByaNvmCiBhTeI0%3D)
 
 Atari Results
 
-![](/assets/images/posts/82/img_36.png)
+![](https://blog.kakaocdn.net/dna/bz5KAv/btsgJZ5qeAN/AAAAAAAAAAAAAAAAAAAAAFyc3aXXBTrYv8UFW_J_rjAhtzSNvdv9aTw4dKeiDLRZ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=ElhDKMMjQp1yh53eoKG6XPcTMOk%3D)
 
 **DRQN Summary**   
 DRQN은 POMDP(Partially Observable Markov Decision Processes)의 노이즈와 불완전한 특성을 다루기 위해 LSTM(Long Short-Term Memory)과 DQN을 결합하여 사용합니다.
@@ -406,16 +396,15 @@ Proposed Two Strategies
 
 Learning curves on the training strategies
 
-![](/assets/images/posts/82/img_37.png)
+![](https://blog.kakaocdn.net/dna/uPsU7/btsgQpCuM7F/AAAAAAAAAAAAAAAAAAAAAEKvVyjDDjBuxm2Gey9UpeyapMPYeKd_HIFiSO4CS3h0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=a3CRuz9jLkiX2m8MLMYL7rnW%2Bwg%3D)
 
 Atari Performance Results
 
-![](/assets/images/posts/82/img_38.png)
-
-![](/assets/images/posts/82/img_39.png)
+![](https://blog.kakaocdn.net/dna/du8OI7/btsgMbYPMrG/AAAAAAAAAAAAAAAAAAAAAMXPcQoP7U305pjSCII7A1nY7Euc5P-WL3YInPfn7cin/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=MCDd8AFyYyPNaPVkvlAdrU0oxIw%3D)
+![](https://blog.kakaocdn.net/dna/coQv0P/btsgMcQZju1/AAAAAAAAAAAAAAAAAAAAAA7G7T3fzCzXxTmmHg-p5ql8fLhGqn8LQiXO4lZ6kgp7/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=f2dCv3P%2BLFryiIqc6pfDGmbUeow%3D)
 
 Montezuma Revenge에서는 별로 좋지 않은 평가를 보인다.
 
 **Reference**
 
-![](/assets/images/posts/82/img_40.png)
+![](https://blog.kakaocdn.net/dna/bbbiiJ/btsgC2JcKnd/AAAAAAAAAAAAAAAAAAAAAEpF_cHttB8FIcNjMdeVBinJhXzS041UUGWBo4mE09UR/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=tub98o8rcYGfCYkzTDj3ccXj%2FKk%3D)

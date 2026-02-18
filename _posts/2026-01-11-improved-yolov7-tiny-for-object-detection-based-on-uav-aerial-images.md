@@ -1,8 +1,6 @@
 ---
 title: "Improved YOLOv7-Tiny for Object Detection Based on UAV Aerial Images"
 date: 2026-01-11 20:58:03
-categories:
-  - 인공지능
 ---
 
 <https://www.mdpi.com/2079-9292/13/15/2969>
@@ -78,7 +76,7 @@ YOLOv7은 현재 사용 가능한 1단계(one-stage) 객체 탐지 알고리즘 
 
 그림 1은 YOLOv7-tiny의 네트워크 아키텍처를 보여주며, 전체 구조는 크게 백본(backbone), 넥(neck), 헤드(head) 세 부분으로 구성된다.
 
-![](/assets/images/posts/617/img.png)
+![](https://blog.kakaocdn.net/dna/bHfiI7/dJMcaaxeP2X/AAAAAAAAAAAAAAAAAAAAAHHjioxNaTESfLiZYDpGl-cczxOB-XtPrmqAla4Ciw7z/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=6UEcD%2Bw9dqTm7zFejOmJUg3QMcg%3D)
 
 **그림 1.** YOLOv7-tiny 각 구성 요소의 네트워크 구조도  
 (a) YOLOv7-tiny의 전체 네트워크 구조  
@@ -101,7 +99,7 @@ YOLOv7-tiny의 넥(neck) 부분에는 **PAFPN(Path Aggregation Feature Pyramid N
 
 Receptive Field Attention Convolution(RFAConv) [28]은 수용 영역(receptive field)의 공간적 특징에 집중함으로써 합성곱 커널 파라미터 공유로 인해 발생하는 문제를 효과적으로 해결한다. RFAConv에서는 수용 영역 특징으로부터 생성된 주의(attention) 맵 간의 상호 학습을 통해 네트워크 성능을 향상시킨다. 그러나 이러한 방식은 추가적인 연산 비용을 수반할 수 있다. 이를 완화하기 위해, 각 수용 영역 특징으로부터 전역 정보를 집계하는 데 평균 풀링(average pooling)을 사용한다. 또한 softmax 함수를 적용하여 수용 영역 내부 각 구성 요소 간의 상관성을 강화한다. RFA의 계산 과정은 다음과 같이 표현된다.
 
-? = Softmax(g₁×₁(AvgPool(X))) × ReLU(Norm(gₖ×ₖ(X))) (1)
+𝐹 = Softmax(g₁×₁(AvgPool(X))) × ReLU(Norm(gₖ×ₖ(X))) (1)
 
 여기서 기호 gᵢ×ᵢ는 크기가 i×i인 그룹 합성곱(grouped convolution) 연산을 의미한다. k는 사용되는 합성곱 커널의 크기를 나타내며, Norm은 정규화(normalization) 과정을 의미한다. X는 입력 특징 맵(input feature map)이다. F는 수용 영역 공간 특징(field space features)을 나타내며, 이는 주의 맵과 적절히 변환된 지각(perceptual) 맵 간의 곱 연산을 통해 얻어진다.
 
@@ -111,7 +109,7 @@ Receptive Field Coordinate Attention Convolution(RFCAConv) [28]의 설계는 합
 
 그림 2는 개선된 RFCA 모듈과 기존 CA 모듈의 구조적 차이를 비교하여 보여준다.
 
-![](/assets/images/posts/617/img_1.png)
+![](https://blog.kakaocdn.net/dna/8cflh/dJMcafyxQLf/AAAAAAAAAAAAAAAAAAAAAB5XjCJEthDiJvgyXSfhCrOFtr3mbCIltcfr6hyRZd6a/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=EuDgUuh9loqtdO5BA6WeoEP8PQc%3D)
 
 **그림 2.** CA와 RFCAConv의 상세 구조 비교도  
 (a) CA의 구조  
@@ -127,7 +125,7 @@ UAV 객체 탐지 과제에서는 특히 장거리 촬영, 고속 이동, 저고
 
 추가된 소형 객체 탐지 레이어의 구조는 그림 3에 제시되어 있다.
 
-![](/assets/images/posts/617/img_2.png)
+![](https://blog.kakaocdn.net/dna/bPsUGm/dJMcadHsEdE/AAAAAAAAAAAAAAAAAAAAAN7aU4yebgft2x0SiYfdCGpo-Nkym7ZA9_-WCXo_55Rz/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=SXtkrv8PwEvQQRrAQ5ifEGbJ68k%3D)
 
 **그림 3.** 개선된 YOLOv7-tiny의 각 구성 요소 네트워크 구조도  
 (a) 개선된 YOLOv7-tiny의 전체 네트워크 구조  
@@ -148,19 +146,19 @@ UAV 객체 탐지 과제에서는 특히 장거리 촬영, 고속 이동, 저고
 
 본 연구에서는 BiFormer [30]의 **Bilevel Routing Attention Module**과 CBAM [31]의 **Spatial Attention Module(SAM)**을 결합하여, 영상 내 소형 객체 인식 성능을 향상시키는 동시에 불필요한 정보는 효과적으로 제거하고자 한다. 두 모듈을 병렬로 통합함으로써 **Bilevel Spatial Attention Module(BSAM)**을 구성하였으며, 이를 통해 모델의 전반적인 주의 표현 능력을 강화하였다. BSAM 모듈은 BiFormer의 동적 희소 주의(dynamic sparse attention)와 공간 주의 메커니즘을 결합한 구조로, 기존 CBAM 주의 모듈과 비교했을 때 특히 위치 민감도 측면에서 우수한 특징 추출 성능을 보인다. 이 모듈은 콘텐츠에 따라 주의 할당을 유연하게 조절하여, 관련 없는 토큰들에 주의를 분산시키는 대신 소수의 핵심 토큰에 집중함으로써, 높은 특징 추출 정확도를 유지하면서도 계산 효율성을 향상시킨다.
 
-BSAM 모듈의 동작 원리는 먼저 입력 특징 맵을 다수의 작은 영역으로 세분화하는 것에서 시작된다. 이후 query(Q), key(K), value(V) 세 가지 벡터를 계산하고, 인접 행렬(adjacency matrix)을 활용하여 의미적 연관성이 높은 영역을 식별한다. 그 다음, 이러한 의미적으로 연결된 영역들 간의 토큰-대-토큰(token-to-token) 주의 메커니즘(??, ??)을 구현하기 위해 인덱싱된 라우팅 행렬을 구성한다.
+BSAM 모듈의 동작 원리는 먼저 입력 특징 맵을 다수의 작은 영역으로 세분화하는 것에서 시작된다. 이후 query(Q), key(K), value(V) 세 가지 벡터를 계산하고, 인접 행렬(adjacency matrix)을 활용하여 의미적 연관성이 높은 영역을 식별한다. 그 다음, 이러한 의미적으로 연결된 영역들 간의 토큰-대-토큰(token-to-token) 주의 메커니즘(𝐾𝑔, 𝑉𝑔)을 구현하기 위해 인덱싱된 라우팅 행렬을 구성한다.
 
-?? = gather(K, ??) (2)
+𝐾𝑔 = gather(K, 𝐼𝑟) (2)
 
-?? = gather(V, ??) (3)
+𝑉𝑔 = gather(V, 𝐼𝑟) (3)
 
-여기서 ??와 ??는 각각 집계된(gathered) key 텐서와 value 텐서를 의미하며, ??은 주의 메커니즘에서 가장 관련성이 높거나 중요한 영역 또는 요소를 포함하는 인덱스를 나타낸다.
+여기서 𝐾𝑔와 𝑉𝑔는 각각 집계된(gathered) key 텐서와 value 텐서를 의미하며, 𝐼𝑟은 주의 메커니즘에서 가장 관련성이 높거나 중요한 영역 또는 요소를 포함하는 인덱스를 나타낸다.
 
 이중 단계 주의 메커니즘을 통해 처리된 특징 맵은 전역 최대 풀링(global max pooling)과 전역 평균 풀링(global average pooling)을 거쳐 2차원 표현으로 변환된다. 이후 채널 차원에서 이들 특징 맵을 연결(concatenation)한 뒤, 합성곱 레이어를 통해 단일 채널로 압축함으로써 특징 통합 과정을 간소화한다. 이어서 sigmoid 활성화 함수를 적용하여 공간 주의 특징 맵을 생성하고, 이를 통해 관련 특징에 대한 집중도를 정제한다. 마지막으로 공간 주의 특징 맵을 입력 특징 맵과 요소별(element-wise)로 곱하여 최종 출력을 생성한다.
 
 BSAM 모듈의 구조는 그림 4에 제시되어 있다.
 
-![](/assets/images/posts/617/img_3.png)
+![](https://blog.kakaocdn.net/dna/dXkFrA/dJMcaaqtgnc/AAAAAAAAAAAAAAAAAAAAAOaFa0sSAOqLWV8ruKxU9yOBMYGxexlJ4Yv54fu2UXGC/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2BcQne8bebw%2FbMMaH0uH73UDSA8k%3D)
 
 **그림 4.** 이중 단계 공간 주의 모듈(Bilevel Spatial Attention Module)의 상세 구조도
 
@@ -172,27 +170,27 @@ YOLOv7-tiny는 바운딩 박스 예측을 위해 CIoU [32] 손실 함수를 사�
 
 반면, inner-IoU [33]는 서로 다른 스케일을 갖는 데이터셋 전반에 걸쳐 손실 함수를 계산하기 위한 새로운 방법을 제안하여, 적응성과 효율성을 향상시킨다. 다양한 스케일의 보조(auxiliary) 프레임을 도입하고, 스케일 팩터 비율을 통해 그 크기를 조절함으로써 손실 함수 계산의 효율을 최적화한다. inner-IoU의 계산식은 다음과 같다.
 
-?? = ?? − ? ∗ ????? / 2, ?? = ?? + ? ∗ ????? / 2 (4)
+𝑏𝑙 = 𝑥𝑐 − 𝑤 ∗ 𝑟𝑎𝑡𝑖𝑜 / 2, 𝑏𝑟 = 𝑥𝑐 + 𝑤 ∗ 𝑟𝑎𝑡𝑖𝑜 / 2 (4)
 
-?? = ?? − ℎ ∗ ????? / 2, ?? = ?? + ℎ ∗ ????? / 2 (5)
+𝑏𝑡 = 𝑦𝑐 − ℎ ∗ 𝑟𝑎𝑡𝑖𝑜 / 2, 𝑏𝑏 = 𝑦𝑐 + ℎ ∗ 𝑟𝑎𝑡𝑖𝑜 / 2 (5)
 
-????? = (min(????, ??) − max(????, ??)) × (min(????, ??) − max(????, ??)) (6)
+𝑖𝑛𝑡𝑒𝑟 = (min(𝑏𝑔𝑡𝑟, 𝑏𝑟) − max(𝑏𝑔𝑡𝑙, 𝑏𝑙)) × (min(𝑏𝑔𝑡𝑏, 𝑏𝑏) − max(𝑏𝑔𝑡𝑡, 𝑏𝑡)) (6)
 
-????? = (??? ∗ ℎ??) ∗ (?????)² + (? ∗ ℎ) (7)
+𝑢𝑛𝑖𝑜𝑛 = (𝑤𝑔𝑡 ∗ ℎ𝑔𝑡) ∗ (𝑟𝑎𝑡𝑖𝑜)² + (𝑤 ∗ ℎ) (7)
 
-???ᵢₙₙₑᵣ = ????? / ????? (8)
+𝐼𝑜𝑈ᵢₙₙₑᵣ = 𝑖𝑛𝑡𝑒𝑟 / 𝑢𝑛𝑖𝑜𝑛 (8)
 
 보조 바운딩 박스를 도입함으로써, inner-IoU는 이 보조 박스와 실제(target) 바운딩 박스 간의 IoU를 손실 계산의 한 요소로 활용한다. 예측 박스가 실제 박스와 높은 교차 비율을 보이는 경우에는, 더 작은 보조 바운딩 박스를 사용하여 손실을 계산함으로써 학습 수렴 속도를 가속한다. 반대로 예측 박스와 실제 박스 간의 교차 비율이 낮은 경우에는, 더 큰 보조 바운딩 박스를 사용하여 유효 회귀 범위를 확장함으로써 낮은 IoU 영역에서의 회귀를 보조하고 IoU 지표의 일반화 성능을 향상시킨다.
 
 MPDIoU 손실 함수는 예측 박스와 실제 박스의 수직 방향 에지 간 최소 거리를 고려함으로써 겹침(overlap) 측정의 정확도를 개선한다.
 
-?????? = ??? − ?²(?ₚᵣₑ?1, ???1) / (?² + ℎ²) − ?²(?ₚᵣₑ?2, ???2) / (?² + ℎ²) (9)
+𝑀𝑃𝐷𝐼𝑜𝑈 = 𝐼𝑜𝑈 − 𝜌²(𝑃ₚᵣₑ𝑑1, 𝑃𝑔𝑡1) / (𝑤² + ℎ²) − 𝜌²(𝑃ₚᵣₑ𝑑2, 𝑃𝑔𝑡2) / (𝑤² + ℎ²) (9)
 
-여기서 ?ₚᵣₑ?1, ?ₚᵣₑ?2는 각각 예측 박스의 좌상단과 우하단 점을 의미하며, ???1, ???2는 실제 박스의 좌상단과 우하단 점을 의미한다. ?²(?ₚᵣₑ?1, ???1)은 해당 점들 간의 거리 제곱을 계산하는 함수이다.
+여기서 𝑃ₚᵣₑ𝑑1, 𝑃ₚᵣₑ𝑑2는 각각 예측 박스의 좌상단과 우하단 점을 의미하며, 𝑃𝑔𝑡1, 𝑃𝑔𝑡2는 실제 박스의 좌상단과 우하단 점을 의미한다. 𝜌²(𝑃ₚᵣₑ𝑑1, 𝑃𝑔𝑡1)은 해당 점들 간의 거리 제곱을 계산하는 함수이다.
 
 inner-MPDIoU는 inner-IoU를 활용하여 MPDIoU를 확장한 손실 함수로, 바운딩 박스 간 겹침 평가를 보다 정교하게 수행함으로써 복잡하거나 객체가 밀집된 장면에서도 효과적으로 동작한다. 이 방법은 바운딩 박스 위치 변화에 대한 모델의 반응 속도를 향상시키고, 복잡한 시각적 환경에 대한 적응 능력을 강화한다. inner-MPDIoU의 수식은 다음과 같다.
 
-??????ᵢₙₙₑᵣ = ???ᵢₙₙₑᵣ − ?²(?ₚᵣₑ?1, ???1) / (?² + ℎ²) − ?²(?ₚᵣₑ?2, ???2) / (?² + ℎ²) (10)
+𝑀𝑃𝐷𝐼𝑜𝑈ᵢₙₙₑᵣ = 𝐼𝑜𝑈ᵢₙₙₑᵣ − 𝜌²(𝑃ₚᵣₑ𝑑1, 𝑃𝑔𝑡1) / (𝑤² + ℎ²) − 𝜌²(𝑃ₚᵣₑ𝑑2, 𝑃𝑔𝑡2) / (𝑤² + ℎ²) (10)
 
 ## 4. 실험 결과 분석 (Analysis of Experimental Results)
 
@@ -208,23 +206,23 @@ YOLOv7-tiny 모델을 활용한 객체 탐지에 앞서, VisDrone2019 데이터�
 
 표 1은 학습 과정에서 사용된 실험 환경 구성과 주요 하이퍼파라미터 설정을 나타낸다.
 
-![](/assets/images/posts/617/img_4.png)
+![](https://blog.kakaocdn.net/dna/cvGcIF/dJMcahC7n1O/AAAAAAAAAAAAAAAAAAAAAAyPQ8dm0uY-zZnOMJUkZs0D_i5WDocX2MvOkYaZ9SRc/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=4JDZ1hx1bH9bXJUD6YJsNMDEOXk%3D)
 
 ### 4.3. 평가 지표 (Assessment Metrics)
 
 모델 성능 향상과 예측 정확도를 객관적으로 평가하기 위해, 본 연구에서는 정밀도(Precision, P), 재현율(Recall, R), 그리고 평균 정밀도(mean Average Precision, mAP)와 같은 주요 지표를 사용하였다. 특히 mAP@0.5는 예측된 바운딩 박스와 실제 바운딩 박스 간의 중첩 비율이 최소 50% 이상일 경우 해당 예측을 올바른 탐지로 간주하는 지표로, 모델의 예측 효과를 평가하는 데 널리 사용되는 중요한 척도이다.
 
-? = ?? / (?? + ??) (11)
+𝑃 = 𝑇𝑃 / (𝑇𝑃 + 𝐹𝑃) (11)
 
-? = ?? / (?? + ??) (12)
+𝑅 = 𝑇𝑃 / (𝑇𝑃 + 𝐹𝑁) (12)
 
-?? = ∫₀¹ ?(?) ?? (13)
+𝐴𝑃 = ∫₀¹ 𝑝(𝑟) 𝑑𝑟 (13)
 
-??? = (1 / ?) ∑ᵢ₌₁ᵏ ??ᵢ (14)
+𝑚𝐴𝑃 = (1 / 𝑘) ∑ᵢ₌₁ᵏ 𝐴𝑃ᵢ (14)
 
-여기서 ??(True Positive)는 모델이 양성(positive) 클래스를 양성으로 정확히 예측한 경우를 의미하고, ??(False Positive)는 음성(negative) 클래스를 양성으로 잘못 분류한 경우를 의미한다. ??(True Negative)는 음성 클래스를 음성으로 정확히 예측한 경우를, ??(False Negative)은 양성 클래스를 음성으로 잘못 판단한 경우를 나타낸다.
+여기서 𝑇𝑃(True Positive)는 모델이 양성(positive) 클래스를 양성으로 정확히 예측한 경우를 의미하고, 𝐹𝑃(False Positive)는 음성(negative) 클래스를 양성으로 잘못 분류한 경우를 의미한다. 𝑇𝑁(True Negative)는 음성 클래스를 음성으로 정확히 예측한 경우를, 𝐹𝑁(False Negative)은 양성 클래스를 음성으로 잘못 판단한 경우를 나타낸다.
 
-또한 ?(?)는 특정 재현율(recall)에서의 정밀도를 의미하며, ??는 서로 다른 재현율 구간에서의 정밀도를 적분하여 계산한 평균 정밀도이다. 이는 다양한 재현율 수준에서의 정밀도를 통합적으로 고려함으로써 모델 성능을 종합적으로 평가한다.
+또한 𝑝(𝑟)는 특정 재현율(recall)에서의 정밀도를 의미하며, 𝐴𝑃는 서로 다른 재현율 구간에서의 정밀도를 적분하여 계산한 평균 정밀도이다. 이는 다양한 재현율 수준에서의 정밀도를 통합적으로 고려함으로써 모델 성능을 종합적으로 평가한다.
 
 추론 시간(inference time, 또는 response time)은 밀리초(ms) 단위로 측정되며, 모델이 객체 탐지를 완료하는 데 소요되는 시간을 평가하는 지표이다. 모델의 성능을 보다 포괄적으로 분석하기 위해, 본 연구에서는 추론 시간뿐만 아니라 모델 파라미터 수와 GFLOPS를 함께 고려하여 연산 복잡도 및 계산 자원 소모 수준을 평가하였다.
 
@@ -232,7 +230,7 @@ YOLOv7-tiny 모델을 활용한 객체 탐지에 앞서, VisDrone2019 데이터�
 
 향상된 모듈들이 모델 성능에 미치는 영향을 검증하기 위해, VisDrone2019 데이터셋에서 단일 개선 모듈 또는 여러 개선 모듈을 조합한 실험을 수행하였다. 실험 결과는 표 2에 제시되어 있다.
 
-![](/assets/images/posts/617/img_5.png)
+![](https://blog.kakaocdn.net/dna/P8GUp/dJMcadOcPNg/AAAAAAAAAAAAAAAAAAAAADHA4QuiiEnCFw30bAzCGXM8W1RDReIffPxt_0nhpyKf/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=xU%2FobEa4MNK3SGr8rnbo1y8KRi4%3D)
 
 표 2에서 볼 수 있듯이, 초기 실험에서는 YOLOv7-tiny를 기준 모델로 설정하여 VisDrone2019 데이터셋에서 실험을 수행하였으며, 그 결과 mAP@0.5는 35.0%로 나타났다. 이후 실험 A, B, C, D는 YOLOv7-tiny 모델을 기반으로 각각 RFCA, TODL, BSAM, inner-MPDIoU 모듈을 단독으로 추가하여, 각 모듈이 프레임워크 성능에 미치는 영향을 분석하였다.
 
@@ -242,7 +240,7 @@ YOLOv7-tiny 모델을 활용한 객체 탐지에 앞서, VisDrone2019 데이터�
 
 inner-MPDIoU 손실 함수에서 ratio 값의 변화가 실험 결과에 미치는 영향을 분석하기 위해, 서로 다른 ratio 값을 적용한 소거 실험을 추가로 수행하였으며, 그 결과는 표 3에 제시되어 있다.
 
-![](/assets/images/posts/617/img_6.png)
+![](https://blog.kakaocdn.net/dna/CbrCH/dJMb99SDTRc/AAAAAAAAAAAAAAAAAAAAACqpFEv6WBj87Xy_twaTV0NuwRJi8dpBlI8n_aYWb70H/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=YyakLLXmi2Hye7uBu3%2FqFxTi1hI%3D)
 
 ratio = 1일 때, inner-MPDIoU 손실 함수는 사실상 MPDIoU 손실 함수와 동일해진다. 실험 결과에 따르면, UAV 항공 영상에는 주로 소형 객체가 많이 포함되어 있기 때문에 ratio 값이 1보다 클 경우 보조 프레임이 실제 프레임보다 커지며, 이는 낮은 IoU 영역에서의 회귀에 유리하게 작용한다. 가장 우수한 실험 결과는 ratio = 1.3일 때 얻어졌다. 반면 ratio = 1.2 또는 1.4일 경우에는 성능이 다소 감소하였다. 따라서 최적의 ratio 값은 실험 데이터셋의 특성에 따라 조정되어야 한다. 일반적으로 데이터셋 내 객체 크기가 큰 경우에는 ratio를 1보다 작게 설정하고, 객체 크기가 작은 경우에는 1보다 크게 설정하는 것이 바람직하다.
 

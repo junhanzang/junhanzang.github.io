@@ -1,8 +1,6 @@
 ---
 title: "Framer: Interactive Frame Interpolation"
 date: 2024-11-21 12:03:42
-categories:
-  - 인공지능
 ---
 
 <https://arxiv.org/abs/2410.18978>
@@ -14,9 +12,9 @@ categories:
 우리는 상호작용 프레임 보간을 위한 "Framer"를 제안합니다. 이는 사용자의 창의성에 따라 두 이미지 간의 부드럽게 전환되는 프레임을 생성하는 것을 목표로 합니다. 구체적으로, 시작 및 종료 프레임을 입력으로 사용하는 것 외에도, 선택된 일부 키포인트의 궤적을 조정하여 전환 과정을 사용자 맞춤형으로 수정할 수 있습니다. 이러한 설계는 두 가지 명확한 이점을 제공합니다. 첫째, 인간의 상호작용을 포함함으로써 한 이미지에서 다른 이미지로 변환되는 수많은 가능성에서 발생하는 문제를 완화하고, 결과적으로 로컬 모션에 대한 세밀한 제어를 가능하게 합니다. 둘째, 가장 기본적인 상호작용 형태인 키포인트를 사용하여 프레임 간의 대응 관계를 설정함으로써 시작 및 종료 프레임의 객체가 서로 다른 형태와 스타일을 가질 때에도 모델이 이러한 도전적인 사례를 처리할 수 있도록 향상시킵니다. 주목할 만한 점은, 본 시스템이 "자동 조종" 모드를 제공한다는 것입니다. 여기에서 우리는 키포인트를 추정하고 궤적을 자동으로 개선하는 모듈을 도입하여 실제 사용에서의 편리성을 높였습니다. 광범위한 실험 결과는 이미지 변형, 타임랩스 비디오 생성, 만화 보간 등의 다양한 응용에서 Framer의 매력적인 성능을 입증합니다. 코드, 모델 및 인터페이스는 후속 연구를 촉진하기 위해 공개될 예정입니다.
 
 **프로젝트 페이지**:  
-???-????.??????.??/??????
+𝚊𝚒𝚖-𝚞𝚘𝚏𝚊.𝚐𝚒𝚝𝚑𝚞𝚋.𝚒𝚘/𝙵𝚛𝚊𝚖𝚎𝚛
 
-![](/assets/images/posts/315/img.png)
+![](https://blog.kakaocdn.net/dna/cCb8P9/btsKQxS4J7N/AAAAAAAAAAAAAAAAAAAAAB8Qx0khQbAe6KPK8gqqQI4x88-C1ozi0zMQfL0KMnYF/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=MveArte3o3Tdesuo4ifR%2FybHHdM%3D)
 
 그림 1: Framer로 생성된 결과물을 보여줍니다. Framer는 로컬 모션의 세밀한 맞춤화를 가능하게 하며 동일한 시작 및 종료 프레임 쌍을 입력으로 주었을 때 다양한 보간 결과를 생성할 수 있습니다(처음 3개의 행). 또한, Framer는 도전적인 사례도 처리하며 부드러운 이미지 변형을 실현할 수 있습니다(마지막 2개의 행). 입력된 궤적은 프레임 위에 중첩되어 표시됩니다.
 
@@ -46,18 +44,17 @@ categories:
 
 **3. 방법**
 
-![](/assets/images/posts/315/img_1.png)
+![](https://blog.kakaocdn.net/dna/us2fK/btsKQhCVK8y/AAAAAAAAAAAAAAAAAAAAAP2u9x7kkem1CCpDYs0D035Ojs7o1lCtI2zTajAlm_mu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=S9OMdqCqnwdZlcxQF7Ducj5vlyM%3D)
 
-![](/assets/images/posts/315/img_2.png)
+![](https://blog.kakaocdn.net/dna/4fdZy/btsKRfjXuKg/AAAAAAAAAAAAAAAAAAAAAJ_NuVykJ7nmFt67U6gpzV5lt-lu30oCtrbC3sU6I-qD/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=7RVKvHOfHxUULfrznjeik9WFv5w%3D)
 
 그림 2: Framer는 (a) 사용자 맞춤형 점 궤적을 위한 사용자 상호작용 모드와 (b) 궤적 입력 없이 비디오 프레임 보간을 위한 "자동 조종" 모드를 지원합니다. 학습 중에는 (d) 비디오 프레임 보간을 위해 사전 학습된 비디오 확산 모델의 3D-UNet을 미세 조정합니다. 이후, (c) 3D-UNet을 고정하고 제어 브랜치를 미세 조정하여 점 궤적 제어를 도입합니다.
 
 **3.1 모델 아키텍처**  
 대규모로 사전 학습된 비디오 확산 모델은 열린 세계의 객체의 외형, 구조, 그리고 움직임에 대해 강력한 시각적 선행 지식을 가지고 있습니다 (Brooks et al., 2024). 우리의 접근법은 이러한 선행 지식을 활용하기 위해 비디오 확산 모델을 기반으로 합니다. Image-to-Video (I2V) 확산 모델이 자연스럽게 첫 번째 프레임 조건을 지원한다는 점을 고려하여, 대표적인 I2V 확산 모델인 Stable Video Diffusion (SVD) (Blattmann et al., 2023a)을 기본 모델로 선택하였습니다 (그림 2d 참조).
 
-![](/assets/images/posts/315/img_3.png)
-
-![](/assets/images/posts/315/img_4.png)
+![](https://blog.kakaocdn.net/dna/cwrZh8/btsKQq0EkUI/AAAAAAAAAAAAAAAAAAAAAAu9FALRW1-8oywUUk5z5My1yb8wRqEEt6prvv7jKPtI/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=HItHfJi4wl9FPsprRUvcq7J%2BsW0%3D)
+![](https://blog.kakaocdn.net/dna/SmCwQ/btsKQPTnQ8U/AAAAAAAAAAAAAAAAAAAAAIBiOzK0llBpi9dt2AfUGfB6g79UaUs7G1WJCtHqFZtU/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=x6gJ%2BT5K4fW6GprK7wCsy6u1EKs%3D)
 
 **3.2 상호작용 프레임 보간**  
 시작 프레임과 종료 프레임만 주어졌을 때, 특히 두 프레임 간의 차이가 클 경우 여전히 모호성이 남아 있습니다. 그 이유는 동일한 입력 쌍에 대해 조건부 분포 P(I∣I0,In)에서 비디오를 샘플링하여 여러 가능한 보간 결과를 얻을 수 있기 때문입니다. 사용자 의도에 더 잘 맞추기 위해, 우리는 맞춤형 점 궤적 지도를 위한 제어 브랜치를 도입했습니다.
@@ -66,9 +63,8 @@ categories:
 
 샘플링된 점 궤적을 얻은 후, 우리는 DragNUWA (Yin et al., 2023)와 DragAnything (Wu et al., 2024)을 따라 점 좌표를 가우시안 히트맵으로 변환하며, 이를 c\_traj으로 표시하고 제어 모듈의 입력으로 사용합니다. 우리는 ControlNet (Zhang et al., 2023)의 조건부 메커니즘을 따라 궤적 제어를 통합합니다. 구체적으로, 우리는 3D-UNet의 인코더를 복사하여 궤적 지도를 인코딩하고, 이를 제로 컨볼루션 이후에 U-Net의 디코더에 추가합니다 (Zhang et al., 2023). 이 학습 과정은 다음과 같이 표현될 수 있습니다:
 
-![](/assets/images/posts/315/img_5.png)
-
-![](/assets/images/posts/315/img_6.png)
+![](https://blog.kakaocdn.net/dna/zKrIi/btsKQfd4j3Y/AAAAAAAAAAAAAAAAAAAAAB5RDd-f3NFOwsWvvdMZVln3D7DP9b8LpHCxow7YI_eR/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=diU3vMXZB9CS4TKxy89smxxCCCA%3D)
+![](https://blog.kakaocdn.net/dna/pikm8/btsKRlj1y6p/AAAAAAAAAAAAAAAAAAAAAO82ZLz-ffHOeKKlm9rHto3GSeVEb5qAkqaQt3SlGtsJ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=EJLPVhQrHmOPkzdvbTu3HH1Ht1Q%3D)
 
 **논의**. 점 궤적 제어의 도입은 사용자 상호작용을 촉진할 뿐만 아니라 서로 다른 프레임의 점들 간의 대응성을 강화합니다. 실험에서 보여준 바와 같이, 이 접근 방식은 시작과 종료 프레임이 크게 다른 경우와 같은 도전적인 사례를 효과적으로 처리할 수 있도록 모델을 개선합니다.
 
@@ -77,9 +73,9 @@ categories:
 
 **궤적 초기화**
 
-![](/assets/images/posts/315/img_7.png)
+![](https://blog.kakaocdn.net/dna/kDLnv/btsKRu2e60R/AAAAAAAAAAAAAAAAAAAAAH9ggo2Hsb-aTRyk93cLdGwCrkASN_n6fxlNFFrk7kUz/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=mMk2SfW0lgCDvdkLms5oU5aOkAo%3D)
 
-![](/assets/images/posts/315/img_8.png)
+![](https://blog.kakaocdn.net/dna/GjRQw/btsKQAvfdmw/AAAAAAAAAAAAAAAAAAAAALWcFEf8TM2Tt5ztU_aKokck4ecrA3u0zN0Z9upaEa8j/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=SL4aE%2Fsr8KZcrtEmFNDmMzVHugM%3D)
 
 그림 3: 점 궤적 추정. 점 궤적은 일치하는 키포인트의 좌표를 보간하여 초기화됩니다. 각 디노이징 단계에서, 우리는 각각 시작 및 종료 프레임에서 키포인트의 가장 가까운 이웃을 찾는 방식으로 점 추적을 수행합니다. 마지막으로, 점 좌표를 업데이트하기 전에 양방향 추적 일관성을 확인합니다.
 
@@ -88,20 +84,20 @@ categories:
 
 각 디노이징 단계에서 우리는 중간 프레임 점들의 좌표를 업데이트하기 위해 점 추적을 적용합니다. 우리는 점 주변의 특징 패치에서 가장 가까운 이웃을 찾는 방식으로 수행합니다. 특징 패치는 점 p와의 거리가 r 미만인 점들의 집합을 나타내며, 이는 다음과 같이 표기됩니다:
 
-![](/assets/images/posts/315/img_9.png)
+![](https://blog.kakaocdn.net/dna/cHGi6Q/btsKQM3sblA/AAAAAAAAAAAAAAAAAAAAAIzzf1l7QJ7DNyhfy8mwxSKDYZNT4xquYUm2s0HKKOrj/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Tvl8xvYw9scWkJxGo3KMS%2FqK8uM%3D)
 
 **4 실험**  
 **4.1 구현 세부사항**
 
-![](/assets/images/posts/315/img_10.png)
+![](https://blog.kakaocdn.net/dna/bPR83L/btsKQGWtVSi/AAAAAAAAAAAAAAAAAAAAALZ7fGEY5m-IHM-j_L3r8RIm0sHZQMFf8fMcxmnyr7uh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Fr273liuoXZ85i8aMwvc26txS%2F4%3D)
 
 **4.2 비교**
 
-![](/assets/images/posts/315/img_11.png)
+![](https://blog.kakaocdn.net/dna/eWfVJu/btsKRjT3FXU/AAAAAAAAAAAAAAAAAAAAAFB0_csdARm-BoRaInHihRzu-N2aUpI5UfXG1GN7C0lW/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=zgHJrkff%2FZihLuACSE6VTvyyX3I%3D)
 
 그림 4: 정성적 비교. 'GT'는 실제(Ground Truth)를 나타냅니다. 각 방법에 대해, 우리는 7개의 보간된 프레임 중 중간 프레임만을 제시합니다. 전체 결과는 부록의 그림 S4와 그림 S5에서 확인할 수 있습니다.
 
-![](/assets/images/posts/315/img_12.png)
+![](https://blog.kakaocdn.net/dna/ocVaL/btsKPw1UBxp/AAAAAAAAAAAAAAAAAAAAACJ9ZOgpGNDPwWz3zA4RKgQ0W39PpXIOrQbRqk1a6M0S/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=gFTgSOClloYbIaJsMtEhiiLrMog%3D)
 
 그림 5: 사용자 선호도에 대한 결과.
 
@@ -113,7 +109,7 @@ categories:
 **정량적 비교**  
 VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 같은 재구성 메트릭은 보간된 프레임의 품질을 정확히 반영하지 못하며, 원본 비디오와 픽셀 정렬이 맞지 않는 다른 그럴듯한 보간 결과를 불리하게 평가합니다. FID와 같은 생성 메트릭이 일부 개선을 제공하긴 하지만, 여전히 시간적 일관성을 고려하지 않고 프레임을 개별적으로 평가한다는 한계가 있습니다. 그럼에도 불구하고, 우리는 두 데이터셋에 대한 다양한 설정에서 정량적 메트릭을 제시하며, Tab. 1에서 볼 수 있듯이 우리 방법이 모든 기준선 중에서 가장 우수한 FVD 점수를 달성했습니다. 우리는 또한 Co-Tracker를 사용하여 추정한 실제 비디오의 5개의 랜덤 점 궤적을 사용하여 Framer를 평가했습니다. 보시다시피, "Co-Tracker와 함께한 Framer"는 재구성 메트릭에서도 우수한 성능을 보였습니다. 품질에 대한 보다 포괄적인 평가를 위해 보충 비교 비디오를 검토하는 것을 권장드립니다.
 
-![](/assets/images/posts/315/img_13.png)
+![](https://blog.kakaocdn.net/dna/cyyByI/btsKQHuj4fr/AAAAAAAAAAAAAAAAAAAAAHsm-Eqb5CVsE4pT7RjLM36sp5C3FE6Iylzg9FySxMY1/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=rUm5LX%2B%2FBqcZUsjgNDSN7w2XDuM%3D)
 
 **표 1**: 모든 7개의 생성된 프레임에 대해 기존 비디오 보간 방법들과의 정량적 비교. 재구성 및 생성 메트릭으로 평가됨.
 
@@ -153,11 +149,11 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 
 -----
 
-![](/assets/images/posts/315/img_14.png)
+![](https://blog.kakaocdn.net/dna/bOr1n3/btsKPN254qZ/AAAAAAAAAAAAAAAAAAAAAOzki1JMDHXVR4YqeENx4ir3bC3DKarnPzIEnCVVAWiv/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=cu5Hf%2BxZtr6aGK2LSaWUN5CLdlQ%3D)
 
 **그림 6**: 사용자 상호작용에 대한 결과. 첫 번째 행은 드래그 입력 없이 생성된 것이며, 나머지 두 행은 서로 다른 드래그 제어를 사용하여 생성된 것입니다. 맞춤형 궤적은 프레임 위에 중첩되어 표시됩니다.
 
-![](/assets/images/posts/315/img_15.png)
+![](https://blog.kakaocdn.net/dna/rjHuo/btsKQgD15zv/AAAAAAAAAAAAAAAAAAAAACzrVjvm2sYvXHkSVaQFEmZFRUIZf7cIW8lfidQ1SEMU/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=%2BPZUO3OiiJvB%2B8rapFi%2BQJxzMMA%3D)
 
 **그림 7**: 정적(1번째 행) 및 동적 장면(2번째 행) 모두에 대한 새로운 시점 합성 결과.
 
@@ -168,18 +164,18 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **선택적 드래그 제어**  
 동일한 시작 및 종료 프레임을 주었을 때, 여러 가지 그럴듯한 결과가 비디오 보간의 목표를 만족할 수 있습니다. Framer를 사용하면 사용자는 간단한 드래그를 통해 입력 프레임에 있는 객체의 움직임을 원하는 방향으로 유도하거나, 드래그 없이 기본 보간 결과를 얻을 수 있습니다. 그림 6에 나타난 것처럼, 동일한 입력 프레임에서 바다표범이 여러 방향으로 움직이는 결과를 볼 수 있습니다.
 
-![](/assets/images/posts/315/img_16.png)
+![](https://blog.kakaocdn.net/dna/b1e9z8/btsKRERbpNs/AAAAAAAAAAAAAAAAAAAAAMCEFxrYYcuHUr35hIeS_fGyDP-klzwFBCHRf0JZkfXC/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=5V3bNEXJSxWHSkj4ADRuVNhzVU0%3D)
 
 그림 8: 만화(첫 번째 행) 및 스케치(두 번째 행) 보간에 대한 응용 결과.
 
-![](/assets/images/posts/315/img_17.png)
+![](https://blog.kakaocdn.net/dna/cWol5m/btsKQ7sNh4B/AAAAAAAAAAAAAAAAAAAAAIgF0DPpSxr70MmS_2xPSBjEM_PeAN-f2E6KEwlXY4Il/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=aIzLtZ8R9P%2BW1AYaJSbBndfCUuo%3D)
 
 그림 9: 타임랩스 비디오 생성에 대한 응용 결과.
 
 **새로운 시점 합성 (NVS)**  
 새로운 시점 합성은 고전적인 3D 비전 작업으로, 다양한 응용을 가지고 있습니다. 비디오의 시작과 종료 프레임으로 각각 다른 시점에서 촬영된 이미지를 사용하여, 비디오 보간을 수행함으로써 희소한 시점 입력에서 NVS를 실현할 수 있습니다. 그림 7에 나타난 것처럼, 우리의 방법은 정적 장면(첫 번째 행)과 동적 장면(두 번째 및 세 번째 행) 모두에서 만족스러운 NVS 결과를 달성합니다. 두 번째 행을 예로 들면, 카메라가 앞으로 이동하면서 집이 장면 밖으로 점차 사라집니다. 동시에 자동차는 카메라와 반대 방향으로 움직이며 프레임에서 점차 더 큰 비율을 차지하게 됩니다.
 
-![](/assets/images/posts/315/img_18.png)
+![](https://blog.kakaocdn.net/dna/laz0l/btsKQ6m6Rqf/AAAAAAAAAAAAAAAAAAAAAASpyT3grepDQFqh7bJShaen7X47w1jAhMxpYiMno3ym/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=cEu%2BDpWNyNNi5fHEIQJnd%2FTW7XA%3D)
 
 그림 10: 슬로우 모션 비디오 생성 응용. 비디오 프레임에서 빨간색으로 강조된 y-t 슬라이스가 오른쪽에 시각화되어 있습니다.
 
@@ -192,7 +188,7 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **슬로우 모션 비디오 생성**  
 슬로우 모션 비디오 생성은 세부 사항을 강조하여 시각적 효과를 향상시키고 빠른 현상을 더 자세히 관찰할 수 있게 합니다. Framer는 기본적으로 빠른 프레임 보간을 지원하며, 그림 10에서 보여준 것처럼 부드러운 슬로우 모션 효과를 제공하여 영화와 애니메이션에 적합합니다.
 
-![](/assets/images/posts/315/img_19.png)
+![](https://blog.kakaocdn.net/dna/s9mkb/btsKRapy6G1/AAAAAAAAAAAAAAAAAAAAAM9S3lldAms7pt2BZg_2p8S11ts-J2Mz6qcDniseIWUQ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=lem89C0jp2jnZ2oaOsVOY%2FMuMJw%3D)
 
 그림 11: 이미지 변형에 대한 응용 결과. 맞춤형 궤적이 종료 프레임 위에 중첩되어 표시되었습니다.
 
@@ -202,7 +198,7 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **4.4 소멸 연구 (Ablation Studies)**  
 우리는 Framer의 개별 구성 요소들의 효과를 검증하기 위해 소멸 연구를 수행했습니다. 결과는 그림 12에 나타나 있습니다. 우리의 관찰 내용은 다음과 같습니다. 첫째, 궤적 가이드를 제거했을 때(“w/o traj.”로 표시), 전경에 있는 오토바이가 상당한 왜곡을 보였습니다. 이는 그림 12의 첫 번째 행에 나타나 있습니다. 반대로, 궤적 가이드를 포함한 경우, 비디오의 시간적 일관성이 현저히 향상되었으며 이는 두 번째 행에 나타나 있습니다. 우리는 이것이 프레임 간의 점 대응 모델링이 강화된 덕분이라고 믿습니다. 둘째, 궤적 업데이트를 제거하거나(“w/o traj. update”) 양방향 일관성 검증 없이 궤적을 업데이트했을 때(“w/o bi-directional”), 출력 비디오의 바퀴 영역에 블러링이 발생했습니다. 우리는 이러한 블러링이 부정확한 궤적으로 인한 부자연스러운 움직임의 지도로 인해 발생했으며, 이는 사전 학습된 확산 모델의 생성 선행 지식과 충돌하여 국소적인 블러링을 일으켰다고 생각합니다. 반면, 우리의 방법은 자연스러운 움직임과 부드러운 시간적 일관성을 갖춘 비디오 프레임 보간 결과를 생성합니다. 부록 B의 표 S1과 S2에 제시된 정량적 결과도 이러한 소멸 실험의 정성적 결과와 유사한 경향을 보이며 이를 뒷받침합니다.
 
-![](/assets/images/posts/315/img_20.png)
+![](https://blog.kakaocdn.net/dna/bDUabr/btsKQDrY8fR/AAAAAAAAAAAAAAAAAAAAAGQRN2gLZb9W4T20NT0DqVaIvNXxRw1hfoC5R_PwVPbZ/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=6gma1PcJHN3d6wG9ywCkGRfzSJw%3D)
 
 그림 12: 각 구성 요소에 대한 소멸 연구. “w/o trajectory”는 점 궤적의 지도가 없는 추론을 의미하고, “w/o traj. update”는 궤적 업데이트가 없는 추론을, “w/o bi”는 양방향 일관성 검증 없이 궤적을 업데이트하는 것을 나타냅니다.
 
@@ -211,7 +207,7 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 
 [2410.18978v2.pdf
 
-11.24MB](./file/2410.18978v2.pdf)
+11.24MB](https://blog.kakaocdn.net/dna/bJL3PB/btsKPCtZzvf/AAAAAAAAAAAAAAAAAAAAAFBmAZLgWrxKTRjEUyBskMOq_M4B5hH5lUeWjq7UGpeF/2410.18978v2.pdf?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=IUMIIh7CmIueK%2B0mnhNJYtW1gck%3D&attach=1&knm=tfile.pdf)
 
 **부록**  
 **부록 A: 추가 구현 세부사항**  
@@ -221,32 +217,32 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **소멸 연구의 정성적 결과**  
 그림 12에서 우리는 소멸 연구에 대한 정성적 결과를 보여줍니다. 이러한 결과를 보충하기 위해 표 S1 및 표 S2에서 정량적 결과를 추가하였으며, 이는 정성적 소멸 실험과 유사한 경향을 보입니다.
 
-![](/assets/images/posts/315/img_21.png)
+![](https://blog.kakaocdn.net/dna/dH69xX/btsKQeTMAl1/AAAAAAAAAAAAAAAAAAAAAFbHOtSBhGCDrDPrlQ1bh47NSIeZVdiaqzyNVOVibUS0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=yJcOEl47h3DYuMfp1lAkbtT%2BC84%3D)
 
 **표 S1**: 각 구성 요소에 대한 소멸 연구 결과로, 생성된 모든 7개의 프레임을 평가합니다. "w/o trajectory"는 점 궤적의 지도가 없는 추론을 의미하며, "w/o traj. updating"은 궤적 업데이트가 없는 추론을, "w/o bi"는 양방향 일관성 검증 없이 궤적을 업데이트하는 것을 나타냅니다.
 
-![](/assets/images/posts/315/img_22.png)
+![](https://blog.kakaocdn.net/dna/co8WWo/btsKQOAalr4/AAAAAAAAAAAAAAAAAAAAAJe-wdHkKGNBkfzPQV7X6PA0O29JTj23-Lduoe74IAN0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Wbh4m%2Fqy7a%2FEALqMzIqqSE6WwaA%3D)
 
 **표 S2**: 각 구성 요소에 대한 소멸 연구 결과로, 생성된 7개의 프레임 중 중간 프레임만을 평가합니다. "w/o trajectory"는 점 궤적의 지도가 없는 추론을 의미하며, "w/o traj. updating"은 궤적 업데이트가 없는 추론을, "w/o bi"는 양방향 일관성 검증 없이 궤적을 업데이트하는 것을 나타냅니다.
 
 **점 추적을 위한 확산 특징에 대한 소멸 연구**  
 3.3절에서 자세히 설명한 것처럼, 우리는 점 궤적 업데이트를 위해 확산 특징을 사용하여 점 추적을 수행합니다. 여기서는 확산 특징 선택에 대한 소멸 실험을 수행했습니다. 결과는 그림 S1에 나타나 있습니다. DAVIS-7과 UCF-7 모두에서 두 번째 확산 블록의 출력 특징을 사용한 점 추적이 FVD에서 가장 우수한 성능을 보인다는 것을 확인할 수 있습니다.
 
-![](/assets/images/posts/315/img_23.png)
+![](https://blog.kakaocdn.net/dna/bhanuP/btsKRnB9mVN/AAAAAAAAAAAAAAAAAAAAAAsMF7hyvZEG6te8FqiQrXu_nStm5745hC6_jQqeWdT_/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=8OCWijKAAFITCCkxQ7G09pJx3Gg%3D)
 
 그림 S1: 테스트 시 점 추적을 위한 확산 특징에 대한 소멸 연구. 실험은 DAVIS-7(왼쪽)과 UCF101-7(오른쪽)에서 수행되었습니다.
 
 **대응 지도를 위한 확산 단계에 대한 소멸 연구**  
 우리는 초기 단계나 후기 단계에서만 확산 샘플링 중 지도를 적용함으로써 대응 지도를 위한 확산 단계를 소멸했습니다. 결과는 그림 S2에 나타나 있습니다. 보시다시피, 초기 단계가 후기 단계보다 대응 모델링에서 더 중요한 경우가 많습니다. 예를 들어, DAVIS-7에서 0-18 확산 단계에서만 지도를 수행해도 만족스러운 FVD를 얻을 수 있습니다. 반면, 18-30 확산 단계에서만 지도를 수행하는 것은 거의 개선을 가져오지 않습니다. 이는 초기 확산 단계가 비디오의 구조적 정보에 중점을 두는 반면, 후기 확산 단계는 텍스처와 세부 사항에 중점을 두기 때문이라고 추측됩니다(Xue et al., 2023). 초기 단계에서의 대응 지도가 이미 모델이 합리적인 비디오 구조를 얻는 데 도움이 됩니다. 구현에서는 하이퍼파라미터에 대한 상세한 검색 없이 모든 확산 단계에서 대응 지도를 간단히 적용합니다.
 
-![](/assets/images/posts/315/img_24.png)
+![](https://blog.kakaocdn.net/dna/QwS1r/btsKQcO8GnH/AAAAAAAAAAAAAAAAAAAAAFBsMVbS8W4OXbFydYnFAnGZ4Ifn_wmXOS-mQPulGFuh/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=f1DR%2FiPrivJHRAm6BYffjp65kuA%3D)
 
 그림 S2: 대응 지도를 위한 시작 및 종료 확산 단계에 대한 소멸 연구. 실험은 DAVIS-7(왼쪽)과 UCF101-7(오른쪽)에서 수행되었습니다. 총 30개의 샘플링 단계를 사용합니다.
 
 **대응 지도를 위한 궤적 수에 대한 소멸 연구**  
 3.3절에서 설명된 바와 같이, 우리는 샘플링 중 대응 지도를 위해 m개의 궤적을 사용합니다. 여기서 이 하이퍼파라미터에 대한 소멸 실험을 수행하였으며, 결과는 그림 S3에 나타나 있습니다. 5개의 궤적을 샘플링하는 것이 가장 우수한 성능을 보이는 것을 확인할 수 있습니다. 따라서 기본 설정으로 m=5로 설정합니다.
 
-![](/assets/images/posts/315/img_25.png)
+![](https://blog.kakaocdn.net/dna/GMumw/btsKPw8EBef/AAAAAAAAAAAAAAAAAAAAAJqCkB2BQLdHPqaNYRRwTYZquu6dCzoJ68GOehjBvP5Y/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=xpZN53tp4LawrNeT79IkB3yKl1U%3D)
 
 그림 S3: 샘플링 중 지도를 위한 궤적 수에 대한 소멸 연구. 실험은 DAVIS-7(왼쪽)과 UCF101-7(오른쪽)에서 수행되었습니다.
 
@@ -257,7 +253,7 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **비교에 대한 추가 결과**  
 표 S3에서 우리는 7개의 보간된 비디오 프레임 중 중간 프레임을 기준으로 한 정량적 비교를 제공합니다. 또한, 그림 S4, 그림 S5, 그림 S6, 그림 S7에서는 기존 방법들과의 더 많은 정성적 비교를 보여줍니다.
 
-![](/assets/images/posts/315/img_26.png)
+![](https://blog.kakaocdn.net/dna/cstxXP/btsKQAIQGsd/AAAAAAAAAAAAAAAAAAAAAGyy0Y0mp383KX1fghWwloN6gR66jZzg31NW4kcfNJ4S/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=BPwL5yaimKLWkPLoFlxj3uTpmUE%3D)
 
 **표 S3**: 기존 비디오 보간 방법들과의 재구성 및 생성 메트릭에 대한 정량적 비교, 생성된 7개의 프레임 중 중간 프레임에 대해서만 평가함.
 
@@ -267,42 +263,42 @@ VIDIM (Jain et al., 2024)에서 논의된 바와 같이, PSNR, SSIM, LPIPS와 �
 **부록 E: 제한 사항에 대한 논의**  
 Framer는 대규모로 사전 학습된 비디오 확산 모델을 기반으로 하여, 사전 학습된 모델의 제한 사항을 계승합니다. 또한, Framer의 점 궤적은 복잡한 움직임을 보간하기 위해 입력 이미지 쌍 간의 일치하는 점에 의존합니다. 이는 단순한 움직임만을 처리할 수 있는 현재 모델에 비해 한 단계 진보한 것이지만, 앞뒤 프레임 간의 차이가 너무 커서 일치하는 점을 전혀 찾을 수 없는 경우, 우리 방법도 여전히 어려움을 겪습니다. 따라서, 우리는 더 강력한 사전 학습된 비디오 확산 모델을 탐색하고, 더 큰 규모의 비디오 데이터에서 비디오 보간 모델을 학습하는 방향으로 나아갈 것입니다. 마지막으로, 현재 우리 방법은 드래그 제어만 지원하며, 다른 상호작용 방법은 탐색하지 않았습니다. 앞으로 우리는 텍스트 제어나 카메라 포즈 제어와 같은 사용자 친화적인 다른 제어 방법도 계속 탐색할 것입니다.
 
-![](/assets/images/posts/315/img_27.png)
+![](https://blog.kakaocdn.net/dna/pcUqP/btsKQEj3n1U/AAAAAAAAAAAAAAAAAAAAADklQFlu6WhtNDQ6zSSW9ESQvqJKgYjPg9bMuuopwtEu/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=2%2Bfkc4q5f4Sec2cYeG%2FsoNQWg0Y%3D)
 
 그림 S4: 기존 방법들과의 더 많은 정성적 비교. "GT"는 실제(Ground Truth)를 의미합니다.
 
-![](/assets/images/posts/315/img_28.png)
+![](https://blog.kakaocdn.net/dna/dp1i3M/btsKPh4ICVf/AAAAAAAAAAAAAAAAAAAAAETsK_VIiqwXSWqspJxpLDHfayT8BzQzuvIQpjq4tE41/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=d5L2ovuJMvT75zHl%2BmzY0VmxUWw%3D)
 
 그림 S5: 기존 방법들과의 더 많은 정성적 비교. "GT"는 실제(Ground Truth)를 의미합니다.
 
-![](/assets/images/posts/315/img_29.png)
+![](https://blog.kakaocdn.net/dna/JjZdW/btsKPRYN7lH/AAAAAAAAAAAAAAAAAAAAAKA8Is8EXbRM1hXT0lkQztO_6ILVy6oxTJdQaI4KvQCN/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=WNkw9nb0inud4PSx%2Bja6Tt%2BHsaM%3D)
 
 그림 S6: 기존 방법들과의 더 많은 정성적 비교. "GT"는 실제(Ground Truth)를 의미합니다.
 
-![](/assets/images/posts/315/img_30.png)
+![](https://blog.kakaocdn.net/dna/cYGSyl/btsKPSpRWMh/AAAAAAAAAAAAAAAAAAAAAHxd9OM0x0oc67y_euuGmNnKqWMYdBQJEvtXIOoG1Ai0/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=48wvRxO0rtrhJci40ZXQ%2FWsOrZU%3D)
 
 그림 S7: 기존 방법들과의 더 많은 정성적 비교. "GT"는 실제(Ground Truth)를 의미합니다.
 
-![](/assets/images/posts/315/img_31.png)
+![](https://blog.kakaocdn.net/dna/b1wzhM/btsKRDShQA8/AAAAAAAAAAAAAAAAAAAAAN10IsyxllAQkhZARJb_6Fu-PrHwtX-eFwRrA3233c00/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=p%2Fj5PtPwRt9bU7XgMelBvGsUCrA%3D)
 
 그림 S8: 사용자 상호작용에 대한 더 많은 결과. 동일한 입력 이미지 쌍에 대해 두 개의 궤적 제어 결과를 보여줍니다.
 
-![](/assets/images/posts/315/img_32.png)
+![](https://blog.kakaocdn.net/dna/kFFos/btsKReZGlOo/AAAAAAAAAAAAAAAAAAAAAH5oEouNCaRFJsAibVlKgqgBYoH_7fT0Jt09yf3Cw9d8/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=83VRHiAqhsUBinmx3fodv4rdpXA%3D)
 
 그림 S9: 새로운 시점 합성에 대한 더 많은 결과. 첫 번째 행과 두 번째 행은 각각 정적 장면과 동적 장면에 대한 결과를 보여줍니다.
 
-![](/assets/images/posts/315/img_33.png)
+![](https://blog.kakaocdn.net/dna/bqzTe0/btsKPB9CNkx/AAAAAAAAAAAAAAAAAAAAAJQe6kpa-7PmyJvrodyi5xH9yord4c4dU92IRBwxt_UF/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=M5pgroGvBxSARtwA8Oq4M6o86Cw%3D)
 
 그림 S10: (a) 만화 및 (b) 스케치 보간에 대한 더 많은 결과.
 
-![](/assets/images/posts/315/img_34.png)
+![](https://blog.kakaocdn.net/dna/3jHad/btsKQzwlXgt/AAAAAAAAAAAAAAAAAAAAAIrUp1wc9IdvBcwjU8wWNXZ3nC6W0hRJF_UnjZIKaj5I/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=PHoLRuisLwGYY44lB6oAZkJdsoA%3D)
 
 그림 S11: 타임랩스 비디오 생성에 대한 더 많은 결과.
 
-![](/assets/images/posts/315/img_35.png)
+![](https://blog.kakaocdn.net/dna/LpfnO/btsKREp7eb8/AAAAAAAAAAAAAAAAAAAAAHCje_23HPp4LVr9bi0YYUcQ56XFFpc_Ljnv2qCdkWjK/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=J3q2sKhavB4v4Qd87ZOlXkO%2FdS0%3D)
 
 그림 S12: 슬로우 모션 비디오 생성에 대한 더 많은 결과. 비디오 프레임에서 빨간색으로 강조된 x-t 슬라이스가 오른쪽에 시각화되어 있습니다.
 
-![](/assets/images/posts/315/img_36.png)
+![](https://blog.kakaocdn.net/dna/ccRWet/btsKQJFEJzc/AAAAAAAAAAAAAAAAAAAAAJzk3K0WvoW09aJNyZtZ1Nia2rSsxjN2c2WoZLvaFf6k/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=Lc27CN6zcNo%2F8dgU9aOU%2BTGKFPA%3D)
 
 그림 S13: 이미지 모핑에 대한 더 많은 결과.
