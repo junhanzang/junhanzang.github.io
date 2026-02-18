@@ -46,9 +46,9 @@ tags:
 
 이 그래프에서 오류를 최소화하는 함수를 구하기 위해서는 Error를 최소화하면된다.
 
--> 함수모양은 𝑤1 ,𝑤2 ,…,𝑤m 가 결정하기 때문!
+-> 함수모양은 𝑤<sub>1</sub> ,𝑤<sub>2</sub> ,…,𝑤<sub>m</sub> 가 결정하기 때문!
 
-Error 함수를 최소화하는 함수는 Error를 최소화하는 𝑤1 ,𝑤2 ,…,𝑤m를 찾는 것이다.
+Error 함수를 최소화하는 함수는 Error를 최소화하는 𝑤<sub>1</sub> ,𝑤<sub>2</sub> ,…,𝑤<sub>m</sub>를 찾는 것이다.
 
 이를 요약하면 다음과 같다.
 
@@ -56,7 +56,7 @@ Error 함수를 최소화하는 함수는 Error를 최소화하는 𝑤1 ,𝑤2 
 
 **그렇다면 이 문제는 어떻게 풀어야할까?**
 
-결국, 위의 말은 E를 모든 𝑤i들에 대해서 편미분을 하고, 이것을 모두 0으로 만드는 모든 𝑤i를 찾으면 된다는 것이다!
+결국, 위의 말은 E를 모든 𝑤<sub>i</sub>들에 대해서 편미분을 하고, 이것을 모두 0으로 만드는 모든 𝑤<sub>i</sub>를 찾으면 된다는 것이다!
 
 ![](https://blog.kakaocdn.net/dna/bxLF2u/btrW9poXbt1/AAAAAAAAAAAAAAAAAAAAAKkcxD8Pg-AhSrv8adAfv3NhSKuO69twPblFhxy6J2SD/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=J95M2dmeRHLBlxBXID84YkJiLXA%3D)
 
@@ -64,7 +64,7 @@ Error 함수를 최소화하는 함수는 Error를 최소화하는 𝑤1 ,𝑤2 
 
 Data = {(0,0), (1,1), (1,2), (2,1)}
 
-f(x; w0, w1, w2) = w2x2 + w1x +w0일 때의 최적의 함수를 구하라.
+f(x; w<sub>0</sub>, w<sub>1</sub>, w<sub>2</sub>) = w<sub>2</sub>x<sup>2</sup> + w<sub>1</sub>x +w<sub>0</sub>일 때의 최적의 함수를 구하라.
 
 ![](https://blog.kakaocdn.net/dna/4F2Sv/btrW4EHg7or/AAAAAAAAAAAAAAAAAAAAAEI5JF9YwLdgypkot7SRjgZI3Bl15HA4Qn2L_qVMQn1a/img.jpg?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=pXm8EM8x%2BdsoESNMm9QBAMnYoEE%3D)
 
@@ -114,7 +114,7 @@ Gradient Descent Method 공식을 다차원인 경우는 각 변수에 대해서
 
 Data = {(0,0), (1,1), (1,2), (2,1)}
 
-f(x; w0, w1, w2) = w2x2 + w1x +w0일 때의 최적의 함수를 구하라.
+f(x; w<sub>0</sub>, w<sub>1</sub>, w<sub>2</sub>) = w<sub>2</sub>x<sup>2</sup> + w<sub>1</sub>x +w<sub>0</sub>일 때의 최적의 함수를 구하라.
 
 수식으로는 앞에서 풀었기 때문에 이를 파이썬으로 구현했다.
 

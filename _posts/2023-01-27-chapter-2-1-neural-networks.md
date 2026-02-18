@@ -10,7 +10,7 @@ tags:
 
 간단하게 인공 신경망(Artificial Neural Network, ANN)의 탄생을 설명하고 넘어가도록하자.
 
-우리의 뇌는 1011개의 뉴런들로 이루어져있다.
+우리의 뇌는 10<sup>11</sup>개의 뉴런들로 이루어져있다.
 
 뉴런은 다음 그림과 같이 생겼다.
 
@@ -66,7 +66,7 @@ ANN을 위의 방식으로 모방하면 다음 그림과 같이 모방이 가능
 
 ![](https://blog.kakaocdn.net/dna/c8RRxM/btrXm87BcPg/AAAAAAAAAAAAAAAAAAAAAIhrlUh_aVKxGTnyusfXg4uDe4dzpArsJ4nC_ys9GfTG/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=QKru1dRMmDSHTrkRC72z3C0QPj8%3D)
 
-𝑁𝑁(𝒘, 𝒙) = 𝒕, 𝒘 = (𝑤1 ,𝑤2 ,…,𝑤n)으로 정의하게 된다면
+𝑁𝑁(𝒘, 𝒙) = 𝒕, 𝒘 = (𝑤<sub>1</sub> ,𝑤<sub>2</sub> ,…,𝑤<sub>n</sub>)으로 정의하게 된다면
 
 **아래의 함수를 minimum스럽게 만드는 w를 찾는 문제로 변경하게 된다!**
 
@@ -241,9 +241,9 @@ h = sigmoid(net)
 
 ![](https://blog.kakaocdn.net/dna/bJYLVB/btrXM30czh0/AAAAAAAAAAAAAAAAAAAAAIZPALxQZtHtXabNRzDI33kGG7tDmMESx8-FkjLSo47e/img.png?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1772290799&allow_ip=&allow_referer=&signature=H4GdLj%2FBIlFRkna3qzAJpcnoxZQ%3D)
 
-hnk가 1 또는 0에 가까우면 n번째 훈련 데이터의 모든 기울기는 0이 된다.
+h<sub>nk</sub>가 1 또는 0에 가까우면 n번째 훈련 데이터의 모든 기울기는 0이 된다.
 
-따라서 hnk가 1이나 0에 가깝지만 틀리게 된다면, Neural Network는 잘못된 학습에서 벗어날 수 없게된다.
+따라서 h<sub>nk</sub>가 1이나 0에 가깝지만 틀리게 된다면, Neural Network는 잘못된 학습에서 벗어날 수 없게된다.
 
 **그러면 어떤 E function를 사용해야될까?**
 
@@ -472,7 +472,7 @@ Adaptive Learning Rates는 다음의 의문들로부터 파생되었다.
 
 단점
 
-1. 결국 𝐺ti는 시간이 지날수록 커짐
+1. 결국 𝐺<sup>t</sup><sub>i</sub>는 시간이 지날수록 커짐
 
 2. 매개변수는 때때로 거의 업데이트되지 않음
 
