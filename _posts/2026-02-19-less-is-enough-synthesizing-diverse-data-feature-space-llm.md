@@ -88,15 +88,15 @@ $$\mathcal{L}_{\text{SAE}} = \|\mathbf{x} - \hat{\mathbf{x}}\|^2_2 + \lambda\|\m
 
 ### 정리 4.1 (일반화 오류 상한)
 
-경계 손실 $\ell$ (경계 $C$)로 최적화된 포스트 학습 모델 $\pi$와 i.i.d. 합성 데이터셋 $S_{\text{gen}}$이 주어지면:
+경계 손실 $\ell$ (경계 $C$)로 최적화된 포스트 학습 모델 $\pi$와 i.i.d. 합성 데이터셋 $S\_{\text{gen}}$이 주어지면:
 
 $$\text{Err}(\pi^{S_{\text{gen}}}) \leq 2C \cdot \Delta_{\text{TV}}(\mathcal{D}, \mathcal{D}_{\text{gen}}) + |R_{\mathcal{D}_{\text{gen}}}(\pi^{S_{\text{gen}}}) - \hat{R}_{S_{\text{gen}}}(\pi^{S_{\text{gen}}})|$$
 
 이 상한은 두 항으로 구성된다:
 
-1. **분포 격차:** $\Delta_{\text{TV}}(\mathcal{D}, \mathcal{D}_{\text{gen}})$는 태스크 도메인과 합성 분포 사이의 발산을 측정하며, 합성 파이프라인 설계에 영향을 받는다.
+1. **분포 격차:** $\Delta\_{\text{TV}}(\mathcal{D}, \mathcal{D}\_{\text{gen}})$는 태스크 도메인과 합성 분포 사이의 발산을 측정하며, 합성 파이프라인 설계에 영향을 받는다.
 
-2. **샘플링 오류:** 기대 위험 $R_{\mathcal{D}_{\text{gen}}}(\pi^{S_{\text{gen}}}) = \mathbb{E}_{x \sim \mathcal{D}_{\text{gen}}}[\ell(\pi^{S_{\text{gen}}}, x)]$와 유한 샘플에서의 경험적 위험 $\hat{R}_{S_{\text{gen}}}(\pi^{S_{\text{gen}}}) = \frac{1}{n_g}\sum \ell(\pi^{S_{\text{gen}}}, x_i)$ 간의 차이
+2. **샘플링 오류:** 기대 위험 $R\_{\mathcal{D}\_{\text{gen}}}(\pi^{S\_{\text{gen}}}) = \mathbb{E}\_{x \sim \mathcal{D}\_{\text{gen}}}[\ell(\pi^{S\_{\text{gen}}}, x)]$와 유한 샘플에서의 경험적 위험 $\hat{R}\_{S\_{\text{gen}}}(\pi^{S\_{\text{gen}}}) = \frac{1}{n\_g}\sum \ell(\pi^{S\_{\text{gen}}}, x\_i)$ 간의 차이
 
 ---
 
@@ -104,33 +104,33 @@ $$\text{Err}(\pi^{S_{\text{gen}}}) \leq 2C \cdot \Delta_{\text{TV}}(\mathcal{D},
 
 ### 5.1 형식화
 
-입력 시퀀스 $X \sim \mathcal{D}$를 LLM이 처리하여 토큰 임베딩 $\mathbf{X} \in \mathbb{R}^{T \times d}$를 생성한다. SAE와 최대 풀링 집계를 통해 $\mathbf{Z} = g(\mathbf{X}) \in \mathbb{R}^k$를 얻는다. 마찬가지로 $X_{\text{gen}} \sim \mathcal{D}_{\text{gen}}$에 대해 $Z_{\text{gen}} = g(X_{\text{gen}})$을 얻는다.
+입력 시퀀스 $X \sim \mathcal{D}$를 LLM이 처리하여 토큰 임베딩 $\mathbf{X} \in \mathbb{R}^{T \times d}$를 생성한다. SAE와 최대 풀링 집계를 통해 $\mathbf{Z} = g(\mathbf{X}) \in \mathbb{R}^k$를 얻는다. 마찬가지로 $X\_{\text{gen}} \sim \mathcal{D}\_{\text{gen}}$에 대해 $Z\_{\text{gen}} = g(X\_{\text{gen}})$을 얻는다.
 
 Pinsker 부등식과 KL 발산 체인 규칙을 적용하면:
 
 $$\Delta_{\text{TV}}(\mathcal{D}, \mathcal{D}_{\text{gen}}) \leq \sqrt{\frac{1}{2}\left(\Delta_{\text{KL}}(P_Z \| Q_Z) + \varepsilon_{\text{cond}}\right)}$$
 
-분포 격차는 SAE 특성 공간에서의 KL 발산과 최적화 불가능한 항 $\varepsilon_{\text{cond}}$로 상한이 정해진다. 따라서 합성 목적함수는 다음과 같다:
+분포 격차는 SAE 특성 공간에서의 KL 발산과 최적화 불가능한 항 $\varepsilon\_{\text{cond}}$로 상한이 정해진다. 따라서 합성 목적함수는 다음과 같다:
 
 $$S^*_{\text{gen}} = \arg\min_{S_{\text{gen}}} \Delta_{\text{KL}}(P_Z \| Q_Z)$$
 
-이는 특성 분포 $Q_Z$가 목표 도메인 $P_Z$와 최대한 가까운 합성 데이터를 추구한다.
+이는 특성 분포 $Q\_Z$가 목표 도메인 $P\_Z$와 최대한 가까운 합성 데이터를 추구한다.
 
 ### 5.2 구현
 
-KL 발산을 그래디언트 방법으로 직접 최소화하는 것은 $Q_Z$가 데이터셋 $S_{\text{gen}}$에 의존하기 때문에 불가능하다. 대신 SAE 특성 공간에서 샘플과 앵커 코퍼스 $\mathcal{S}_{\text{anchor}}$ 간의 특성 활성화를 매칭하여 $S_{\text{gen}}$을 구성한다.
+KL 발산을 그래디언트 방법으로 직접 최소화하는 것은 $Q\_Z$가 데이터셋 $S\_{\text{gen}}$에 의존하기 때문에 불가능하다. 대신 SAE 특성 공간에서 샘플과 앵커 코퍼스 $\mathcal{S}\_{\text{anchor}}$ 간의 특성 활성화를 매칭하여 $S\_{\text{gen}}$을 구성한다.
 
 **이진 활성화 정의:**
 
 $$\mathcal{A}_i(x) = \mathbf{1}[g_i(x) > \delta]$$
 
-$\mathcal{A}_i(x) = 1$이면 특성 $i$ 활성화됨을 나타낸다.
+$\mathcal{A}\_i(x) = 1$이면 특성 $i$ 활성화됨을 나타낸다.
 
 **태스크 관련 특성:** 집합 $F \subset \{1, \ldots, k\}$는 LLM(예: GPT-4o-mini)을 사용하여 식별된다.
 
 **활성 특성 부분집합:**
-- $F(P_Z) = \{i \in F \mid \Pr_{x \sim \mathcal{S}_{\text{anchor}}}(\mathcal{A}_i(x) = 1) > 0\}$
-- $F(Q_Z) = \{i \in F \mid \Pr_{x \sim S_{\text{gen}}}(\mathcal{A}_i(x) = 1) > 0\}$
+- $F(P\_Z) = \{i \in F \mid \Pr\_{x \sim \mathcal{S}\_{\text{anchor}}}(\mathcal{A}\_i(x) = 1) > 0\}$
+- $F(Q\_Z) = \{i \in F \mid \Pr\_{x \sim S\_{\text{gen}}}(\mathcal{A}\_i(x) = 1) > 0\}$
 
 **Feature Activation Coverage (FAC):**
 
@@ -140,25 +140,25 @@ $$\text{FAC} = \frac{|F(Q_Z)|}{|F(P_Z)|}$$
 
 $$F_{\text{miss}} = F(P_Z) \setminus F(Q_Z)$$
 
-$P_Z$와 $Q_Z$ 사이의 분포 격차를 줄이기 위해 $i \in F_{\text{miss}}$에 해당하는 특성 활성화를 목표로 하는 샘플을 합성한다.
+$P\_Z$와 $Q\_Z$ 사이의 분포 격차를 줄이기 위해 $i \in F\_{\text{miss}}$에 해당하는 특성 활성화를 목표로 하는 샘플을 합성한다.
 
 ---
 
-## 6. 합성 분포 $\mathcal{D}_{\text{gen}}$ 하의 샘플링 오류 감소
+## 6. 합성 분포 $\mathcal{D}\_{\text{gen}}$ 하의 샘플링 오류 감소
 
 ### 6.1 형식화
 
-잘 정렬된 합성 분포 $\mathcal{D}_{\text{gen}}$을 가지더라도 유한한 데이터셋 $S_{\text{gen}}$은 학습 목적함수를 불완전하게 추정할 수 있다. PAC-베이지안 이론은 이 오류를 상한으로 묶는다.
+잘 정렬된 합성 분포 $\mathcal{D}\_{\text{gen}}$을 가지더라도 유한한 데이터셋 $S\_{\text{gen}}$은 학습 목적함수를 불완전하게 추정할 수 있다. PAC-베이지안 이론은 이 오류를 상한으로 묶는다.
 
 ### 보조 정리 6.1 (샘플링 오류 상한)
 
-Sub-Gamma 손실 가정 하에서, 샘플링 오류는 상호 정보량 $I(S_{\text{gen}}; W)$를 통해 상한이 정해진다:
+Sub-Gamma 손실 가정 하에서, 샘플링 오류는 상호 정보량 $I(S\_{\text{gen}}; W)$를 통해 상한이 정해진다:
 
 $$\mathbb{E}\left[|R_{\mathcal{D}_{\text{gen}}}(\pi^{S_{\text{gen}}}) - \hat{R}_{S_{\text{gen}}}(\pi^{S_{\text{gen}}})|  \right] \leq \sqrt{\frac{2\sigma^2}{n} I(S_{\text{gen}}; W)} + \frac{c}{n} I(S_{\text{gen}}; W)$$
 
 $$\leq \sqrt{\frac{2\sigma^2}{n} H(S_{\text{gen}})} + \frac{c}{n} H(S_{\text{gen}})$$
 
-모델이 완전히 암기할 때($H(S_{\text{gen}} \mid W) = 0$), 등호가 성립하고 상한은 오로지 $S_{\text{gen}}$의 엔트로피에만 의존한다. $H(S_{\text{gen}})$을 통한 합성 데이터셋의 불확실성 감소가 샘플링 오류 감소에 핵심적이다.
+모델이 완전히 암기할 때($H(S\_{\text{gen}} \mid W) = 0$), 등호가 성립하고 상한은 오로지 $S\_{\text{gen}}$의 엔트로피에만 의존한다. $H(S\_{\text{gen}})$을 통한 합성 데이터셋의 불확실성 감소가 샘플링 오류 감소에 핵심적이다.
 
 ### 6.2 구현
 
@@ -166,15 +166,15 @@ $$\leq \sqrt{\frac{2\sigma^2}{n} H(S_{\text{gen}})} + \frac{c}{n} H(S_{\text{gen
 
 **1단계: 대조 쌍 구성**
 
-각 누락된 특성 $i \in F_{\text{miss}}$에 대해 대조 쌍 $(x^+_i, x^-_i)$를 구성한다:
-- $x^+_i$: 해당 특성을 강하게 활성화
-- $x^-_i$: 해당 특성을 약하게 활성화
+각 누락된 특성 $i \in F\_{\text{miss}}$에 대해 대조 쌍 $(x^+\_i, x^-\_i)$를 구성한다:
+- $x^+\_i$: 해당 특성을 강하게 활성화
+- $x^-\_i$: 해당 특성을 약하게 활성화
 
-특성 인식 프롬프트 $\mathcal{T}(\text{Desc}_i)$를 사용하여 후보를 생성하고 SAE 활성화 $g_i(x)$로 점수를 매긴다. $g_i(x) \geq \delta$인 것을 $x^+_i$로, 약한 활성화를 $x^-_i$로 식별하여 대조 쌍을 구성한다.
+특성 인식 프롬프트 $\mathcal{T}(\text{Desc}\_i)$를 사용하여 후보를 생성하고 SAE 활성화 $g\_i(x)$로 점수를 매긴다. $g\_i(x) \geq \delta$인 것을 $x^+\_i$로, 약한 활성화를 $x^-\_i$로 식별하여 대조 쌍을 구성한다.
 
 **2단계: 특성 커버 샘플 합성**
 
-대조 쌍 $(x^+_i, x^-_i)$를 사용하여 합성 프롬프트 $\mathcal{T}^{\text{ctr}}_i(x^+_i, x^-_i; \text{Desc}_i)$를 구성한다. 생성 모델 $\mathcal{M}$에서 $m$개 후보를 샘플링한다:
+대조 쌍 $(x^+\_i, x^-\_i)$를 사용하여 합성 프롬프트 $\mathcal{T}^{\text{ctr}}\_i(x^+\_i, x^-\_i; \text{Desc}\_i)$를 구성한다. 생성 모델 $\mathcal{M}$에서 $m$개 후보를 샘플링한다:
 
 $$\tilde{S}_i = \{x_{i,1}, \ldots, x_{i,m}\}, \quad x_{i,j} \sim \mathcal{M}(\cdot \mid \mathcal{T}^{\text{ctr}}_i)$$
 
@@ -182,11 +182,11 @@ SAE 활성화 임계값 $\delta$로 후보를 필터링하여 목표 특성 $i$�
 
 $$S^*_i = \{x_{i,j} \in \tilde{S}_i \mid g(x_{i,j}) > \delta\}$$
 
-$S^*_i$의 후보를 순위 매기고 상위 샘플을 유지한다. 누락된 특성 전체에 걸쳐 집계한다:
+$S^*\_i$의 후보를 순위 매기고 상위 샘플을 유지한다. 누락된 특성 전체에 걸쳐 집계한다:
 
 $$S_{\text{gen}} = \bigcup_{i \in F_{\text{miss}}} S^*_i$$
 
-이 두 단계 방법은 대조 쌍으로 생성 공간을 제한하여 목표 특성 활성화 가능성을 높이고 조건부 엔트로피 $H(S_{\text{gen}} \mid \cdot)$를 낮춤으로써 추정 오류를 줄인다.
+이 두 단계 방법은 대조 쌍으로 생성 공간을 제한하여 목표 특성 활성화 가능성을 높이고 조건부 엔트로피 $H(S\_{\text{gen}} \mid \cdot)$를 낮춤으로써 추정 오류를 줄인다.
 
 ---
 
@@ -196,8 +196,8 @@ $$S_{\text{gen}} = \bigcup_{i \in F_{\text{miss}}} S^*_i$$
 
 FAC Synthesis 파이프라인:
 1. **SAE**로 모델 활성화를 해석 가능한 태스크 관련 특성으로 분해
-2. $\mathcal{D}$와 $\mathcal{D}_{\text{gen}}$에서 각각 태스크 관련 SAE 특성을 추출하고 그 차집합으로 누락 집합 $F_{\text{miss}}$를 정의
-3. $F_{\text{miss}}$를 사용하여 데이터 합성을 안내
+2. $\mathcal{D}$와 $\mathcal{D}\_{\text{gen}}$에서 각각 태스크 관련 SAE 특성을 추출하고 그 차집합으로 누락 집합 $F\_{\text{miss}}$를 정의
+3. $F\_{\text{miss}}$를 사용하여 데이터 합성을 안내
 
 ---
 
@@ -322,7 +322,7 @@ $\delta \in [1.0, 2.0]$ 범위에서 누락 특성 수는 거의 일정하게 �
 
 ![누락 특성당 합성 샘플 수의 효과](/assets/images/posts/less-is-enough-synthesizing-diverse-data-feature-space-llm/x7.png)
 
-누락 특성당 샘플을 더 합성할수록 AUPRC는 증가하지만 데이터 효율성 점수(DES, $\log_{10}$ 전체 합성 샘플로 AUPRC 정규화)는 감소한다. 성능 향상의 대부분은 특성당 소수의 샘플만으로 달성되어, 추가 확장은 한계 이익이 적음을 보여준다.
+누락 특성당 샘플을 더 합성할수록 AUPRC는 증가하지만 데이터 효율성 점수(DES, $\log\_{10}$ 전체 합성 샘플로 AUPRC 정규화)는 감소한다. 성능 향상의 대부분은 특성당 소수의 샘플만으로 달성되어, 추가 확장은 한계 이익이 적음을 보여준다.
 
 ---
 
