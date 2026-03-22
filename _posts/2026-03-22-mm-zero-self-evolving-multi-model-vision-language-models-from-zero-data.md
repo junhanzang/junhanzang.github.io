@@ -88,11 +88,13 @@ LLM과 달리 VLM은 **시각적 입력이 필요**하다. 기존 VLM 자기 진
 
 ### 2.1 사전 지식: GRPO
 
-MM-Zero는 **검증 가능한 보상을 활용한 강화학습(RLVR)** 위에 구축된다. 규칙 기반 검증기가 이진 보상을 부여한다:
+RLVR(Reinforcement Learning with Verifiable Rewards)은 모델 출력의 정확성을 검증할 수 있는 도메인에 적용 가능한 VLM 훈련 패러다임이다. 규칙 기반 검증기 $v: X \to \{0, 1\}$가 각 생성물 $x_i$에 이진 보상을 부여한다:
 
 $$r_i = v(x_i) = \begin{cases} 1, & \text{if } x_i \text{이 정답이면} \\ 0, & \text{그 외} \end{cases}$$
 
-**GRPO**는 N개 샘플에 걸쳐 정규화된 이점(advantage)을 계산한다:
+이러한 검증 가능한 보상은 수학이나 코드 생성 등 정확성을 객관적으로 평가할 수 있는 추론 집약적 태스크에 특히 효과적이다. 정확성 외에도 답변 다양성이나 원하는 출력 포맷 준수 등의 추가 기준도 인코딩할 수 있다.
+
+본 논문은 **GRPO(Group Relative Policy Optimization)**를 채택한다. GRPO는 학습된 가치 함수(value function)의 필요성을 제거하고, 여러 샘플에 걸친 상대적 보상을 계산하는 실용적인 RL 알고리즘이다. 프롬프트 $p$가 주어지면, 현재 정책이 N개의 응답과 해당 보상을 생성하고, 이 보상을 그룹 내에서 정규화하여 응답 수준의 이점(advantage)을 산출한다:
 
 $$\hat{A}_i = \frac{r_i - \text{mean}(r_1, \ldots, r_N)}{\text{std}(r_1, \ldots, r_N) + \varepsilon_{\text{norm}}}$$
 
@@ -117,7 +119,7 @@ GRPO 손실 함수:
 
 $$\mathcal{L}_{\text{GRPO}}(\theta) = -\frac{1}{N}\sum_{i=1}^{N}\min\left(\frac{\pi_\theta(x_i)}{\pi_{\theta_{\text{old}}}(x_i)}\hat{A}_i,\ \text{clip}\left(\frac{\pi_\theta(x_i)}{\pi_{\theta_{\text{old}}}(x_i)}, 1-\epsilon, 1+\epsilon\right)\hat{A}_i\right) + \beta \cdot \text{KL}(\pi_\theta \| \pi_{\theta_{\text{old}}})$$
 
-> **직관적 이해**: PPO와 유사하게, 정책 비율을 클리핑하여 너무 급격한 업데이트를 방지하면서, KL 발산으로 이전 정책에서 너무 멀어지지 않도록 제약
+> **직관적 이해**: 양의 상대적 이점을 가진 응답을 상향 조정하면서, 과도한 정책 이탈을 패널티로 제한함으로써, RLVR 프레임워크 하에서 VLM의 추론 및 생성 품질을 향상시키는 효과적인 메커니즘을 제공한다.
 
 <div class="mermaid">
 graph TD
@@ -144,7 +146,21 @@ graph TD
 | **Coder** | $\pi_D$ | 설명을 SVG/Python 코드로 변환 | 캡션 $c$ | 실행 가능 코드 → 이미지 $I$ |
 | **Solver** | $\pi_S$ | 생성된 이미지로 추론 수행 | 이미지 $I$ + 질문 $q$ | 답변 $y$ |
 
-**순차 훈련**: 각 역할이 훈련될 때 나머지 역할은 동결(frozen)된다.
+MM-Zero는 추가 데이터 없이 동일한 기본 모델에서 진화한 세 개의 독립적 모델 에이전트를 포함한다. 각 모델은 역할별 보상 함수를 사용해 GRPO로 순차 최적화되며, 폐쇄 훈련 루프를 형성한다. **각 역할의 훈련 단계에서 나머지 두 역할은 동결(frozen)**된다.
+
+#### Proposer 상세
+
+Proposer는 다양한 시각 도메인에 걸쳐 **시각적 캡션과 질문-답변 쌍**을 생성하도록 훈련된다. 대상 도메인에는 차트 이해, 객체/도형 인식, OCR, 시각적 수학 추론이 포함된다.
+
+Proposer의 보상을 계산하기 위해, Coder와 Solver 양쪽에 대한 **vLLM 서비스 포트를 초기화**한다. Coder가 생성된 캡션과 질문을 받아 SVG 코드를 생성하고, 이를 **병렬로 렌더링하여 PNG 이미지로 변환**한다. 성공적으로 렌더링된 이미지와 관련 질문은 Solver에 전달되어 답변을 생성한다. Solver가 Proposer의 보상을 계산한다. 계산 비용 절감을 위해 Coder는 **rollout 크기 4**, Solver는 **rollout 크기 5**를 사용한다.
+
+#### Coder 상세
+
+가장 최근의 Proposer 체크포인트가 **약 4,000개의 캡션 및 질문-답변 쌍**을 생성하며, 이것이 Coder의 훈련 데이터가 된다. Coder는 캡션으로부터 **이미지를 렌더링하는 SVG 코드를 생성**하도록 훈련된다. 렌더링된 이미지는 Solver에 전송되어 보상을 계산한다.
+
+#### Solver 상세
+
+Solver의 훈련 데이터는 가장 최근의 Proposer와 Coder 체크포인트를 사용하여 구성된다. Proposer가 제안을 생성하고, Coder가 이를 이미지로 렌더링한다. **성공적으로 렌더링된 이미지와 관련 질문만** 유지하여 Solver의 훈련 세트로 사용한다.
 
 <div class="mermaid">
 graph TB
@@ -172,9 +188,26 @@ graph TB
 
 ---
 
-### 2.3 Proposer 보상: 6가지 구성 요소
+### 2.3 보상 설계 개요
 
-Proposer는 $(c, q_{\text{easy}}, a_{\text{easy}}, q_{\text{hard}})$ 4중 쌍을 생성한다. 전체 보상 함수:
+이 절에서는 세 역할 각각에 대한 보상 설계를 설명한다.
+
+---
+
+### 2.4 Proposer 보상: 6가지 구성 요소
+
+Proposer 정책 $\pi_P$는 **4중 쌍(Quadruple)** $x = (c, q\_{\text{easy}}, a\_{\text{easy}}, q\_{\text{hard}})$를 생성한다:
+
+| 요소 | 의미 |
+|------|------|
+| $c$ | 시각 장면의 **세밀한 텍스트 설명(캡션)** |
+| $q\_{\text{easy}}$ | 캡션이 이미지로 렌더링되면 답이 명확해지는 **쉬운 질문** (렌더링 품질 검증용) |
+| $a\_{\text{easy}}$ | 쉬운 질문의 **정답** |
+| $q\_{\text{hard}}$ | 렌더링된 이미지에 대해 **다단계 추론이 필요한 어려운 질문** (Solver 훈련·평가용) |
+
+훈련을 통해 Proposer는 더 풍부한 캡션과 더 어려운 질문을 생성하는 법을 학습하여, Coder가 더 정보적인 렌더링을 생성하고 Solver가 더 깊은 추론을 수행하도록 압박한다.
+
+$x$를 평가하기 위해, 포맷 유효성, 풀이 가능성, 난이도를 Solver $\pi_S$를 통해 검증하는 **다단계 계층적 보상 메커니즘**을 사용한다. 전체 보상 함수:
 
 $$R_p(x) = \begin{cases} -1 & \text{포맷이 유효하지 않으면} \\ \frac{1}{N}\sum_{i=1}^{N}\mathbb{1}_{\text{exec}}(C_i) \cdot \left(\min(R_{\text{solv}}(I_i), 0.5) + R_{\text{diff}}(I_i)\right) + r_{\text{eh}} + r_{\text{ct}} + r_{\text{div}} & \text{그 외} \end{cases}$$
 
@@ -299,7 +332,9 @@ graph TB
 
 ---
 
-### 2.4 Coder 보상
+### 2.5 Coder 보상: 실행과 유효성
+
+Coder $\pi_D$는 캡션 $c$를 받아 코드 $C$를 생성한다. 목표는 Proposer의 의도를 충실히 나타내는 **실행 가능한 코드**를 생성하는 것이다. 보상 $R_D$는 실행 상태, 의미적 정확성, 태스크 실현 가능성의 가중합이다:
 
 $$R_D(C) = R_{\text{render}} + R_{\text{solv}} + R_{\text{diff}} - \lambda_{\text{err}}$$
 
@@ -328,7 +363,11 @@ graph LR
 
 ---
 
-### 2.5 Solver 보상: 테스트 타임 RL
+### 2.6 Solver 보상: 테스트 타임 강화학습 (TTRL)
+
+Solver 정책 $\pi_S$는 Proposer가 생성한 어려운 질문 $(I, q\_{\text{hard}})$에 대해 훈련된다. 이 생성된 질문에는 **정답 레이블이 없으므로**, Test-Time Reinforcement Learning(TTRL)을 다수결 투표 방식으로 사용한다.
+
+주어진 입력에 대해 Solver가 **K개의 독립적인 추론 경로**를 생성한다. 다수결 투표로 실버 답변을 식별한다: $\bar{y} = \text{Mode}(\{y_1, \ldots, y_K\})$. $k$번째 응답의 보상은 답변 정확도와 구조적 유효성의 가중합이다:
 
 $$R_S(y_k) = \alpha \cdot R_{\text{acc}}(y_k, \bar{y}) + (1-\alpha) \cdot R_{\text{fmt}}(y_k)$$
 
@@ -383,6 +422,8 @@ graph LR
 
 ### 3.2 주요 결과
 
+결과는 **Qwen-2.5-14B-Instruct를 LLM-as-a-Judge 평가자**로 사용한다.
+
 #### Qwen3-VL-4B-Instruct
 
 | 단계 | MMMU | MMMU-Pro | MM-Vet | ChartQA | MathVerse | MathVision | MathVista | VisNumBench | Hallusion | MMSI | **평균** |
@@ -414,13 +455,53 @@ graph LR
 
 > **핵심 관찰**: 모든 모델에서 **Iter 1에서 가장 큰 점프**가 발생하며, 이후 반복에서도 안정적으로 향상된다. 8B 모델은 5회 반복까지도 성능이 계속 오른다 (50.7% → 54.5%).
 
+**교차 모델 일반화**: 4B 모델은 더 작은 향상(3%)을 보이는데, 이는 초기 이미지 렌더링 성공률이 낮기 때문이다(~40% vs 7B/8B의 70%).
+
+**렌더링 진행**: 훈련 전반에 걸쳐 Coder의 렌더링 성공률과 이미지 풀이 가능성이 **꾸준히 향상**되며, 이는 점진적으로 더 충실한 시각적 생성이 이루어짐을 나타낸다.
+
+### 3.3 논의 (Discussion)
+
+사례 연구를 통해 반복별 시각적 개선 과정을 관찰할 수 있다:
+
+| 반복 | 시각적 품질 | 질문 난이도 |
+|------|-----------|-----------|
+| **초기** | 겹치는 요소가 있는 어수선한 레이아웃 | 단순 |
+| **Iter 1** | 구성이 개선되나, 답이 주석으로 이미지에 포함됨 | 중간 |
+| **Iter 2** | 더 깔끔한 레이아웃, 다단계 추론 요구 | 높음 |
+| **Iter 3** | 세련된 그래프, 값 추출 후 백분율 적용 등 **진정한 구성적 추론** 필요 | 매우 높음 |
+
+<div class="mermaid">
+graph LR
+    subgraph I0["초기"]
+        A1["어수선한 레이아웃<br/>겹치는 요소"]
+    end
+    subgraph I1["Iter 1"]
+        B1["구성 개선<br/>but 답이 이미지에 포함"]
+    end
+    subgraph I2["Iter 2"]
+        C1["깔끔한 레이아웃<br/>다단계 추론"]
+    end
+    subgraph I3["Iter 3"]
+        D1["세련된 그래프<br/>구성적 추론 필요"]
+    end
+    I0 --> I1 --> I2 --> I3
+    style I0 fill:#5a2727,stroke:#c44
+    style I1 fill:#5a3a27,stroke:#c94
+    style I2 fill:#2d4a27,stroke:#4a9
+    style I3 fill:#1a3a5c,stroke:#49c
+</div>
+
 ---
 
 ## 4. 절제 연구 (Ablation Study)
 
 ### 풀이 가능성-난이도 균형 제거 시
 
+Proposer 보상에는 $\min(R\_{\text{solv}}, 0.5) + R\_{\text{diff}}$가 포함되어 있으며, 풀이 가능성에 상한을 두어 사소한 인스턴스를 방지한다. 이 상한을 제거하면:
+
 $$\text{Avg. 향상:}\ 3.9\% \xrightarrow{\text{제거 시}} 2.3\%$$
+
+상한 없이는 **불균형한 보상 신호**가 발생하여, 난이도를 무시하고 풀이 가능성에 대해 불균형적으로 최적화하게 된다.
 
 > **보상 해킹(Reward Hacking) 발견**: 균형 메커니즘 없이 Coder가 **렌더링된 이미지에 정답을 직접 삽입**하는 치팅 행동을 학습했다.
 
@@ -446,7 +527,7 @@ graph LR
 | Iter 2 | 53.1% | 51.3% ↓ |
 | Iter 3 | 54.1% | **49.4%** ↓↓ |
 
-> 다양성 없이는 모델이 **쉽게 렌더링 가능한 유형(히스토그램 등)으로 수렴**하여, 반복이 진행될수록 오히려 성능이 하락했다.
+> $r\_{\text{ct}}$ 항은 시각적 유형 간 다양성을 장려한다. 다양성을 제거하면, 분석 결과 모델이 렌더링하기 쉬운 **좁은 시각적 유형 부분 집합(예: 히스토그램)**으로 수렴하여, **좁은 시각적 문제 유형에 과적합(overfitting)**하는 결과를 보였다.
 
 ```
 정확도(%)
@@ -527,3 +608,161 @@ graph TB
     style S fill:#5c1a3a,stroke:#c44,color:#fff
     style 결과 fill:#1a1a3a,stroke:#49c,color:#fff
 </div>
+
+---
+
+## 부록 A: 프롬프트 템플릿
+
+### A.1 Proposer 프롬프트
+
+```
+역할: 당신은 SVG를 사용하여 풍부하고 복잡한 데이터 시각화 및 다이어그램 사양을
+설계하는 전문 Visual Content Designer입니다. 시각적으로 흥미롭고, 데이터가
+밀집되어 있으며, 해석에 진정한 추론이 필요한 시각화를 설계하는 것이 목표입니다.
+```
+
+**출력 형식**: 정확히 6개의 XML 블록:
+
+| 필드 | 설명 |
+|------|------|
+| `<content_type>` | `data_chart`, `diagram`, `geometry`, `timeline`, `map`, `table`, `other` 중 하나 |
+| `<caption>` | 풍부하고 상세한 시각화 사양 |
+| `<easy_question>` | 이미지에서 직접 읽을 수 있는 단순 질문 |
+| `<easy_answer>` | 쉬운 질문의 정답 |
+| `<hard_question>` | 다단계 추론이 필요한 도전적 질문 |
+| `<hard_answer>` | 어려운 질문의 정답 |
+
+**복잡도 요구사항**: 캡션에는 다음 중 최소 3가지 포함:
+- 다중 데이터 시리즈, 주석, 보조 패널, 색상/마커, 파생 값, 비자명한 패턴, 기하학적 구성
+
+**어려운 질문 제약**: 다단계 추론을 요구하며, 시각화에서 최소 하나의 값을 추출해야 함. 질문 자체에 모든 값을 명시하지 않아야 한다.
+
+**답변 형식**: 단일 숫자, 단어, 또는 짧은 구문 (예: "42", "Q1", "blue")
+
+### A.2 CodeGen 프롬프트
+
+```
+당신은 데이터 시각화를 위한 SVG 코드 생성기입니다.
+차트 설명(캡션)과 질문-답변이 주어집니다.
+
+핵심: 렌더링된 이미지는 제공된 정확한 Easy Answer로
+Easy Question에 답하는 데 필요한 데이터를 포함해야 합니다.
+
+<svg ...>로 시작하는 순수 SVG 마크업을 작성하세요.
+Python 코드를 작성하지 마세요.
+```
+
+**SVG 가이드라인**:
+- `viewBox` 사용
+- `<text>`로 레이블 표시
+- font-size ≥ 12px 유지
+- 구분되는 색상 적용
+- 자체 완결적 코드
+
+### A.3 Solver 프롬프트
+
+```
+이미지를 주의 깊게 보고 질문에 답하세요.
+먼저, <think>...</think> 태그 안에서 단계별로 생각하세요.
+그런 다음, \boxed{} 안에 최종 답을 넣으세요.
+단일 숫자, 단어, 또는 짧은 구문만 (예: \boxed{42}, \boxed{blue})
+— 단위, 완전한 문장 없이.
+```
+
+### A.4 LLM-as-a-Judge 프롬프트
+
+Qwen2.5-14B-Instruct가 벤치마크 전반의 모델 출력을 평가한다.
+
+```
+시스템: 당신은 답변 정확성 판단자입니다.
+질문, 정답(gold), 모델 답변이 주어지면,
+모델 답변이 정확한지 판단하세요.
+
+수치 동등성(14 vs 14.0), 선택지 동등성(A vs A.),
+의역(paraphrase)을 고려하세요.
+
+정확히 한 단어로 답하세요: Yes 또는 No.
+```
+
+---
+
+## 부록 B: 훈련 설정
+
+### 메인 스크립트 파라미터 (Table 4)
+
+| 파라미터 | 값 | 설명 |
+|---------|-----|------|
+| GPU\_MEM | 80 | GPU 메모리 (GB) |
+| TRAIN\_STEPS | 10 | 모델당 반복당 훈련 스텝 |
+| NUM\_ITER | 3 | 자기 진화 반복 횟수 |
+| PROP\_PER\_GPU | 413 | GPU당 제안 수 (Proposer/CodeGen) |
+| PROP\_PER\_S | 625 | GPU당 제안 수 (Solver) |
+| PROP\_ROLL\_BS | 18 | Proposer rollout 배치 크기 |
+| GLOBAL\_BS\_P | 18 | Proposer 전역 배치 크기 |
+| ROLLOUT\_N | 4 | 제안당 rollout 수 (Proposer/CodeGen) |
+| SOLVER\_N\_R | 5 | Solver rollout 수 |
+| ROLLOUT\_BS | 320 | CodeGen rollout 배치 크기 |
+| ROLL\_BS\_S | 512 | Solver rollout 배치 크기 |
+| GLOBAL\_BS\_S | 64 | Solver 전역 배치 크기 |
+
+### 역할별 설정 (Table 5) — 80GB GPU 기준
+
+| 설정 | Proposer | CodeGen | Solver |
+|------|----------|---------|--------|
+| GPU 수 | 3 | 4 | 8 |
+| 최대 프롬프트 길이 | 4096 | 4096 | 8192 |
+| 최대 응답 길이 | 2048 | 4096 | 4096 |
+| Rollout 배치 크기 | 18 | 256 | 512 |
+| 전역 배치 크기 | 18 | 64 | 64 |
+| 학습률 | $1 \times 10^{-6}$ | $1 \times 10^{-6}$ | $1 \times 10^{-6}$ |
+| 가중치 감쇠 | $1 \times 10^{-2}$ | $1 \times 10^{-2}$ | $1 \times 10^{-2}$ |
+| Rollout 온도 | 1.0 | 0.7 | 1.0 |
+| Rollout top\_p | 0.99 | 0.95 | 0.99 |
+| Rollout n | 4 | 4 | 8 |
+| Tensor parallel | 1 | 1 | 2 |
+
+세 모델 모두 **전체 파인튜닝(full fine-tuning)**을 사용하며 LoRA rank는 0이다. **비전 타워(vision tower)는 훈련 가능** 상태를 유지한다. 총 훈련 가능 파라미터: 약 **8.77B** (Qwen3-VL-8B-Instruct 기준).
+
+<div class="mermaid">
+graph LR
+    subgraph GPU할당["GPU 할당 (80GB 기준)"]
+        P_GPU["Proposer<br/>3 GPU"]
+        C_GPU["CodeGen<br/>4 GPU"]
+        S_GPU["Solver<br/>8 GPU"]
+    end
+    subgraph 온도["Rollout 온도 전략"]
+        P_T["Proposer: 1.0<br/>(최대 다양성)"]
+        C_T["CodeGen: 0.7<br/>(안정적 코드)"]
+        S_T["Solver: 1.0<br/>(탐색 장려)"]
+    end
+    style P_GPU fill:#2d5a27,stroke:#4a9,color:#fff
+    style C_GPU fill:#1a3a5c,stroke:#49c,color:#fff
+    style S_GPU fill:#5c1a3a,stroke:#c44,color:#fff
+</div>
+
+---
+
+## 부록 C: 렌더링 파이프라인
+
+SVG 전용 렌더링 변형은 생성된 SVG 마크업을 Solver 입력용 PNG 이미지로 변환한다:
+
+<div class="mermaid">
+graph LR
+    SVG["SVG 문자열"] -->|"cairosvg"| PNG["PNG 변환"]
+    PNG --> VAL{"유효성 검증"}
+    VAL -->|"종횡비 ≤ 100<br/>최대 차원 ≤ 16384px"| OK["Base64 인코딩<br/>→ vLLM & Solver"]
+    VAL -->|"무효"| DISCARD["폐기"]
+    TIMEOUT["타임아웃: 30초/스니펫"] -.-> PNG
+    PARALLEL["ProcessPoolExecutor<br/>(병렬 워커)"] -.-> PNG
+    style OK fill:#2d5a27,stroke:#4a9,color:#fff
+    style DISCARD fill:#5a2727,stroke:#c44,color:#fff
+</div>
+
+| 파라미터 | 값 |
+|---------|-----|
+| 변환 라이브러리 | cairosvg |
+| 스니펫당 타임아웃 | 30초 |
+| 병렬 처리 | ProcessPoolExecutor |
+| 최대 종횡비 | 100 |
+| 최대 차원 | 16384 px |
+| 출력 형식 | Base64 인코딩 PNG |
