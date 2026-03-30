@@ -18,6 +18,63 @@
 /* 수식 블록 오버플로 방지 */
 .MathJax_Display { overflow-x: auto; overflow-y: hidden; }
 
+/* ===== 사이드바 카테고리 ===== */
+.sidebar-categories {
+  margin-top: 1.5em;
+  padding-top: 1em;
+  border-top: 1px solid #e0e0e0;
+}
+.sidebar-categories__title {
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5em;
+  color: #494e52;
+}
+.sidebar-categories__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8em;
+}
+.sidebar-categories__list li {
+  padding: 0.2em 0;
+}
+.sidebar-categories__list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: #494e52;
+}
+.sidebar-categories__list a:hover {
+  color: #0092ca;
+}
+.sidebar-categories__count {
+  background: #f0f0f0;
+  border-radius: 10px;
+  padding: 0.1em 0.5em;
+  font-size: 0.85em;
+  color: #888;
+}
+[data-theme="dark"] .sidebar-categories {
+  border-top-color: var(--border);
+}
+[data-theme="dark"] .sidebar-categories__title {
+  color: var(--link);
+}
+[data-theme="dark"] .sidebar-categories__list a {
+  color: var(--text);
+}
+[data-theme="dark"] .sidebar-categories__list a:hover {
+  color: var(--link-hover);
+}
+[data-theme="dark"] .sidebar-categories__count {
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+}
+
 /* ===== 다크 모드 ===== */
 [data-theme="dark"] {
   --bg: #1a1b26;
