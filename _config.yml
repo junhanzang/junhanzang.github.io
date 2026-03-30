@@ -9,7 +9,7 @@ repository: "junhanzang/junhanzang.github.io"
 
 # Theme
 remote_theme: "mmistakes/minimal-mistakes@4.26.2"
-minimal_mistakes_skin: "dark"
+minimal_mistakes_skin: "default"
 
 # Site Author
 author:
@@ -34,7 +34,7 @@ comments:
     discussion_term: "pathname"
     strict: "1"
     reactions_enabled: "1"
-    theme: "dark_dimmed"
+    theme: "light"
 
 # Reading Files
 include:

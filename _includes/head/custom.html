@@ -1,20 +1,174 @@
 <style>
-/* TOC가 본문 수식을 가리지 않도록 조정 */
+/* ===== 넓은 레이아웃: 여백 줄이고 컨텐츠 폭 확대 ===== */
+.page {
+  max-width: 100% !important;
+}
+.page__inner-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+}
 @media (min-width: 64em) {
-  .sidebar__right { width: 180px; }
-  .page { padding-right: 200px; }
+  .sidebar__right { width: 200px; }
+  .page__content { margin-right: 220px; }
 }
 @media (min-width: 80em) {
-  .sidebar__right { width: 200px; }
-  .page { padding-right: 220px; }
+  .sidebar__right { width: 220px; }
+  .page__content { margin-right: 240px; }
 }
 /* 수식 블록 오버플로 방지 */
 .MathJax_Display { overflow-x: auto; overflow-y: hidden; }
+
+/* ===== 다크 모드 ===== */
+[data-theme="dark"] {
+  --bg: #1a1b26;
+  --bg-secondary: #24283b;
+  --text: #c0caf5;
+  --text-muted: #565f89;
+  --border: #3b4261;
+  --link: #7aa2f7;
+  --link-hover: #89b4fa;
+  --code-bg: #24283b;
+  --blockquote-bg: #1f2335;
+  --blockquote-border: #7aa2f7;
+  --toc-bg: #24283b;
+  --masthead-bg: #16161e;
+  --author-bg: #1f2335;
+}
+[data-theme="dark"] body,
+[data-theme="dark"] .page,
+[data-theme="dark"] .initial-content,
+[data-theme="dark"] .page__content {
+  background-color: var(--bg);
+  color: var(--text);
+}
+[data-theme="dark"] .masthead {
+  background-color: var(--masthead-bg);
+  border-bottom: 1px solid var(--border);
+}
+[data-theme="dark"] .masthead a,
+[data-theme="dark"] .greedy-nav a {
+  color: var(--text);
+}
+[data-theme="dark"] .greedy-nav {
+  background-color: var(--masthead-bg);
+}
+[data-theme="dark"] a {
+  color: var(--link);
+}
+[data-theme="dark"] a:hover {
+  color: var(--link-hover);
+}
+[data-theme="dark"] .author__name,
+[data-theme="dark"] .author__bio,
+[data-theme="dark"] .author__urls-wrapper a,
+[data-theme="dark"] .sidebar .author__name {
+  color: var(--text);
+}
+[data-theme="dark"] .sidebar {
+  background-color: var(--author-bg);
+}
+[data-theme="dark"] .sidebar__right .toc,
+[data-theme="dark"] .toc__menu a {
+  background-color: var(--toc-bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+[data-theme="dark"] .toc .nav__title {
+  background-color: var(--bg-secondary);
+  color: var(--link);
+}
+[data-theme="dark"] .page__content h1,
+[data-theme="dark"] .page__content h2,
+[data-theme="dark"] .page__content h3,
+[data-theme="dark"] .page__content h4 {
+  color: var(--text);
+}
+[data-theme="dark"] .page__meta,
+[data-theme="dark"] .page__taxonomy {
+  color: var(--text-muted);
+}
+[data-theme="dark"] blockquote {
+  background-color: var(--blockquote-bg);
+  border-left-color: var(--blockquote-border);
+  color: var(--text);
+}
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+  background-color: var(--code-bg);
+  color: var(--text);
+}
+[data-theme="dark"] table,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="dark"] th {
+  background-color: var(--bg-secondary);
+}
+[data-theme="dark"] tr:nth-child(even) {
+  background-color: var(--bg-secondary);
+}
+[data-theme="dark"] hr {
+  border-color: var(--border);
+}
+[data-theme="dark"] .page__footer {
+  background-color: var(--masthead-bg);
+  color: var(--text-muted);
+}
+[data-theme="dark"] .pagination a,
+[data-theme="dark"] .pagination span {
+  color: var(--text);
+  border-color: var(--border);
+}
+[data-theme="dark"] .archive__item-title a {
+  color: var(--text);
+}
+
+/* ===== 토글 버튼 ===== */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+[data-theme="dark"] .theme-toggle {
+  background: #24283b;
+  border-color: #3b4261;
+  color: #c0caf5;
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
 </style>
+
+<!-- 다크/라이트 토글 스크립트 (FOUC 방지: head에서 즉시 실행) -->
+<script>
+(function() {
+  var saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+</script>
 
 <!-- Mermaid -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
+<script>
+  // Mermaid 테마를 현재 모드에 맞게 설정
+  var mTheme = (localStorage.getItem('theme') === 'dark') ? 'dark' : 'default';
+  mermaid.initialize({startOnLoad:true, theme: mTheme});
+</script>
 
 <!-- MathJax -->
 <script type="text/javascript" async
